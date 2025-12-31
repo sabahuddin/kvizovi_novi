@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 1B</title>
+    
+    <!-- Centralizovani CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 1B</h1>
+            <p class="subtitle">Namaski Šarti i Čistoća</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+                {"question": "Namaskih šarta ima ukupno dvanaest.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Namaskih šarta ima 12: 6 uvjeta (priprema za namaz) i 6 ruknova (sastavni dijelovi namaza)."},
+                {"question": "Abdest je vjersko pranje cijelog tijela.", "options": ["DA", "NE"], "answer": "NE", "explanation": "Abdest je vjersko pranje određenih dijelova tijela (lice, ruke, glava, noge). Pranje cijelog tijela je gusul."},
+                {"question": "Abdeskih šarta (farzova) ima četiri.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Četiri abdestka šarta su: umiti lice, oprati ruke do iznad lakata, potrati glavu (mesh) i oprati noge do iznad članaka."},
+                {"question": "Spavanje kvari abdest.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Abdest kvari: spavanje ili gubitak svijesti, oticanje krvi, povraćanje, prirodna nužda i glasno smijanje u namazu."},
+                {"question": "Sura En-Nas je prva sura u Kur'anu.", "options": ["DA", "NE"], "answer": "NE", "explanation": "Sura En-Nas je posljednja (114.) sura u Kur'anu. Prva sura je El-Fatiha."},
+                {"question": "Gusulskih šarta ima tri.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Tri gusulska šarta su: gargara (ispiranje usta), istinšak (ispiranje nosa) i pranje cijelog tijela."},
+                {"question": "Tejemum se obavlja kada nemamo vode za abdest.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Tejemum je simboličko čišćenje zemljom kada nemamo vode ili ne možemo koristiti vodu."},
+                {"question": "U džamiju ulazimo lijevom nogom.", "options": ["DA", "NE"], "answer": "NE", "explanation": "U džamiju, kuću, školu i mekteb ulazimo DESNOM nogom, a izlazimo lijevom."},
+                {"question": "Kijam je stajanje u namazu.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Kijam je drugi namaski rukn - stajanje u namazu kada učimo Subhaneke, Fatihu i suru."},
+                {"question": "Ruku' je spuštanje lica na tlo.", "options": ["DA", "NE"], "answer": "NE", "explanation": "Ruku' je pregibanje u namazu (savijanje do polovine tijela). Spuštanje lica na tlo je sedžda."},
+                {"question": "Sure El-Felek i En-Nas se nazivaju 'Zaštitnice'.", "options": ["DA", "NE"], "answer": "DA", "explanation": "El-Felek i En-Nas su 'zaštitnice' (mu'avvizetejn) - sure kojima tražimo zaštitu od zla."},
+                {"question": "Kadei-ehire je sjedenje na kraju namaza.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Kadei-ehire je posljednje sjedenje u namazu na kojem učimo Et-Tehijatu, salavate i dove."},
+                {"question": "Namaz se može klanjati kada Sunce izlazi.", "options": ["DA", "NE"], "answer": "NE", "explanation": "Namaz se ne može klanjati: kada Sunce izlazi, kada je na sredini neba i kada zalazi."},
+                {"question": "Mesh je potiranje mokrom rukom po glavi.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Mesh je treći abdestkši šart - potiranje najmanje četvrtine glave mokrom rukom."},
+                {"question": "Tejemumskih šarta ima tri.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Tri tejemumska šarta: nijet, potiranje lica zemljom i potiranje ruku do iznad lakata zemljom."},
+                {"question": "Koliko namaskih šarta ima?", "options": ["Šest", "Deset", "Dvanaest", "Petnaest"], "answer": "Dvanaest", "explanation": "Namaskih šarta ima 12: 6 uvjeta prije namaza (pripreme) i 6 ruknova u toku namaza."},
+                {"question": "Koji je prvi namaski šart (uvjet)?", "options": ["Abdest", "Kibla", "Čistoća tijela", "odjeće i mjesta", "Nijet"], "answer": "Čistoća tijela, odjeće i mjesta", "explanation": "Prvi namaski uvjet je čistoća tijela, odjeće i mjesta za klanjanje."},
+                {"question": "Koliko ima abdeskih šarta (farzova)?", "options": ["Tri", "Četiri", "Pet", "Šest"], "answer": "Četiri", "explanation": "Četiri abdestka šarta: 1) umiti lice, 2) oprati ruke do lakata, 3) mesh glave, 4) oprati noge."},
+                {"question": "Šta je Kibla?", "options": ["Vrsta namaza", "Smjer prema Kabi u Mekki", "Namaski rukn", "Vrsta abdesta"], "answer": "Smjer prema Kabi u Mekki", "explanation": "Kibla je smjer prema Kabi u Mekki. Muslimani se okreću prema Kibli kada klanjaju namaz."},
+                {"question": "Šta učimo na ruku'u?", "options": ["Subhane Rabbijel-e'ala", "Subhane Rabbijel-'azim", "Semiallahu limen hamideh", "Et-Tehijatu"], "answer": "Subhane Rabbijel-'azim", "explanation": "Na ruku'u tri puta učimo 'Subhane Rabbijel-'azim' - Slavljen je moj Gospodar Veličanstveni."},
+                {"question": "Šta učimo na sedždi?", "options": ["Subhane Rabbijel-'azim", "Subhane Rabbijel-e'ala", "Allahu ekber", "Rabbena lekel-hamd"], "answer": "Subhane Rabbijel-e'ala", "explanation": "Na sedždi tri puta učimo 'Subhane Rabbijel-e'ala' - Slavljen je moj Gospodar Uzvišeni."},
+                {"question": "Koja sura je posljednja u Kur'anu?", "options": ["El-Felek", "El-Ihlas", "En-Nas", "El-Kevser"], "answer": "En-Nas", "explanation": "Sura En-Nas je 114. i posljednja sura u Kur'anu. Govori o traženju zaštite od šejtana."},
+                {"question": "Šta je gusul?", "options": ["Pranje ruku", "Obavezno vjersko kupanje", "Potiranje zemljom", "Pranje zuba"], "answer": "Obavezno vjersko kupanje", "explanation": "Gusul je obavezno vjersko kupanje cijelog tijela propisano punoljetnim muslimanima."},
+                {"question": "Šta je iftitahi-tekbir?", "options": ["Završetak namaza", "Početni tekbir", "Sjedenje u namazu", "Pregibanje"], "answer": "Početni tekbir", "explanation": "Iftitahi-tekbir je početni tekbir (Allahu ekber) kojim započinjemo namaz nakon nijeta."},
+                {"question": "Koliko namaskih vremena ima?", "options": ["Tri", "Četiri", "Pet", "Šest"], "answer": "Pet", "explanation": "Pet namaskih vremena: sabah, podne, ikindija, akšam i jacija."},
+                {"question": "Čime se obavlja tejemum?", "options": ["Vodom", "Zemljom", "Pijeskom", "Kamenjem"], "answer": "Zemljom", "explanation": "Tejemum se obavlja čistom suhom zemljom ili predmetom od zemlje (kamen, zid)."},
+                {"question": "Šta je kiraet?", "options": ["Stajanje u namazu", "Učenje Kur'ana u namazu", "Pregibanje", "Sjedenje"], "answer": "Učenje Kur'ana u namazu", "explanation": "Kiraet je treći namaski rukn - učenje Kur'ana (Fatihe i sure) stojeći u namazu."},
+                {"question": "Kojom nogom izlazimo iz džamije?", "options": ["Desnom", "Lijevom", "Obje istovremeno", "Svejedno"], "answer": "Lijevom", "explanation": "Iz džamije, kuće i škole izlazimo lijevom nogom, a ulazimo desnom."},
+                {"question": "Ko uči ezan?", "options": ["Imam", "Mujezin", "Hatib", "Muallim"], "answer": "Mujezin", "explanation": "Mujezin je osoba koja uči ezan - poziv na namaz sa munare džamije."},
+                {"question": "Šta čini jedan rekat?", "options": ["Samo kijam", "Kijam", "kiraet", "ruku' i dvije sedžde", "Samo sedžda", "Samo ruku'"], "answer": "Kijam, kiraet, ruku' i dvije sedžde", "explanation": "Jedan rekat čine: kijam (stajanje) + kiraet (učenje) + ruku' + dvije sedžde."},
+                {"question": "IZBACI ULJEZA: Šta NE kvari abdest?", "options": ["Spavanje", "Plakanje", "Povraćanje", "Krvarenje"], "answer": "Plakanje", "explanation": "Plakanje NE kvari abdest. Abdest kvare: spavanje, povraćanje, krvarenje i prirodna nužda."},
+                {"question": "IZBACI ULJEZA: Šta ne spada u namaske ruknove?", "options": ["Kijam", "Ruku'", "Abdest", "Sedžda"], "answer": "Abdest", "explanation": "Abdest je namaski UVJET (priprema za namaz), a ne rukn. Kijam, ruku' i sedžda su ruknovi."},
+                {"question": "IZBACI ULJEZA: Koja riječ ne pripada nizu?", "options": ["Iftitahi-tekbir", "Kijam", "Kibla", "Sedžda"], "answer": "Kibla", "explanation": "Kibla je namaski uvjet (smjer), dok su iftitahi-tekbir, kijam i sedžda namaski ruknovi."},
+                {"question": "IZBACI ULJEZA: Šta nije dio abdesta?", "options": ["Pranje lica", "Mesh glave", "Gargara", "Pranje nogu"], "answer": "Gargara", "explanation": "Gargara (ispiranje usta i grla) je dio GUSULA, ne abdesta. Četiri abdestka šarta su: lice, ruke, mesh i noge."},
+                {"question": "IZBACI ULJEZA: Koja sura ne spada u 'zaštitnice'?", "options": ["El-Felek", "En-Nas", "El-Ihlas", "Sve su zaštitnice"], "answer": "El-Ihlas", "explanation": "Zaštitnice (mu'avvizetejn) su samo El-Felek i En-Nas. El-Ihlas govori o Allahovom jedinstvu."},
+                {"question": "ASOCIJACIJA: Broj '12' u kontekstu namaza vas asocira na:", "options": ["Namaske šarte", "Broj rekata", "Broj sedždi", "Broj sura"], "answer": "Namaske šarte", "explanation": "Namaskih šarta ima 12: 6 uvjeta prije namaza i 6 ruknova u toku namaza."},
+                {"question": "ASOCIJACIJA: Riječ 'Kaba' vas asocira na:", "options": ["Medinu", "Kiblu", "Minaret", "Mihrab"], "answer": "Kiblu", "explanation": "Kaba je građevina u Mekki prema kojoj se muslimani okreću (Kibla) prilikom klanjanja namaza."},
+                {"question": "ASOCIJACIJA: Riječ 'mesh' vas asocira na:", "options": ["Pranje lica", "Potiranje glave", "Pranje nogu", "Gargaru"], "answer": "Potiranje glave", "explanation": "Mesh je potiranje mokrom rukom najmanje četvrtine glave - treći abdestki šart."},
+                {"question": "ASOCIJACIJA: Izraz 'Subhane Rabbijel-e'ala' vas asocira na:", "options": ["Ruku'", "Sedždu", "Kijam", "Sjedenje"], "answer": "Sedždu", "explanation": "'Subhane Rabbijel-e'ala' (Slavljen je Gospodar moj Uzvišeni) učimo na sedždi tri puta."},
+                {"question": "ASOCIJACIJA: Riječ 'džunub' vas asocira na:", "options": ["Abdest", "Gusul", "Tejemum", "Namaz"], "answer": "Gusul", "explanation": "Džunub je stanje nečistoće koje zahtijeva gusul (obavezno kupanje)."},
+                {"question": "ANALOGIJA: Abdest : voda = Tejemum : ?", "options": ["Pijesak", "Voda", "Zemlja", "Zrak"], "answer": "Zemlja", "explanation": "Kao što se abdest uzima vodom, tako se tejemum obavlja zemljom (ili predmetom od zemlje)."},
+                {"question": "ANALOGIJA: Kijam : stajanje = Ruku' : ?", "options": ["Sjedenje", "Pregibanje", "Ležanje", "Hodanje"], "answer": "Pregibanje", "explanation": "Kijam je stajanje u namazu, a ruku' je pregibanje (savijanje do polovine tijela)."},
+                {"question": "ANALOGIJA: Iftitahi-tekbir : početak = Selam : ?", "options": ["Sredina", "Početak", "Kraj", "Pauza"], "answer": "Kraj", "explanation": "Iftitahi-tekbir je početak namaza, a selam (Es-selamu alejkum) je kraj namaza."},
+                {"question": "ANALOGIJA: El-Felek : 113. = En-Nas : ?", "options": ["110.", "112.", "114.", "115."], "answer": "114.", "explanation": "El-Felek je 113. sura, a En-Nas je 114. i posljednja sura u Kur'anu."},
+                {"question": "ANALOGIJA: Sabah : jutro = Akšam : ?", "options": ["Podne", "Noć", "Veče", "Popodne"], "answer": "Veče", "explanation": "Sabah je jutarnji namaz, a akšam je večernji namaz (klanja se nakon zalaska Sunca)."},
+                {"question": "KO SAM JA? Ja sam namaski rukn. Savijate se do polovine tijela. Na meni učite 'Subhane Rabbijel-'azim'.", "options": ["Kijam", "Sedžda", "Ruku'", "Kadei-ehire"], "answer": "Ruku'", "explanation": "Ruku' je pregibanje u namazu - savijanje do polovine tijela uz učenje 'Subhane Rabbijel-'azim'."},
+                {"question": "KO SAM JA? Ja sam namaski rukn. Spuštate lice na tlo. Na meni učite 'Subhane Rabbijel-e'ala'.", "options": ["Ruku'", "Kijam", "Sedžda", "Kiraet"], "answer": "Sedžda", "explanation": "Sedžda je spuštanje lica (čela i nosa) na tlo uz učenje 'Subhane Rabbijel-e'ala'."},
+                {"question": "ŠTA SAM JA? Ja sam simboličko čišćenje. Koristim se kada nema vode. Obavljam se zemljom.", "options": ["Abdest", "Gusul", "Tejemum", "Istindža"], "answer": "Tejemum", "explanation": "Tejemum je simboličko čišćenje zemljom kada nema vode ili se voda ne može koristiti."},
+                {"question": "KO SAM JA? Ja sam posljednja sura u Kur'anu. Tražim zaštitu od šejtana. Zovem se 'Ljudi'.", "options": ["El-Felek", "El-Ihlas", "En-Nas", "El-Kevser"], "answer": "En-Nas", "explanation": "Sura En-Nas (Ljudi) je 114. i posljednja sura Kur'ana - tražimo zaštitu od šejtana."},
+                {"question": "ŠTA SAM JA? Ja sam poziv na namaz. Učim se sa munare. Uči me mujezin.", "options": ["Ikamet", "Ezan", "Hutba", "Dova"], "answer": "Ezan", "explanation": "Ezan je poziv na namaz koji mujezin uči sa munare kako bi obavijestio muslimane o namaskom vremenu."},
+                {"question": "DOPUNI NIZ: Iftitahi-tekbir, kijam, kiraet, ruku', sedžda, ...?", "options": ["Selam", "Kadei-ehire", "Ezan", "Nijet"], "answer": "Kadei-ehire", "explanation": "Šest namaskih ruknova su: 1) iftitahi-tekbir, 2) kijam, 3) kiraet, 4) ruku', 5) sedžda, 6) kadei-ehire."},
+                {"question": "DOPUNI NIZ: Čistoća, abdest, odjeća, vrijeme, Kibla, ...?", "options": ["Ruku'", "Nijet", "Sedžda", "Kijam"], "answer": "Nijet", "explanation": "Šest namaskih uvjeta: 1) čistoća, 2) abdest, 3) odjeća, 4) vrijeme, 5) Kibla, 6) nijet."},
+                {"question": "DOPUNI NIZ: Sabah, podne, ikindija, akšam, ...?", "options": ["Duha", "Jacija", "Teravih", "Vitr"], "answer": "Jacija", "explanation": "Pet dnevnih namaza su: sabah, podne, ikindija, akšam i jacija."},
+                {"question": "DOPUNI NIZ: Umiti lice, oprati ruke, mesh glave, ...?", "options": ["Gargara", "Oprati noge", "Istinšak", "Potrati vrat"], "answer": "Oprati noge", "explanation": "Četiri abdestka šarta: 1) umiti lice, 2) oprati ruke do lakata, 3) mesh glave, 4) oprati noge."},
+                {"question": "DOPUNI NIZ: Gargara, istinšak, ...?", "options": ["Mesh", "Gasli vudžud", "Abdest", "Nijet"], "answer": "Gasli vudžud", "explanation": "Tri gusulska šarta: 1) gargara (ispiranje usta), 2) istinšak (ispiranje nosa), 3) gasli vudžud (pranje tijela)."},
+                {"question": "SITUACIJA: Ahmed mora klanjati namaz, ali nema vode u blizini. Šta treba uraditi?", "options": ["Ne klanjati", "Uzeti tejemum", "Čekati vodu", "Klanjati bez čistoće"], "answer": "Uzeti tejemum", "explanation": "Kada nema vode, uzima se tejemum (simboličko čišćenje zemljom) i klanja namaz."},
+                {"question": "SITUACIJA: Merjem je zaboravila na koju stranu treba predati selam prvo. Koja je ispravna?", "options": ["Lijeva pa desna", "Desna pa lijeva", "Samo desna", "Samo lijeva"], "answer": "Desna pa lijeva", "explanation": "Selam se prvo predaje na DESNU stranu, pa zatim na lijevu stranu."},
+                {"question": "SITUACIJA: Hasan ulazi u džamiju. Kojom nogom treba ući?", "options": ["Lijevom", "Desnom", "Obje istovremeno", "Svejedno"], "answer": "Desnom", "explanation": "U džamiju, kuću, školu i mekteb ulazimo DESNOM nogom, a izlazimo lijevom."},
+                {"question": "SITUACIJA: Selma se glasno nasmijala tokom namaza. Šta se desilo s njenim abdestom?", "options": ["Ništa", "Pokvario se", "Pojačao se", "Obnovio se"], "answer": "Pokvario se", "explanation": "Glasno smijanje u namazu kvari abdest. Potrebno je ponovo uzeti abdest i klanjati namaz."},
+                {"question": "PRONAĐI GREŠKU: Namaski ruknovi su: kijam, Kibla, ruku', sedžda, kadei-ehire, iftitahi-tekbir.", "options": ["Kijam", "Kibla", "Ruku'", "Sedžda"], "answer": "Kibla", "explanation": "KIBLA je namaski UVJET, a ne rukn! Šesti rukn je kiraet (umjesto Kible)."}
+            ]
+        };
+    </script>
+
+    <!-- Centralizovani JavaScript Engine -->
+    <script src="../core/quiz-engine.js"></script>
+</body>
+</html>

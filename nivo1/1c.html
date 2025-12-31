@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 1C</title>
+    
+    <!-- Centralizovani CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 1C</h1>
+            <p class="subtitle">Dove, Namazi i Mubarek-dani</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+                {"question": "Et-Tehijatu se uči na svakom sjedenju u namazu.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Et-Tehijatu je dova kojom iskazujemo zahvalnost Allahu i učimo je na svakom sjedenju u namazu."},
+                {"question": "Salavati se uče prije Et-Tehijatu.", "options": ["DA", "NE"], "answer": "NE", "explanation": "Salavati se uče POSLIJE Et-Tehijatu na posljednjem sjedenju u namazu."},
+                {"question": "Sabah-namaz ima četiri rekata.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Sabah-namaz ima 4 rekata: 2 rekata sunneta i 2 rekata farza."},
+                {"question": "Akšam-namaz ima pet rekata.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Akšam-namaz ima 5 rekata: 3 farza i 2 sunneta."},
+                {"question": "Hidžra je preseljenje Muhammeda, a.s., iz Mekke u Medinu.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Hidžra je preseljenje iz Mekke u Medinu 622. godine. Od tog događaja počinje islamski kalendar."},
+                {"question": "Mevlud je dan rođenja Muhammeda, a.s.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Mevlud je dan u kojem se radujemo rođenju Muhammeda, a.s. - 12. rebiul-evvela."},
+                {"question": "Ramazanski bajram se slavi nakon hadža.", "options": ["DA", "NE"], "answer": "NE", "explanation": "Ramazanski bajram se slavi nakon posta u ramazanu. Kurban-bajram se slavi nakon hadža."},
+                {"question": "Teravih-namaz se klanja tokom ramazana.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Teravih-namaz je poseban noćni namaz koji se klanja samo tokom mjeseca ramazana."},
+                {"question": "Hidžretski kalendar ima dvanaest mjeseci.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Hidžretski (islamski) kalendar ima 12 mjeseci: muharrem, safer, rebiul-evvel..."},
+                {"question": "Prvi dan sedmice u hidžretskom kalendaru je nedjelja.", "options": ["DA", "NE"], "answer": "NE", "explanation": "Prvi dan sedmice u hidžretskom kalendaru je SUBOTA, a zadnji je petak (džuma)."},
+                {"question": "Dove se uče na posljednjem sjedenju poslije salavata.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Na posljednjem sjedenju učimo redom: Et-Tehijatu, salavate, pa dove."},
+                {"question": "Et-Tehijatu je razgovor između Allaha i Muhammeda, a.s., na Miradžu.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Et-Tehijatu su riječi razmijenjene između Allaha i Poslanika na Miradžu (noćnom putovanju)."},
+                {"question": "Za Kurban-bajram se kolje kurban.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Za Kurban-bajram je sunnet (preporučeno) zaklati kurban (žrtvenu životinju) i podijeliti meso."},
+                {"question": "Tekbiri-tešrik se uče za vrijeme Kurban-bajrama.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Tekbiri-tešrik su riječi veličanja Allaha koje se uče poslije farz-namaza u danima Kurban-bajrama."},
+                {"question": "Bajram-namaz ima dva rekata.", "options": ["DA", "NE"], "answer": "DA", "explanation": "Bajram-namaz (i Ramazanski i Kurban) ima 2 rekata i klanja se u džematu."},
+                {"question": "Šta je Et-Tehijatu?", "options": ["Poziv na namaz", "Dova zahvalnosti na sjedenju u namazu", "Završetak namaza", "Početni tekbir"], "answer": "Dova zahvalnosti na sjedenju u namazu", "explanation": "Et-Tehijatu je dova kojom iskazujemo zahvalnost i pokornost Allahu na svakom sjedenju u namazu."},
+                {"question": "Šta su salavati?", "options": ["Dove za roditelje", "Blagoslovi na Poslanika", "Poziv na namaz", "Završetak namaza"], "answer": "Blagoslovi na Poslanika", "explanation": "Salavati su iskazi ljubavi i blagoslova prema Muhammedu, a.s., i njegovoj porodici."},
+                {"question": "Koliko rekata ima sabah-namaz?", "options": ["Dva", "Tri", "Četiri", "Pet"], "answer": "Četiri", "explanation": "Sabah-namaz ima 4 rekata: 2 sunneta + 2 farza."},
+                {"question": "Koliko rekata ima akšam-namaz?", "options": ["Tri", "Četiri", "Pet", "Šest"], "answer": "Pet", "explanation": "Akšam-namaz ima 5 rekata: 3 farza + 2 sunneta."},
+                {"question": "Kada se desila Hidžra?", "options": ["571. godine", "610. godine", "622. godine", "632. godine"], "answer": "622. godine", "explanation": "Hidžra (preseljenje u Medinu) se desila 622. godine i od tada počinje islamski kalendar."},
+                {"question": "Koji je mjesec posta?", "options": ["Muharrem", "Redžeb", "Ramazan", "Zul-hidždže"], "answer": "Ramazan", "explanation": "Ramazan je deveti mjesec islamskog kalendara u kojem muslimani poste od zore do zalaska Sunca."},
+                {"question": "Kada se slavi Mevlud?", "options": ["1. muharrema", "12. rebiul-evvela", "27. redžeba", "10. zul-hidždžeta"], "answer": "12. rebiul-evvela", "explanation": "Mevlud (rođenje Muhammeda, a.s.) obilježava se 12. rebiul-evvela."},
+                {"question": "Šta je tekbiri-tešrik?", "options": ["Dova za mrtve", "Veličanje Allaha za Kurban-bajram", "Poziv na namaz", "Završetak namaza"], "answer": "Veličanje Allaha za Kurban-bajram", "explanation": "Tekbiri-tešrik su riječi veličanja Allaha (Allahu ekber...) koje se uče za Kurban-bajram."},
+                {"question": "Koji namaz se klanja samo tokom ramazana?", "options": ["Bajram-namaz", "Teravih-namaz", "Džuma-namaz", "Dženaza-namaz"], "answer": "Teravih-namaz", "explanation": "Teravih-namaz je poseban noćni namaz koji se klanja samo u mjesecu ramazanu."},
+                {"question": "Koji dan je džuma?", "options": ["Subota", "Nedjelja", "Petak", "Ponedjeljak"], "answer": "Petak", "explanation": "Džuma je petak - najvažniji dan u sedmici za muslimane kada se klanja džuma-namaz."},
+                {"question": "Koji je prvi mjesec islamskog kalendara?", "options": ["Ramazan", "Muharrem", "Rebiul-evvel", "Zul-hidždže"], "answer": "Muharrem", "explanation": "Muharrem je prvi mjesec islamskog (hidžretskog) kalendara."},
+                {"question": "Šta je Miradž?", "options": ["Rođenje Poslanika", "Noćno putovanje Poslanika", "Preseljenje u Medinu", "Osvojenje Mekke"], "answer": "Noćno putovanje Poslanika", "explanation": "Miradž je noćno putovanje Muhammeda, a.s., na nebesa kada je propisan namaz."},
+                {"question": "Šta se kaže kada se kaje za grijeh?", "options": ["Mašallah", "Inšallah", "Estagfirullah", "Subhanallah"], "answer": "Estagfirullah", "explanation": "Estagfirullah znači 'Oprosti mi, Bože' - kažemo kada se kajemo za grijeh."},
+                {"question": "Šta je dženaza-namaz?", "options": ["Namaz za umrlog", "Noćni namaz", "Jutarnji namaz", "Bajramski namaz"], "answer": "Namaz za umrlog", "explanation": "Dženaza-namaz je namaz koji se klanja za umrlu osobu prije ukopa."},
+                {"question": "Kako se čestita Bajram?", "options": ["Es-selamu alejkum", "Bajram šerif mubarek olsun", "El-hamdu lillah", "Mašallah"], "answer": "Bajram šerif mubarek olsun", "explanation": "Bajram čestitamo riječima 'Bajram šerif mubarek olsun' - Neka ti je Bajram blagoslovljen."},
+                {"question": "IZBACI ULJEZA: Šta ne spada u redoslijed na sjedenju namaza?", "options": ["Et-Tehijatu", "Salavati", "Subhaneke", "Dove"], "answer": "Subhaneke", "explanation": "Subhaneke se uči na STAJANJU (kijamu), ne na sjedenju. Na sjedenju učimo: Et-Tehijatu, salavate, dove."},
+                {"question": "IZBACI ULJEZA: Koji nije muslimanski mubarek-dan?", "options": ["Ramazanski bajram", "Kurban-bajram", "Nova gregorijanska godina", "Mevlud"], "answer": "Nova gregorijanska godina", "explanation": "Nova gregorijanska godina nije islamski praznik. Muslimanski mubarek-dani su: bajrami, Mevlud, nova hidžretska godina."},
+                {"question": "IZBACI ULJEZA: Koji namaz nema sunnet?", "options": ["Sabah", "Akšam", "Džuma", "Jacija"], "answer": "Džuma", "explanation": "Džuma-namaz ima samo 2 rekata farza (u džematu), bez sunneta. Ostali namazi imaju i sunnet rekate."},
+                {"question": "IZBACI ULJEZA: Koji izraz se ne koristi u svakodnevnom govoru?", "options": ["Bismillah", "Inšallah", "Tekbiri-tešrik", "Mašallah"], "answer": "Tekbiri-tešrik", "explanation": "Tekbiri-tešrik su posebne riječi veličanja Allaha za Kurban-bajram, ne koriste se svakodnevno."},
+                {"question": "IZBACI ULJEZA: Koji mjesec nije vezan za poseban ibadet?", "options": ["Ramazan", "Zul-hidždže", "Safer", "Rebiul-evvel"], "answer": "Safer", "explanation": "Safer nema poseban ibadet. Ramazan=post, Zul-hidždže=hadž, Rebiul-evvel=Mevlud."},
+                {"question": "ASOCIJACIJA: Broj '5' u kontekstu namaza vas asocira na:", "options": ["Broj rekata akšama", "Pet dnevnih namaza", "Pet islamskih šarta", "Oboje B i C"], "answer": "Oboje B i C", "explanation": "Broj 5 predstavlja i pet dnevnih namaza (sabah, podne, ikindija, akšam, jacija) i pet islamskih šarta."},
+                {"question": "ASOCIJACIJA: Riječ 'Miradž' vas asocira na:", "options": ["Et-Tehijatu", "Hidžru", "Mevlud", "Ramazan"], "answer": "Et-Tehijatu", "explanation": "Et-Tehijatu su riječi iz razgovora Allaha i Poslanika na Miradžu (noćnom putovanju)."},
+                {"question": "ASOCIJACIJA: Riječ 'kurban' vas asocira na:", "options": ["Ramazanski bajram", "Kurban-bajram", "Mevlud", "Hidžru"], "answer": "Kurban-bajram", "explanation": "Kurban (žrtvena životinja) se kolje za Kurban-bajram kao sunnet."},
+                {"question": "ASOCIJACIJA: Mjesec 'muharrem' vas asocira na:", "options": ["Post", "Hadž", "Novu hidžretsku godinu", "Mevlud"], "answer": "Novu hidžretsku godinu", "explanation": "Muharrem je prvi mjesec islamskog kalendara - u njemu počinje nova hidžretska godina."},
+                {"question": "ASOCIJACIJA: Riječ 'teravih' vas asocira na:", "options": ["Ramazan", "Kurban-bajram", "Džumu", "Dženazu"], "answer": "Ramazan", "explanation": "Teravih-namaz se klanja samo tokom mjeseca ramazana."},
+                {"question": "ANALOGIJA: Ramazan : post = Zul-hidždže : ?", "options": ["Post", "Hadž", "Mevlud", "Zekat"], "answer": "Hadž", "explanation": "U ramazanu se posti, a u zul-hidždžetu se obavlja hadž."},
+                {"question": "ANALOGIJA: Sabah : jutro = Jacija : ?", "options": ["Podne", "Veče", "Noć", "Popodne"], "answer": "Noć", "explanation": "Sabah je jutarnji namaz, a jacija je noćni namaz (klanja se kada potpuno nestane svjetlosti)."},
+                {"question": "ANALOGIJA: Ramazanski bajram : 1. ševvala = Kurban-bajram : ?", "options": ["1. muharrema", "10. zul-hidždžeta", "12. rebiul-evvela", "27. redžeba"], "answer": "10. zul-hidždžeta", "explanation": "Ramazanski bajram počinje 1. ševvala, a Kurban-bajram 10. zul-hidždžeta."},
+                {"question": "ANALOGIJA: Et-Tehijatu : zahvalnost = Salavati : ?", "options": ["Molba", "Blagoslov Poslaniku", "Kajanje", "Zaštita"], "answer": "Blagoslov Poslaniku", "explanation": "Et-Tehijatu je iskazivanje zahvalnosti Allahu, a salavati su blagoslovi Muhammedu, a.s."},
+                {"question": "ANALOGIJA: Mekka : Hidžra = Medina : ?", "options": ["Polazište", "Odredište", "Rodno mjesto", "Kaba"], "answer": "Odredište", "explanation": "Mekka je polazište Hidžre, a Medina je odredište (cilj) Hidžre."},
+                {"question": "KO SAM JA? Ja sam mjesec posta. Deveti sam mjesec islamskog kalendara. U meni je objavljen Kur'an.", "options": ["Muharrem", "Ramazan", "Zul-hidždže", "Rebiul-evvel"], "answer": "Ramazan", "explanation": "Ramazan je deveti mjesec, mjesec posta, i u njemu je počela objava Kur'ana."},
+                {"question": "KO SAM JA? Ja sam dova na sjedenju. U meni se spominje Miradž. Učim se u svakom namazu.", "options": ["Subhaneke", "Et-Tehijatu", "Salavati", "Dove"], "answer": "Et-Tehijatu", "explanation": "Et-Tehijatu su riječi razmijenjene na Miradžu i uče se na svakom sjedenju u namazu."},
+                {"question": "ŠTA SAM JA? Ja sam poseban noćni namaz. Klanjam se samo u ramazanu. Imam 20 rekata.", "options": ["Vitr", "Teravih", "Tahijjatul-mesdžid", "Duha"], "answer": "Teravih", "explanation": "Teravih-namaz se klanja samo u ramazanu i ima 20 rekata (plus vitr)."},
+                {"question": "KO SAM JA? Ja sam dan radosti. Slavim se nakon posta. Zovem se 'Mali bajram'.", "options": ["Kurban-bajram", "Ramazanski bajram", "Mevlud", "Nova godina"], "answer": "Ramazanski bajram", "explanation": "Ramazanski bajram (Bajrami-šerif, 'Mali bajram') se slavi nakon posta u ramazanu."},
+                {"question": "ŠTA SAM JA? Ja sam preseljenje. Desio sam se 622. godine. Od mene počinje islamski kalendar.", "options": ["Mevlud", "Miradž", "Hidžra", "Osvojenje Mekke"], "answer": "Hidžra", "explanation": "Hidžra je preseljenje iz Mekke u Medinu 622. godine - početak islamskog kalendara."},
+                {"question": "DOPUNI NIZ: Et-Tehijatu, salavati, ...?", "options": ["Subhaneke", "Dove", "Fatiha", "Ezan"], "answer": "Dove", "explanation": "Na posljednjem sjedenju učimo redom: Et-Tehijatu, salavate, dove."},
+                {"question": "DOPUNI NIZ: Muharrem, safer, rebiul-evvel, ...?", "options": ["Ramazan", "Rebiul-ahir", "Šaban", "Ševval"], "answer": "Rebiul-ahir", "explanation": "Mjeseci hidžretskog kalendara: 1. Muharrem, 2. Safer, 3. Rebiul-evvel, 4. Rebiul-ahir..."},
+                {"question": "DOPUNI NIZ: Bismillah, el-hamdu lillah, subhanallah, ...?", "options": ["Allahu ekber", "Namaz", "Abdest", "Džamija"], "answer": "Allahu ekber", "explanation": "Ovo su zikrovi/izrazi: Bismillah, El-hamdu lillah, Subhanallah, Allahu ekber (tekbir)."},
+                {"question": "DOPUNI NIZ: Bajram-namaz, džuma-namaz, teravih-namaz, ...?", "options": ["Sabah-namaz", "Dženaza-namaz", "Podne-namaz", "Akšam-namaz"], "answer": "Dženaza-namaz", "explanation": "Posebni namazi su: bajram-namaz, džuma-namaz, teravih-namaz, dženaza-namaz."},
+                {"question": "DOPUNI NIZ: Sabah 4 rekata, akšam 5 rekata, podne ...?", "options": ["4 rekata", "8 rekata", "10 rekata", "12 rekata"], "answer": "10 rekata", "explanation": "Podne-namaz ima 10 rekata: 4 sunneta + 4 farza + 2 sunneta."},
+                {"question": "SITUACIJA: Ahmed želi čestitati prijatelju Bajram. Šta treba reći?", "options": ["Es-selamu alejkum", "Bajram šerif mubarek olsun", "Mašallah", "Inšallah"], "answer": "Bajram šerif mubarek olsun", "explanation": "Bajram čestitamo riječima 'Bajram šerif mubarek olsun' - Neka ti je Bajram blagoslovljen."},
+                {"question": "SITUACIJA: Merjem je pogriješila u namazu. Šta treba reći kada se kaje?", "options": ["Mašallah", "Inšallah", "Estagfirullah", "Subhanallah"], "answer": "Estagfirullah", "explanation": "Estagfirullah (Oprosti mi, Bože) kažemo kada se kajemo za grijeh ili grešku."},
+                {"question": "SITUACIJA: Hasan završava namaz. Koje riječi izgovara na kraju?", "options": ["Allahu ekber", "Es-selamu alejkum ve rahmetullah", "Subhaneke", "Bismillah"], "answer": "Es-selamu alejkum ve rahmetullah", "explanation": "Namaz završavamo selamom - okrenemo glavu desno pa lijevo i kažemo 'Es-selamu alejkum ve rahmetullah'."},
+                {"question": "SITUACIJA: Danas je 1. ševvala. Koji praznik je danas?", "options": ["Kurban-bajram", "Ramazanski bajram", "Mevlud", "Nova hidžretska godina"], "answer": "Ramazanski bajram", "explanation": "Ramazanski bajram počinje 1. ševvala (deseti mjesec), nakon završetka posta u ramazanu."},
+                {"question": "PRONAĐI GREŠKU: Na sjedenju učimo: Subhaneke, salavate, dove.", "options": ["Subhaneke", "Salavate", "Dove", "Nema greške"], "answer": "Subhaneke", "explanation": "GREŠKA! Subhaneke se uči na STAJANJU, ne na sjedenju. Na sjedenju učimo: Et-Tehijatu, salavate, dove."}
+            ]
+        };
+    </script>
+
+    <!-- Centralizovani JavaScript Engine -->
+    <script src="../core/quiz-engine.js"></script>
+</body>
+</html>

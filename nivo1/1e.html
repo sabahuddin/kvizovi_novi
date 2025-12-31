@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 1E</title>
+    
+    <!-- Centralizovani CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 1E</h1>
+            <p class="subtitle">Sure i Dove</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+
+            // ===== DA/NE PITANJA (15) =====
+            // Sure
+            {question: 'Sura El-Fatiha se naziva "Majka Kur\'ana".', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! El-Fatiha je prva sura u Kur\'anu i naziva se "Ummul-Kur\'an" (Majka Kur\'ana).'},
+            {question: 'Sura El-Fatiha ima 7 ajeta.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! El-Fatiha ima 7 ajeta i uči se na svakom rekatu namaza.'},
+            {question: 'Sura En-Nasr je objavljena u Medini.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! En-Nasr (Pomoć) je medinska sura i jedna od posljednjih objavljenih sura.'},
+            {question: 'Sura El-Leheb govori o Ebu Lehebu i njegovoj ženi.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! El-Leheb (Plamen) govori o Ebu Lehebu koji je bio neprijatelj islama.'},
+            {question: 'Sura El-Ihlas govori o Allahovom jedinstvu.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! El-Ihlas opisuje Allahovo jedinstvo - "Kul huvallahu ehad" (Reci: On je Allah Jedan).'},
+            {question: 'Sura El-Ihlas vrijedi kao trećina Kur\'ana.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Muhammed, a.s., je rekao da sura El-Ihlas vrijedi kao trećina Kur\'ana.'},
+            {question: 'Sura En-Nas je 114. i posljednja sura u Kur\'anu.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! En-Nas (Ljudi) je 114. i posljednja sura u Kur\'anu.'},
+            {question: 'El-Felek i En-Nas su poznate kao "zaštitnice" (mu\'avvizetejn).', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! El-Felek i En-Nas su sure zaštitnice od zla.'},
+            // Dove
+            {question: 'Subhaneke se uči na početku svakog namaza.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Subhaneke je dova kojom veličamo Allaha, a učimo je na početku namaza nakon iftitahi-tekbira.'},
+            {question: 'Et-Tehijjatu su riječi iz razgovora na Miradžu.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Et-Tehijjatu su riječi razmijenjene između Allaha i Poslanika na Miradžu.'},
+            {question: 'Salavati su blagoslovi na Poslanika, a.s.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Salavati su blagoslovi koje učimo na Poslanika, a.s., poslije Et-Tehijjatu.'},
+            {question: 'Ajetul-kursijj je najvredniji ajet u Kur\'anu.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Ajetul-kursijj (255. ajet sure El-Bekare) je najvredniji ajet u Kur\'anu.'},
+            {question: 'Ajetul-kursijj se nalazi u suri El-Bekare.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Ajetul-kursijj je 255. ajet sure El-Bekare.'},
+            {question: 'Poslije ezana učimo dovu za Poslanika, a.s.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Poslije ezana učimo dovu u kojoj molimo Allaha da podari Poslaniku vesile i fadile.'},
+            {question: 'Zikr poslije namaza uključuje tesbih, tahmid i tekbir.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Poslije namaza učimo: 33x Subhanallah, 33x Elhamdulillah, 33x Allahu ekber.'},
+
+            // ===== VIŠESTRUKI IZBOR - SURE (15) =====
+            {question: 'Koliko ajeta ima sura El-Fatiha?', options: ['5', '6', '7', '8'], answer: '7', explanation: 'El-Fatiha ima 7 ajeta i zove se "Majka Kur\'ana".'},
+            {question: 'Koja je prva sura u Kur\'anu?', options: ['El-Ihlas', 'El-Fatiha', 'El-Bekare', 'En-Nas'], answer: 'El-Fatiha', explanation: 'El-Fatiha je prva sura u Kur\'anu.'},
+            {question: 'Koja je posljednja sura u Kur\'anu?', options: ['El-Felek', 'El-Ihlas', 'En-Nas', 'El-Kevser'], answer: 'En-Nas', explanation: 'En-Nas je 114. i posljednja sura u Kur\'anu.'},
+            {question: 'Koja sura je 113. u Kur\'anu?', options: ['El-Ihlas', 'El-Felek', 'En-Nas', 'El-Leheb'], answer: 'El-Felek', explanation: 'El-Felek je 113. sura u Kur\'anu.'},
+            {question: 'Koliko ajeta ima sura El-Ihlas?', options: ['3', '4', '5', '6'], answer: '4', explanation: 'Sura El-Ihlas ima 4 ajeta.'},
+            {question: 'Koliko ajeta ima sura En-Nasr?', options: ['3', '4', '5', '6'], answer: '3', explanation: 'Sura En-Nasr (Pomoć) ima 3 ajeta.'},
+            {question: 'Koliko ajeta ima sura El-Leheb?', options: ['3', '4', '5', '6'], answer: '5', explanation: 'Sura El-Leheb (Plamen) ima 5 ajeta.'},
+            {question: 'O kome govori sura El-Leheb?', options: ['Ebu Talibu', 'Ebu Lehebu', 'Ebu Bekru', 'Ebu Hurejri'], answer: 'Ebu Lehebu', explanation: 'El-Leheb govori o Ebu Lehebu i njegovoj ženi koji su bili neprijatelji islama.'},
+            {question: 'Šta znači "En-Nasr"?', options: ['Ljudi', 'Pomoć', 'Zora', 'Plamen'], answer: 'Pomoć', explanation: 'En-Nasr znači "Pomoć" - sura govori o Allahovoj pomoći i pobjedi.'},
+            {question: 'Šta znači "El-Felek"?', options: ['Ljudi', 'Jedinstvo', 'Zora/Svitanje', 'Plamen'], answer: 'Zora/Svitanje', explanation: 'El-Felek znači "Zora" ili "Svitanje" - tražimo zaštitu Gospodara zore.'},
+            {question: 'Šta znači "En-Nas"?', options: ['Zora', 'Jedinstvo', 'Ljudi', 'Pomoć'], answer: 'Ljudi', explanation: 'En-Nas znači "Ljudi" - tražimo zaštitu Gospodara ljudi.'},
+            {question: 'Šta znači "El-Ihlas"?', options: ['Pomoć', 'Iskrenost/Čistoća', 'Zora', 'Plamen'], answer: 'Iskrenost/Čistoća', explanation: 'El-Ihlas znači "Iskrenost" ili "Čistoća vjere" - govori o čistom vjerovanju u Allaha.'},
+            {question: '"Kul huvallahu ehad" je početak koje sure?', options: ['El-Fatiha', 'El-Ihlas', 'El-Felek', 'En-Nas'], answer: 'El-Ihlas', explanation: '"Kul huvallahu ehad" (Reci: On je Allah Jedan) je početak sure El-Ihlas.'},
+            {question: '"Iza džae nasrullahi vel-feth" je početak koje sure?', options: ['El-Ihlas', 'En-Nasr', 'El-Felek', 'El-Leheb'], answer: 'En-Nasr', explanation: '"Iza džae nasrullahi vel-feth" (Kada dođe Allahova pomoć i pobjeda) je početak sure En-Nasr.'},
+            {question: '"Tebbet jeda Ebi Lehebin ve tebb" je početak koje sure?', options: ['En-Nasr', 'El-Ihlas', 'El-Leheb', 'El-Felek'], answer: 'El-Leheb', explanation: '"Tebbet jeda Ebi Lehebin ve tebb" (Propale ruke Ebu Lehebove) je početak sure El-Leheb.'},
+
+            // ===== VIŠESTRUKI IZBOR - DOVE (15) =====
+            {question: 'Kada se uči Subhaneke?', options: ['Na ruku\'u', 'Na sedždi', 'Na početku namaza', 'Na kraju namaza'], answer: 'Na početku namaza', explanation: 'Subhaneke se uči na početku namaza, nakon iftitahi-tekbira.'},
+            {question: 'Na sjedenju u namazu učimo:', options: ['Subhaneke', 'Et-Tehijjatu', 'Ajetul-kursijj', 'Dovu poslije ezana'], answer: 'Et-Tehijjatu', explanation: 'Na sjedenju u namazu učimo Et-Tehijjatu, salavate i dove.'},
+            {question: 'Salavati se uče:', options: ['Na početku namaza', 'Poslije Et-Tehijjatu', 'Poslije ezana', 'Prije spavanja'], answer: 'Poslije Et-Tehijjatu', explanation: 'Salavati se uče poslije Et-Tehijjatu na sjedenju u namazu.'},
+            {question: 'Ajetul-kursijj je:', options: ['Cijela sura', '255. ajet sure El-Bekare', 'Dova poslije namaza', 'Početak El-Fatihe'], answer: '255. ajet sure El-Bekare', explanation: 'Ajetul-kursijj je 255. ajet sure El-Bekare, najvredniji ajet u Kur\'anu.'},
+            {question: 'Kada se uči Ajetul-kursijj?', options: ['Samo u namazu', 'Poslije svakog farza', 'Samo ujutro', 'Samo navečer'], answer: 'Poslije svakog farza', explanation: 'Ajetul-kursijj se preporučuje učiti poslije svakog farz-namaza, prije spavanja i u drugim prilikama.'},
+            {question: 'Zikr poslije namaza uključuje učenje:', options: ['Samo Subhanallah', 'Samo Elhamdulillah', 'Tesbih, tahmid i tekbir', 'Samo Ajetul-kursijj'], answer: 'Tesbih, tahmid i tekbir', explanation: 'Zikr poslije namaza: 33x Subhanallah (tesbih), 33x Elhamdulillah (tahmid), 33x Allahu ekber (tekbir).'},
+            {question: 'Koliko puta se uči Subhanallah u zikru poslije namaza?', options: ['10', '11', '33', '99'], answer: '33', explanation: 'Subhanallah se uči 33 puta u zikru poslije namaza.'},
+            {question: 'Koliko puta se uči Elhamdulillah u zikru poslije namaza?', options: ['10', '11', '33', '99'], answer: '33', explanation: 'Elhamdulillah se uči 33 puta u zikru poslije namaza.'},
+            {question: 'Koliko puta se uči Allahu ekber u zikru poslije namaza?', options: ['10', '11', '33', '99'], answer: '33', explanation: 'Allahu ekber se uči 33 puta u zikru poslije namaza.'},
+            {question: 'U dovi poslije ezana molimo za Poslanika:', options: ['Oprost', 'Vesile i fadile', 'Zdravlje', 'Imetak'], answer: 'Vesile i fadile', explanation: 'U dovi poslije ezana molimo Allaha da Poslaniku podari vesile (stepen u Džennetu) i fadile (počast).'},
+            {question: 'Redoslijed učenja na sjedenju je:', options: ['Salavati, Et-Tehijjatu, Dove', 'Et-Tehijjatu, Salavati, Dove', 'Dove, Et-Tehijjatu, Salavati', 'Subhaneke, Salavati, Dove'], answer: 'Et-Tehijjatu, Salavati, Dove', explanation: 'Na sjedenju učimo redom: Et-Tehijjatu, Salavate, pa Dove.'},
+            {question: 'Šta znači "Subhaneke"?', options: ['Hvala Allahu', 'Slavljen neka si Ti, Allahu', 'Allah je najveći', 'U ime Allaha'], answer: 'Slavljen neka si Ti, Allahu', explanation: 'Subhaneke znači "Slavljen neka si Ti, Allahu" - dova veličanja na početku namaza.'},
+            {question: 'Et-Tehijjatu počinje riječima:', options: ['Subhaneke', 'Ettehijjatu lillahi', 'Allahumme salli', 'Rabbena atina'], answer: 'Ettehijjatu lillahi', explanation: 'Et-Tehijjatu počinje sa "Ettehijjatu lillahi ves-salavatu vet-tajjibatu".'},
+            {question: 'Salavati počinju riječima:', options: ['Subhaneke', 'Ettehijjatu', 'Allahumme salli ala Muhammed', 'Rabbena atina'], answer: 'Allahumme salli ala Muhammed', explanation: 'Salavati počinju sa "Allahumme salli ala Muhammedin..." - blagoslov na Poslanika.'},
+            {question: 'Dova "Rabbena atina fid-dunja haseneten..." se uči:', options: ['Na početku namaza', 'Prije Et-Tehijjatu', 'Poslije salavata', 'Poslije ezana'], answer: 'Poslije salavata', explanation: 'Dova "Rabbena atina..." se uči poslije salavata, na kraju sjedenja prije selama.'},
+
+            // ===== PAMETNA PITANJA (15) =====
+            // Izbaci uljeza (4)
+            {question: 'IZBACI ULJEZA: El-Fatiha, En-Nasr, El-Bekare, El-Ihlas', options: ['El-Fatiha', 'En-Nasr', 'El-Bekare', 'El-Ihlas'], answer: 'El-Bekare', explanation: 'El-Fatiha, En-Nasr i El-Ihlas su KRATKE sure, a El-Bekare je NAJDUŽA sura u Kur\'anu.'},
+            {question: 'IZBACI ULJEZA: Subhaneke, Et-Tehijjatu, Ajetul-kursijj, Salavati', options: ['Subhaneke', 'Et-Tehijjatu', 'Ajetul-kursijj', 'Salavati'], answer: 'Ajetul-kursijj', explanation: 'Subhaneke, Et-Tehijjatu i Salavati su NAMASKE dove u toku namaza, a Ajetul-kursijj je AJET iz Kur\'ana.'},
+            {question: 'IZBACI ULJEZA: El-Felek, En-Nas, El-Ihlas, El-Leheb', options: ['El-Felek', 'En-Nas', 'El-Ihlas', 'El-Leheb'], answer: 'El-Leheb', explanation: 'El-Felek, En-Nas i El-Ihlas su sure koje se često uče zajedno (tri Kul), a El-Leheb nije među njima.'},
+            {question: 'IZBACI ULJEZA: Subhanallah, Elhamdulillah, Estagfirullah, Allahu ekber', options: ['Subhanallah', 'Elhamdulillah', 'Estagfirullah', 'Allahu ekber'], answer: 'Estagfirullah', explanation: 'Subhanallah, Elhamdulillah i Allahu ekber su ZIKR POSLIJE NAMAZA (33x svaki), a Estagfirullah nije dio tog zikra.'},
+
+            // Asocijacije (4)
+            {question: 'Broj 7 vas asocira na:', options: ['Ajete El-Ihlas', 'Ajete El-Fatihe', 'Ajete En-Nasr', 'Ajete El-Leheb'], answer: 'Ajete El-Fatihe', explanation: 'Sura El-Fatiha ima 7 ajeta.'},
+            {question: 'Broj 33 vas asocira na:', options: ['Broj sura', 'Zikr poslije namaza', 'Broj ajeta El-Bekare', 'Broj poslanika'], answer: 'Zikr poslije namaza', explanation: 'U zikru poslije namaza učimo 33x Subhanallah, 33x Elhamdulillah, 33x Allahu ekber.'},
+            {question: 'Riječ "Miradž" vas asocira na:', options: ['Subhaneke', 'Et-Tehijjatu', 'Salavate', 'Ajetul-kursijj'], answer: 'Et-Tehijjatu', explanation: 'Et-Tehijjatu su riječi iz razgovora Allaha i Poslanika na Miradžu.'},
+            {question: 'Riječ "zaštitnice" vas asocira na:', options: ['El-Fatiha i El-Ihlas', 'El-Felek i En-Nas', 'En-Nasr i El-Leheb', 'Subhaneke i Salavati'], answer: 'El-Felek i En-Nas', explanation: 'El-Felek i En-Nas su sure zaštitnice (mu\'avvizetejn).'},
+
+            // Analogije (4)
+            {question: 'DOPUNI: El-Felek : 113 = En-Nas : ?', options: ['110', '112', '114', '115'], answer: '114', explanation: 'El-Felek je 113. sura, a En-Nas je 114. sura.'},
+            {question: 'DOPUNI: El-Fatiha : 7 ajeta = El-Ihlas : ?', options: ['3 ajeta', '4 ajeta', '5 ajeta', '6 ajeta'], answer: '4 ajeta', explanation: 'El-Fatiha ima 7 ajeta, a El-Ihlas ima 4 ajeta.'},
+            {question: 'DOPUNI: Et-Tehijjatu : sjedenje = Subhaneke : ?', options: ['Sedžda', 'Ruku\'', 'Početak namaza', 'Kraj namaza'], answer: 'Početak namaza', explanation: 'Et-Tehijjatu učimo na sjedenju, a Subhaneke na početku namaza.'},
+            {question: 'DOPUNI: Subhanallah : tesbih = Elhamdulillah : ?', options: ['Tekbir', 'Tahmid', 'Tehlil', 'Temhid'], answer: 'Tahmid', explanation: 'Subhanallah je tesbih (slavljenje), a Elhamdulillah je tahmid (zahvala).'},
+
+            // Ko sam ja (3)
+            {question: '"Ja sam prva sura. Imam 7 ajeta. Zovem se Majka Kur\'ana." Koja sam sura?', options: ['El-Ihlas', 'El-Fatiha', 'El-Bekare', 'En-Nas'], answer: 'El-Fatiha', explanation: 'El-FATIHA je prva sura, ima 7 ajeta i zove se "Majka Kur\'ana".'},
+            {question: '"Ja sam 255. ajet El-Bekare. Ja sam najvredniji ajet." Šta sam?', options: ['Subhaneke', 'Et-Tehijjatu', 'Ajetul-kursijj', 'Salavati'], answer: 'Ajetul-kursijj', explanation: 'AJETUL-KURSIJJ je 255. ajet sure El-Bekare i najvredniji ajet u Kur\'anu.'},
+            {question: '"Ja sam dova na sjedenju. Spominjem Miradž." Šta sam?', options: ['Subhaneke', 'Et-Tehijjatu', 'Salavati', 'Ajetul-kursijj'], answer: 'Et-Tehijjatu', explanation: 'ET-TEHIJJATU su riječi razmijenjene na Miradžu i uče se na sjedenju u namazu.'}
+                    ]
+        };
+    </script>
+
+    <!-- Centralizovani JavaScript Engine -->
+    <script src="../core/quiz-engine.js"></script>
+</body>
+</html>
