@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mektebska pouka - Kvizovi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;600&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Lora', serif;
+            background: linear-gradient(135deg, #064e3b 0%, #0f766e 50%, #065f46 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: white;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 3rem; }
+        
+        .logo {
+            width: 200px;
+            height: auto;
+            margin-bottom: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle { font-size: 1.8rem; color: #d1fae5; margin-bottom: 0.5rem; }
+        .level { font-size: 1.3rem; color: #fbbf24; font-weight: 600; }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin: 3rem 0 1.5rem 0;
+            text-align: center;
+            color: #fbbf24;
+        }
+        
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(110, 231, 183, 0.3);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(251, 191, 36, 0.6);
+        }
+        
+        .quiz-card.final-quiz:hover {
+            border-color: #fbbf24;
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
+        }
+        
+        .quiz-icon { width: 120px; height: auto; margin: 0 auto 1rem auto; display: block; }
+        .quiz-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .quiz-description { color: #d1fae5; margin-bottom: 1rem; font-size: 1rem; line-height: 1.5; }
+        
+        .quiz-badge {
+            display: inline-block;
+            background: rgba(251, 191, 36, 0.2);
+            border: 1px solid rgba(251, 191, 36, 0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .random-badge { display: block; margin-top: 0.5rem; color: #fbbf24; font-size: 0.85rem; }
+        
+        .footer { text-align: center; margin-top: 3rem; padding: 2rem; color: #d1fae5; font-size: 1.1rem; }
+        
+        .support-section {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            margin-top: 2rem;
+        }
+        .support-section p { color: #d1fae5; font-size: 1rem; margin-bottom: 1rem; line-height: 1.6; }
+        .support-section a { color: #fbbf24; text-decoration: none; font-weight: 600; transition: color 0.3s; }
+        .support-section a:hover { color: #f59e0b; }
+        .qr-code { width: 150px; height: auto; margin: 1rem auto; display: block; border-radius: 10px; }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .subtitle { font-size: 1.4rem; }
+            .quiz-grid { grid-template-columns: 1fr; }
+            .logo { width: 150px; }
+            .quiz-icon { width: 90px; }
+            .qr-code { width: 120px; }
+        }
+        
+        /* AUTH SECTION */
+        .auth-section { margin: 1rem 0; }
+        
+        .info-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(251, 191, 36, 0.2);
+            border: 2px solid #fbbf24;
+            color: #fbbf24;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-family: 'Lora', serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        .info-btn:hover { background: #fbbf24; color: #064e3b; }
+        .info-btn-secondary { background: transparent; }
+        
+        .user-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 2px solid #10b981;
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: #d1fae5;
+        }
+        
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Lora', serif;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover { background: #ef4444; color: white; }
+        
+        /* POPUP OVERLAY */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        .popup-overlay.active { display: flex; }
+        
+        .popup-box {
+            background: linear-gradient(135deg, #065f46, #0f766e);
+            border: 2px solid #fbbf24;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: popupIn 0.3s ease;
+        }
+        
+        @keyframes popupIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .popup-box h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 1rem; color: #fbbf24; }
+        .popup-box p { color: #d1fae5; line-height: 1.6; margin-bottom: 1.5rem; }
+        .popup-box a { color: #fbbf24; text-decoration: none; font-weight: bold; }
+        
+        .popup-close {
+            background: #fbbf24;
+            color: #064e3b;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Lora', serif;
+            transition: all 0.3s;
+        }
+        .popup-close:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(251, 191, 36, 0.4); }
+        
+        /* LOCKED QUIZ CARDS */
+        .quiz-card.locked { position: relative; opacity: 0.85; }
+        .quiz-card.locked::before { content: "🔒"; position: absolute; top: 10px; right: 10px; font-size: 1.5rem; }
+        .quiz-card.locked .quiz-badge { background: rgba(251, 191, 36, 0.3); border-color: #fbbf24; }
+        .locked-notice { display: block; margin-top: 0.5rem; color: #fbbf24; font-size: 0.85rem; font-weight: 600; }
+        
+        /* LOGIN FORM */
+        .login-box { text-align: left; }
+        .login-box h3 { text-align: center; }
+        
+        .login-input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1rem;
+            font-family: 'Lora', serif;
+        }
+        .login-input::placeholder { color: rgba(255,255,255,0.5); }
+        .login-input:focus { outline: none; border-color: #fbbf24; }
+        .login-submit { width: 100%; background: #10b981 !important; }
+        
+        .login-error {
+            background: rgba(239, 68, 68, 0.3);
+            border: 1px solid #ef4444;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+            color: #fca5a5;
+        }
+        .login-error.show { display: block; }
+        .login-hint { text-align: center; font-size: 0.85rem; color: #a7f3d0; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="assets/images/mekteb_logo.png" alt="Mekteb Logo" class="logo">
+            <h1>Mektebska pouka</h1>
+            <p class="subtitle">Kvizovi</p>
+            
+            <!-- PRIJAVA SEKCIJA -->
+            <div class="auth-section">
+                <div id="loggedOutView">
+                    <button class="info-btn" onclick="showLoginPopup()">🔐 Prijava</button>
+                    <button class="info-btn info-btn-secondary" onclick="showInfoPopup()">ℹ️ Info</button>
+                </div>
+                <div id="loggedInView" style="display: none;">
+                    <div class="user-badge">
+                        <span>👤 <strong id="userName"></strong></span>
+                        <button class="logout-btn" onclick="logout()">Odjava</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- INFO POPUP -->
+        <div class="popup-overlay" id="infoPopup">
+            <div class="popup-box">
+                <h3>ℹ️ Informacije o prijavi</h3>
+                <p>
+                    Prijava je namijenjena muallimima i njihovim učenicima mekteba u cilju evidentiranja i praćenja rezultata.
+                    <br><br>
+                    Završni kvizovi (🔒) su dostupni samo prijavljenim korisnicima.
+                    <br><br>
+                    Za više informacija pišite nam na:<br>
+                    <a href="/cdn-cgi/l/email-protection#5a33343c351a373f312e3f3874343f2e"><span class="__cf_email__" data-cfemail="0c65626a634c61696778696e22626978">[email&#160;protected]</span></a>
+                </p>
+                <button class="popup-close" onclick="closeInfoPopup()">Zatvori</button>
+            </div>
+        </div>
+        
+        <!-- LOGIN POPUP -->
+        <div class="popup-overlay" id="loginPopup">
+            <div class="popup-box login-box">
+                <h3>🔐 Prijava</h3>
+                <div class="login-error" id="loginError"></div>
+                <input type="text" id="username" class="login-input" placeholder="Korisničko ime" autocomplete="username">
+                <input type="password" id="password" class="login-input" placeholder="Šifra" autocomplete="current-password">
+                <button class="popup-close login-submit" id="loginBtn" onclick="login()">Prijavi se</button>
+                <button class="popup-close" onclick="closeLoginPopup()" style="background: transparent; border: 2px solid #fbbf24; color: #fbbf24; margin-top: 10px; width: 100%;">Zatvori</button>
+                <p class="login-hint">Prijava je samo za učenike i muallime mekteba.</p>
+            </div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">1. NIVO - LIGHT</h2>
+        
+        <div class="quiz-grid">
+            <a href="nivo1/1a.html" class="quiz-card">
+                <img src="assets/images/star_1.png" alt="1 zvjezdica" class="quiz-icon">
+                <h2 class="quiz-title">KVIZ 1A</h2>
+                <p class="quiz-description">Iman, islam, poslanik i temelji vjere</p>
+                <div class="quiz-badge">20 od 60 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+            </a>
+            
+            <a href="nivo1/1b.html" class="quiz-card">
+                <img src="assets/images/star_2.png" alt="2 zvjezdice" class="quiz-icon">
+                <h2 class="quiz-title">KVIZ 1B</h2>
+                <p class="quiz-description">Namaz, abdest, gusul, čistoća i džamija</p>
+                <div class="quiz-badge">20 od 60 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+            </a>
+            
+            <a href="nivo1/1c.html" class="quiz-card">
+                <img src="assets/images/star_3.png" alt="3 zvjezdice" class="quiz-icon">
+                <h2 class="quiz-title">KVIZ 1C</h2>
+                <p class="quiz-description">Izrazi, hidžra, bajrami i kalendar</p>
+                <div class="quiz-badge">20 od 60 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+            </a>
+
+            <a href="nivo1/1d.html" class="quiz-card">
+                <img src="assets/images/star_4.png" alt="4 zvjezdice" class="quiz-icon">
+                <h2 class="quiz-title">KVIZ 1D</h2>
+                <p class="quiz-description">Sure i dove</p>
+                <div class="quiz-badge">20 od 60 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+            </a>
+            
+            <div class="quiz-card final-quiz locked" onclick="openLockedQuiz('1e.html')">
+                <img src="assets/images/star_1_line.png" alt="1 zvjezdica sa lentom" class="quiz-icon">
+                <h2 class="quiz-title">ZAVRŠNI KVIZ 1E</h2>
+                <p class="quiz-description">60 najboljih pitanja iz svih lekcija</p>
+                <div class="quiz-badge">20 od 60 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+                <span class="locked-notice">🔒 Samo za prijavljene</span>
+            </div>
+        </div>
+        
+        <h2 class="section-title">2. nivo</h2>
+        
+        <div class="quiz-grid">
+            <a href="nivo2/2a.html" class="quiz-card">
+                <img src="assets/images/star_1.png" alt="1 zvjezdica" class="quiz-icon">
+                <h2 class="quiz-title">PRVI DIO</h2>
+                <p class="quiz-description">Imanski šarti - temeljne istine vjere</p>
+                <div class="quiz-badge">25 od 100 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+            </a>
+            
+            <a href="nivo2/2b.html" class="quiz-card">
+                <img src="assets/images/star_2.png" alt="2 zvjezdice" class="quiz-icon">
+                <h2 class="quiz-title">DRUGI DIO</h2>
+                <p class="quiz-description">Islamski šarti i propisi o namazu</p>
+                <div class="quiz-badge">25 od 100 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+            </a>
+            
+            <a href="nivo2/2c.html" class="quiz-card">
+                <img src="assets/images/star_3.png" alt="3 zvjezdice" class="quiz-icon">
+                <h2 class="quiz-title">TREĆI DIO</h2>
+                <p class="quiz-description">Ahlak, grijesi i tevba</p>
+                <div class="quiz-badge">25 od 100 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+            </a>
+            
+            <a href="nivo2/2d.html" class="quiz-card">
+                <img src="assets/images/star_4.png" alt="4 zvjezdice" class="quiz-icon">
+                <h2 class="quiz-title">ČETVRTI DIO</h2>
+                <p class="quiz-description">Sure i dove</p>
+                <div class="quiz-badge">25 od 100 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+            </a>
+            
+            <div class="quiz-card final-quiz locked" onclick="openLockedQuiz('nivo2/2e.html')">
+                <img src="assets/images/star_2_line.png" alt="2 zvjezdice s lentom" class="quiz-icon">
+                <h2 class="quiz-title">ZAVRŠNI KVIZ - NIVO 2</h2>
+                <p class="quiz-description">100 najboljih pitanja iz svih lekcija</p>
+                <div class="quiz-badge">25 od 100 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+                <span class="locked-notice">🔒 Samo za prijavljene</span>
+            </div>
+            
+            <div class="quiz-card final-quiz locked" onclick="openLockedQuiz('nivo2/2f.html')">
+                <img src="assets/images/mekteb_logo.png" alt="logo mekteb" class="quiz-icon">
+                <h2 class="quiz-title">KVIZ PRVOG I DRUGOG NIVOA</h2>
+                <p class="quiz-description">150 najboljih pitanja iz svih lekcija</p>
+                <div class="quiz-badge">30 od 150 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+                <span class="locked-notice">🔒 Samo za prijavljene</span>
+            </div>
+        </div>
+        
+        <h2 class="section-title">3. nivo</h2>
+        
+        <div class="quiz-grid">
+            <a href="nivo3/3a.html" class="quiz-card">
+                <img src="assets/images/star_1.png" alt="1 zvjezdica" class="quiz-icon">
+                <h2 class="quiz-title">PRVI DIO</h2>
+                <p class="quiz-description">Ibadet i vjerovanje - dužnosti prema Allahu, imanski šarti</p>
+                <div class="quiz-badge">25 od 100 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+            </a>
+            
+            <a href="nivo3/3b.html" class="quiz-card">
+                <img src="assets/images/star_2.png" alt="2 zvjezdice" class="quiz-icon">
+                <h2 class="quiz-title">DRUGI DIO</h2>
+                <p class="quiz-description">Ahlak i zabrane - vrline, poroci, droga, alkohol, kocka</p>
+                <div class="quiz-badge">25 od 100 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+            </a>
+            
+            <a href="nivo3/3c.html" class="quiz-card">
+                <img src="assets/images/star_3.png" alt="3 zvjezdice" class="quiz-icon">
+                <h2 class="quiz-title">TREĆI DIO</h2>
+                <p class="quiz-description">Poslanici i Islamska zajednica - Nuh, Ibrahim, Musa, Isa, Muhammed a.s.</p>
+                <div class="quiz-badge">25 od 100 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+            </a>
+            
+            <a href="nivo3/3d.html" class="quiz-card">
+                <img src="assets/images/star_4.png" alt="4 zvjezdice" class="quiz-icon">
+                <h2 class="quiz-title">ČETVRTI DIO</h2>
+                <p class="quiz-description">Sure i dove - El-Fil, El-Humeze, Et-Tekasur, zikrovi</p>
+                <div class="quiz-badge">25 od 100 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+            </a>
+            
+            <div class="quiz-card final-quiz locked" onclick="openLockedQuiz('nivo3/3e.html')">
+                <img src="assets/images/star_3_line.png" alt="3 zvjezdice s lentom" class="quiz-icon">
+                <h2 class="quiz-title">ZAVRŠNI KVIZ - NIVO 3</h2>
+                <p class="quiz-description">100 najboljih pitanja iz svih lekcija</p>
+                <div class="quiz-badge">25 od 100 pitanja</div>
+                <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+                <span class="locked-notice">🔒 Samo za prijavljene</span>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>📖 Ukupno 16 kvizova • 1200+ pitanja</p>
+            <p style="margin-top: 1rem; font-size: 0.95rem;">Učite o islamu kroz interaktivne kvizove</p>
+        </div>
+        
+        <div class="support-section">
+            <p>☕ Počasti nas kahvom jer smo te počastili sadržajem koji koristi tebi i drugima. Hvala!</p>
+            <a href="https://www.buymeacoffee.com/mekteb" target="_blank">
+                <img src="assets/images/bmc_qr.png" alt="Buy Me a Coffee QR" class="qr-code">
+            </a>
+            <p><a href="https://www.buymeacoffee.com/mekteb" target="_blank">buymeacoffee.com/mekteb</a></p>
+        </div>
+    </div>
+    
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        const API_URL = "/wp-json/mekteb/v1";
+        let pendingQuizUrl = '';
+        
+        // ==========================================
+        // PROVJERA PRIJAVE PRI UČITAVANJU
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+            document.getElementById('username').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') document.getElementById('password').focus();
+            });
+        });
+        
+        function checkLoginStatus() {
+            const userData = localStorage.getItem('mektebUser');
+            if (userData) {
+                const user = JSON.parse(userData);
+                showLoggedInView(user.name);
+            } else {
+                showLoggedOutView();
+            }
+        }
+        
+        function showLoggedInView(name) {
+            document.getElementById('loggedOutView').style.display = 'none';
+            document.getElementById('loggedInView').style.display = 'block';
+            document.getElementById('userName').textContent = name;
+        }
+        
+        function showLoggedOutView() {
+            document.getElementById('loggedOutView').style.display = 'block';
+            document.getElementById('loggedInView').style.display = 'none';
+        }
+        
+        // ==========================================
+        // INFO POPUP
+        // ==========================================
+        function showInfoPopup() {
+            document.getElementById('infoPopup').classList.add('active');
+        }
+        function closeInfoPopup() {
+            document.getElementById('infoPopup').classList.remove('active');
+        }
+        
+        // ==========================================
+        // LOGIN POPUP
+        // ==========================================
+        function showLoginPopup() {
+            document.getElementById('loginPopup').classList.add('active');
+            document.getElementById('username').focus();
+        }
+        
+        function closeLoginPopup() {
+            document.getElementById('loginPopup').classList.remove('active');
+            document.getElementById('loginError').classList.remove('show');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            pendingQuizUrl = '';
+        }
+        
+        function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const loginError = document.getElementById('loginError');
+            
+            if (!username || !password) {
+                loginError.textContent = "Unesite korisničko ime i šifru!";
+                loginError.classList.add('show');
+                return;
+            }
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = "Prijava...";
+            loginError.classList.remove('show');
+            
+            fetch(API_URL + '/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, password: password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const user = { id: data.user_id, name: data.name, username: data.username };
+                    localStorage.setItem('mektebUser', JSON.stringify(user));
+                    showLoggedInView(user.name);
+                    closeLoginPopup();
+                    
+                    if (pendingQuizUrl) {
+                        window.location.href = pendingQuizUrl;
+                    }
+                } else {
+                    loginError.textContent = data.message || "Pogrešno korisničko ime ili šifra!";
+                    loginError.classList.add('show');
+                }
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Prijavi se";
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                loginError.textContent = "Greška pri povezivanju. Pokušajte ponovo.";
+                loginError.classList.add('show');
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Prijavi se";
+            });
+        }
+        
+        function logout() {
+            localStorage.removeItem('mektebUser');
+            showLoggedOutView();
+        }
+        
+        // ==========================================
+        // ZAKLJUČANI KVIZOVI
+        // ==========================================
+        function openLockedQuiz(quizUrl) {
+            const loggedUser = localStorage.getItem('mektebUser');
+            
+            if (loggedUser) {
+                window.location.href = quizUrl;
+            } else {
+                pendingQuizUrl = quizUrl;
+                showLoginPopup();
+            }
+        }
+        
+        // Zatvori popup klikom van njega
+        document.querySelectorAll('.popup-overlay').forEach(overlay 
