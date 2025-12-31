@@ -284,23 +284,33 @@
         // MUALLIM DASHBOARD
         async function loadMuallimDashboard() {
             try {
-                const response = await fetch(API_URL + '/muallim-dashboard', {
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('mektebToken')
-                    }
-                });
+                const userData = localStorage.getItem('mektebUser');
+                const user = JSON.parse(userData);
+                
+                console.log('👤 User data iz localStorage:', user);
+                console.log('📡 Šaljem API zahtjev:', API_URL + '/muallim-dashboard?user_id=' + user.id);
+                
+                const response = await fetch(API_URL + '/muallim-dashboard?user_id=' + user.id);
+                
+                console.log('📥 HTTP Status:', response.status);
                 
                 const data = await response.json();
+                console.log('📦 API Response:', data);
+                
                 dashboardData = data;
                 
                 if (data.success) {
                     renderMuallimDashboard(data);
                 } else {
-                    showError('Greška pri učitavanju podataka.');
+                    // WP_Error format
+                    const errorMessage = data.message || data.code || 'Greška pri učitavanju podataka';
+                    console.error('❌ API Error:', errorMessage);
+                    console.error('   Full error:', data);
+                    showError('Greška: ' + errorMessage + '<br><br>Status: ' + response.status + '<br>Detalji: ' + JSON.stringify(data));
                 }
             } catch (error) {
-                console.error('Error:', error);
-                showError('Greška pri komunikaciji sa serverom.');
+                console.error('🔥 Exception:', error);
+                showError('Greška pri komunikaciji sa serverom: ' + error.message);
             }
         }
         
@@ -414,11 +424,10 @@
         // STUDENT DASHBOARD
         async function loadStudentDashboard() {
             try {
-                const response = await fetch(API_URL + '/student-dashboard', {
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('mektebToken')
-                    }
-                });
+                const userData = localStorage.getItem('mektebUser');
+                const user = JSON.parse(userData);
+                
+                const response = await fetch(API_URL + '/student-dashboard?user_id=' + user.id);
                 
                 const data = await response.json();
                 
