@@ -1,0 +1,370 @@
+/* MEKTEB.NET - Univerzalni stilovi za sve kvizove */
+/* Uniform dizajn - svi kvizovi isti */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Lora', serif;
+    background: linear-gradient(135deg, #064e3b 0%, #0f766e 50%, #065f46 100%);
+    min-height: 100vh;
+    color: white;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* ========== HEADER ========== */
+.quiz-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.quiz-icon {
+    width: 100px;
+    height: auto;
+    margin-bottom: 0.5rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #d1fae5;
+}
+
+/* ========== PROGRESS BAR ========== */
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.back-link {
+    color: #fbbf24;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+}
+
+.back-link:hover {
+    color: #f59e0b;
+}
+
+.progress-bar-container {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    margin: 0 1rem;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(to right, #fbbf24, #f59e0b);
+    border-radius: 4px;
+    transition: width 0.3s;
+}
+
+/* ========== QUESTION CARD ========== */
+.question-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.question-text {
+    font-size: 1.4rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+/* ========== OPTIONS ========== */
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.option-btn {
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: left;
+    font-family: 'Lora', serif;
+}
+
+/* UNIFORM HOVER - svi kvizovi isti */
+.option-btn:hover:not(.disabled) {
+    background: rgba(34, 197, 94, 0.4);
+    border-color: rgba(255,255,255,0.5);
+    transform: translateX(5px);
+}
+
+.option-btn.correct {
+    background: rgba(34, 197, 94, 0.4);
+    border-color: #22c55e;
+}
+
+.option-btn.incorrect {
+    background: rgba(239, 68, 68, 0.4);
+    border-color: #ef4444;
+}
+
+.option-btn.disabled {
+    pointer-events: none;
+}
+
+/* ========== EXPLANATION BOX (unutar card-a) ========== */
+.explanation-box {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #064e3b;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-top: 1.5rem;
+    display: none;
+}
+
+.explanation-box.show {
+    display: block;
+}
+
+.explanation-title {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+/* ========== NEXT BUTTON ========== */
+.next-btn {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #064e3b;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: block;
+    margin: 0 auto;
+    font-family: 'Lora', serif;
+}
+
+.next-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4);
+}
+
+/* ========== RESULT SCREEN ========== */
+.result-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.result-emoji {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+
+.result-message {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.result-score {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fbbf24;
+    margin-bottom: 0.5rem;
+}
+
+.result-percentage {
+    font-size: 1.2rem;
+    color: #d1fae5;
+    margin-bottom: 2rem;
+}
+
+.restart-btn {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #064e3b;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Lora', serif;
+}
+
+.restart-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4);
+}
+
+/* ========== POPUP OVERLAY ========== */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-overlay.active {
+    display: flex;
+}
+
+.popup-content {
+    background: linear-gradient(135deg, #064e3b, #0f766e);
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    border: 2px solid rgba(255,255,255,0.2);
+    animation: popupSlide 0.3s ease-out;
+}
+
+@keyframes popupSlide {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.popup-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.popup-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.popup-title.correct {
+    color: #22c55e;
+}
+
+.popup-title.incorrect {
+    color: #ef4444;
+}
+
+.popup-explanation {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: #d1fae5;
+}
+
+.popup-next-btn {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #064e3b;
+    border: none;
+    padding: 1rem 3rem;
+    border-radius: 30px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Lora', serif;
+}
+
+.popup-next-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4);
+}
+
+/* ========== SCREEN STATES ========== */
+.quiz-screen,
+.result-screen {
+    display: none;
+}
+
+.quiz-screen.active,
+.result-screen.active {
+    display: block;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .question-text {
+        font-size: 1.2rem;
+    }
+    
+    .option-btn {
+        font-size: 1rem;
+        padding: 0.8rem 1rem;
+    }
+    
+    .quiz-icon {
+        width: 80px;
+    }
+    
+    .popup-content {
+        padding: 2rem;
+    }
+    
+    .popup-title {
+        font-size: 1.5rem;
+    }
+}
