@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KVIZ 1D - NIVO 1</title>
+    
+    <!-- Centralizovani CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>KVIZ 1D</h1>
+            <p class="subtitle">Nivo 1 - Četvrti kviz</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA - Ovdje ide samo baza pitanja -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+                {
+                    question: "Ko je stvorio svijet?",
+                    options: ["Allah", "Priroda", "Ljudi", "Niko"],
+                    answer: "Allah",
+                    explanation: "Allah je jedini Stvoritelj svega što postoji - neba, zemlje i svega između njih."
+                },
+                {
+                    question: "Koliko ima poslanika čija imena treba znati?",
+                    options: ["25", "10", "50", "100"],
+                    answer: "25",
+                    explanation: "Muslimani moraju znati imena 25 poslanika koji su spomenuti u Kur'anu."
+                },
+                {
+                    question: "Koji je prvi stup islama?",
+                    options: ["Kelime-i šehadet", "Namaz", "Post", "Zekat"],
+                    answer: "Kelime-i šehadet",
+                    explanation: "Prvi stup islama je kelime-i šehadet - svjedočenje da nema drugog boga osim Allaha i da je Muhammed Njegov poslanik."
+                },
+                {
+                    question: "Koliko puta dnevno musliman klanja namaz?",
+                    options: ["5 puta", "3 puta", "7 puta", "4 puta"],
+                    answer: "5 puta",
+                    explanation: "Muslimani klanjaju pet dnevnih namaza: sabah, podne, ikindija, akšam i jacija."
+                },
+                {
+                    question: "U kojem mjesecu se posti?",
+                    options: ["Ramazan", "Muharrem", "Redžeb", "Ševval"],
+                    answer: "Ramazan",
+                    explanation: "Post se drži u ramazanu, devetom mjesecu islamskog kalendara."
+                },
+                {
+                    question: "Koliko je poslanika poslano ljudima?",
+                    options: ["124.000", "1.000", "25", "313"],
+                    answer: "124.000",
+                    explanation: "Allah je poslao 124.000 poslanika, ali moramo znati imena 25 koji su spominjani u Kur'anu."
+                },
+                {
+                    question: "Koji je posljednji Allah's poslanik?",
+                    options: ["Muhammed a.s.", "Isa a.s.", "Musa a.s.", "Ibrahim a.s."],
+                    answer: "Muhammed a.s.",
+                    explanation: "Muhammed, a.s., je posljednji Allahov poslanik poslan svim ljudima."
+                },
+                {
+                    question: "Kako se zove sveta knjiga muslimana?",
+                    options: ["Kur'an", "Tevrat", "Zebur", "Indžil"],
+                    answer: "Kur'an",
+                    explanation: "Kur'an je posljednja Allahova knjiga, objavljena Muhammedu, a.s."
+                },
+                {
+                    question: "Gdje se muslimani okupe petkom na džumu?",
+                    options: ["U džamiji", "U kući", "Na ulici", "U školi"],
+                    answer: "U džamiji",
+                    explanation: "Petkom se muslimani okupljaju u džamiji na džuma-namaz."
+                },
+                {
+                    question: "Koliko stubova ima islam?",
+                    options: ["5", "3", "7", "6"],
+                    answer: "5",
+                    explanation: "Islam ima pet stubova: kelime-i šehadet, namaz, zekat, post i hadždž."
+                },
+                {
+                    question: "Koji meleki su čuvari džennetskih vrata?",
+                    options: ["Ridvan", "Malik", "Munker i Nekir", "Kiramen-Katibin"],
+                    answer: "Ridvan",
+                    explanation: "Ridvan je melek čuvar džennetskih vrata."
+                },
+                {
+                    question: "Kako se zovu meleki koji pitaju u kaburu?",
+                    options: ["Munker i Nekir", "Ridvan i Malik", "Džebrail i Mikail", "Israfil i Azrail"],
+                    answer: "Munker i Nekir",
+                    explanation: "Munker i Nekir su meleki koji pitaju čovjeka u kaburu o njegovoj vjeri."
+                },
+                {
+                    question: "Ko je prvi meleku koji je stvoren?",
+                    options: ["Džebrail a.s.", "Mikail a.s.", "Israfil a.s.", "Azrail a.s."],
+                    answer: "Džebrail a.s.",
+                    explanation: "Džebrail je prvi stvoreni melek i nosio je objave poslanicima."
+                },
+                {
+                    question: "Koji su meleki zaduženi za zapisivanje dobrih i loših djela?",
+                    options: ["Kiramen-Katibin", "Munker i Nekir", "Ridvan i Malik", "Harun i Marut"],
+                    answer: "Kiramen-Katibin",
+                    explanation: "Kiramen-Katibin (plemeniti pisari) su meleki koji zapisuju naša djela."
+                },
+                {
+                    question: "Šta znači riječ 'Islam'?",
+                    options: ["Pokornost Allahu", "Vjerovanje", "Milosrđe", "Mir"],
+                    answer: "Pokornost Allahu",
+                    explanation: "Islam znači potpuna predanost i pokornost Allahu."
+                },
+                {
+                    question: "Koliko je dana ramazana?",
+                    options: ["29 ili 30", "28", "31", "15"],
+                    answer: "29 ili 30",
+                    explanation: "Ramazan traje 29 ili 30 dana, ovisno o pojavi mladog mjeseca."
+                },
+                {
+                    question: "Koja je prva objava meleka Džebraila Muhammedu a.s.?",
+                    options: ["Ikra (Uči)", "Bismillah", "El-hamdu lillah", "La ilahe illallah"],
+                    answer: "Ikra (Uči)",
+                    explanation: "Prva objava bila je riječ 'Ikra' (Uči) u pećini Hira."
+                },
+                {
+                    question: "Šta znači riječ 'Allah'?",
+                    options: ["Bog, Stvoritelj svega", "Kralj", "Moćan", "Veliki"],
+                    answer: "Bog, Stvoritelj svega",
+                    explanation: "Allah znači Jedini Bog, Stvoritelj svega što postoji."
+                },
+                {
+                    question: "Koliko puta se spominje 'bismillah' u Kur'anu?",
+                    options: ["114 puta", "99 puta", "313 puta", "1 put"],
+                    answer: "114 puta",
+                    explanation: "Bismillah se spominje 114 puta u Kur'anu - na početku svake sure osim jedne."
+                },
+                {
+                    question: "Šta je Miradž?",
+                    options: ["Noćno putovanje i uznesenje", "Rođenje Muhammeda a.s.", "Prva objava", "Preseljenje u Medinu"],
+                    answer: "Noćno putovanje i uznesenje",
+                    explanation: "Miradž je noćno putovanje Muhammeda, a.s., iz Mekke u Jerusalim i uznesenje na nebesa."
+                },
+                {
+                    question: "Kako se zove preseljenje iz Mekke u Medinu?",
+                    options: ["Hidžra", "Miradž", "Kurban", "Hadždž"],
+                    answer: "Hidžra",
+                    explanation: "Hidžra je preseljenje Muhammeda, a.s., i muslimana iz Mekke u Medinu 622. godine."
+                },
+                {
+                    question: "Koja sura se prvo uči?",
+                    options: ["El-Fatiha", "El-Ihlas", "En-Nas", "El-Felak"],
+                    answer: "El-Fatiha",
+                    explanation: "El-Fatiha je prva sura koja se uči i mora se znati za namaz."
+                },
+                {
+                    question: "Koliko ajeta ima sura El-Fatiha?",
+                    options: ["7", "5", "10", "3"],
+                    answer: "7",
+                    explanation: "Sura El-Fatiha ima 7 ajeta."
+                },
+                {
+                    question: "Šta znači 'kelime-i šehadet'?",
+                    options: ["Svjedočenje vjere", "Namaz", "Post", "Dova"],
+                    answer: "Svjedočenje vjere",
+                    explanation: "Kelime-i šehadet je svjedočenje da nema drugog boga osim Allaha i da je Muhammed Njegov poslanik."
+                },
+                {
+                    question: "Kada se slavi Ramazanski bajram?",
+                    options: ["1. ševvala", "10. zul-hidždžeta", "12. rebiul-evvela", "1. ramazana"],
+                    answer: "1. ševvala",
+                    explanation: "Ramazanski bajram pada 1. ševvala, prvog dana nakon ramazana."
+                },
+                {
+                    question: "Kada se slavi Kurban-bajram?",
+                    options: ["10. zul-hidždžeta", "1. ševvala", "27. ramazana", "12. rebiul-evvela"],
+                    answer: "10. zul-hidždžeta",
+                    explanation: "Kurban-bajram pada 10. zul-hidždžeta, zadnjeg mjeseca islamskog kalendara."
+                },
+                {
+                    question: "Koliko rekata ima sabah-namaz?",
+                    options: ["4 (2 sunnet + 2 farz)", "2", "3", "5"],
+                    answer: "4 (2 sunnet + 2 farz)",
+                    explanation: "Sabah-namaz ima ukupno 4 rekata: 2 sunnet i 2 farz."
+                },
+                {
+                    question: "GREŠKA U REČENICI: 'Muslimani vjeruju u jednog Boga, više meleka i 25 poslanika.'",
+                    options: ["'više meleka' treba biti 'mnogo meleka' ili samo 'meleke'", "Sve je tačno", "'25 poslanika' treba biti '124.000'", "'jednog Boga' treba biti 'tri boga'"],
+                    answer: "'više meleka' treba biti 'mnogo meleka' ili samo 'meleke'",
+                    explanation: "Muslimani vjeruju u mnogo meleka (tačan broj ne znamo), ali znamo imena nekih od njih. 25 je broj poslanika čija imena moramo znati."
+                },
+                {
+                    question: "GREŠKA U REČENICI: 'Kur'an je objavljen Ademuu a.s. u pećini Hira.'",
+                    options: ["'Ademu a.s.' treba biti 'Muhammedu a.s.'", "Sve je tačno", "'pećini Hira' treba biti 'Mekki'", "'Kur'an' treba biti 'Tevrat'"],
+                    answer: "'Ademu a.s.' treba biti 'Muhammedu a.s.'",
+                    explanation: "Kur'an je objavljen Muhammedu, a.s., u pećini Hira. Adem, a.s., je bio prvi čovjek i poslanik, ali njemu nije objavljen Kur'an."
+                },
+                {
+                    question: "GREŠKA U REČENICI: 'Islam ima šest stubova: šehadet, namaz, zekat, hadždž, post i iman.'",
+                    options: ["'šest' treba biti 'pet' (iman nije stup islama)", "Sve je tačno", "'namaz' treba biti 'dova'", "'hadždž' treba biti 'kurban'"],
+                    answer: "'šest' treba biti 'pet' (iman nije stup islama)",
+                    explanation: "Islam ima pet stubova. Iman (vjera) nije stup islama, nego je osnova. Pet stubova su: šehadet, namaz, zekat, post i hadždž."
+                },
+                {
+                    question: "ASOCIJACIJA: Riječ 'ševval' vas asocira na:",
+                    options: ["Ramazanski bajram", "Kurban-bajram", "Post", "Mevlud"],
+                    answer: "Ramazanski bajram",
+                    explanation: "Ramazanski bajram pada 1. ševvala, prvog dana mjeseca ševvala nakon ramazana."
+                },
+                {
+                    question: "ASOCIJACIJA: Broj '622' vas asocira na:",
+                    options: ["Godinu Hidžre", "Rođenje Muhammeda, a.s.", "Broj ajeta u Kur'anu", "Broj poslanika"],
+                    answer: "Godinu Hidžre",
+                    explanation: "622. godina je godina Hidžre - preseljenja Muhammeda, a.s., iz Mekke u Medinu. Od nje počinje islamski kalendar."
+                },
+                {
+                    question: "ANALOGIJA: Ramazanski bajram : 1. ševval = Kurban-bajram : ?",
+                    options: ["10. zul-hidždže", "1. muharrem", "12. rebiul-evvel", "27. redžeb"],
+                    answer: "10. zul-hidždže",
+                    explanation: "Kao što Ramazanski bajram pada 1. ševvala, tako Kurban-bajram pada 10. zul-hidždžeta."
+                },
+                {
+                    question: "ANALOGIJA: Sabah : 4 rekata = Akšam : ?",
+                    options: ["5 rekata", "3 rekata", "4 rekata", "6 rekata"],
+                    answer: "5 rekata",
+                    explanation: "Sabah-namaz ima 4 rekata (2 sunnet + 2 farz), a akšam-namaz ima 5 rekata (3 farz + 2 sunnet)."
+                },
+                {
+                    question: "ANALOGIJA: Mekka : Hidžra = Medina : ?",
+                    options: ["Odredište", "Polazište", "Rodno mjesto", "Kibla"],
+                    answer: "Odredište",
+                    explanation: "Kao što je Mekka bila polazište Hidžre, tako je Medina bila odredište - grad u koji se preselio Muhammed, a.s."
+                },
+                {
+                    question: "KO SAM JA? Ja sam dova koja se uči na sjedenju u namazu. Potječem od razgovora na Miradžu. Sadržim pozdrave Allahu.",
+                    options: ["Et-Tehijatu", "Subhaneke", "Salavati", "Kunut-dova"],
+                    answer: "Et-Tehijatu",
+                    explanation: "Et-Tehijatu je dova na sjedenju u namazu, sadrži pozdrave Allahu i potječe od razgovora Muhammeda, a.s., s Allahom na Miradžu."
+                },
+                {
+                    question: "ŠTA SAM JA? Ja sam mjesec posta. Deveti sam mjesec hidžretskog kalendara. U meni je objavljen Kur'an.",
+                    options: ["Ramazan", "Muharrem", "Ševval", "Zul-hidždže"],
+                    answer: "Ramazan",
+                    explanation: "Ramazan je deveti mjesec islamskog kalendara, mjesec posta u kojem je počela objava Kur'ana."
+                },
+                {
+                    question: "KO SAM JA? Ja sam namaz koji se klanja samo u ramazanu. Klanjam se poslije jacije. Imam 20 rekata.",
+                    options: ["Teravih-namaz", "Džuma-namaz", "Bajram-namaz", "Dženaza-namaz"],
+                    answer: "Teravih-namaz",
+                    explanation: "Teravih je namaz koji se klanja samo u ramazanu, poslije jacija-namaza, i ima 20 rekata."
+                },
+                {
+                    question: "ŠTA SAM JA? Ja sam čestitka za bajram. Izgovaram se prilikom čestitanja. Značim 'Neka vam je bajram blagoslovljen'.",
+                    options: ["Bajram šerif mubarek olsun", "Es-selamu alejkum", "El-hamdu lillah", "Mašallah"],
+                    answer: "Bajram šerif mubarek olsun",
+                    explanation: "Bajram šerif mubarek olsun je tradicionalna bajramska čestitka koja znači 'Neka vam je bajram blagoslovljen'."
+                },
+                {
+                    question: "DOPUNI NIZ: Muharrem, safer, rebiul-evvel, rebiul-ahir, ...?",
+                    options: ["Džumadel-ula", "Ramazan", "Ševval", "Zul-hidždže"],
+                    answer: "Džumadel-ula",
+                    explanation: "Redoslijed prvih mjeseci islamskog kalendara: Muharrem, safer, rebiul-evvel, rebiul-ahir, džumadel-ula..."
+                },
+                {
+                    question: "DOPUNI NIZ: Farz sabaha, sunnet sabaha, farz podne, ...?",
+                    options: ["Sunnet podne", "Farz ikindije", "Sunnet ikindije", "Prvi sunnet podne"],
+                    answer: "Sunnet podne",
+                    explanation: "U sabahu prvo klanjamo sunnet pa farz, a u podne prvo farz pa sunnet (ima i sunnet prije farza)."
+                },
+                {
+                    question: "SITUACIJA: Sutra je bajram. Šta treba proučiti ujutro prije bajram-namaza?",
+                    options: ["Tekbire", "Salavate", "Et-Tehijatu", "Kunut-dovu"],
+                    answer: "Tekbire",
+                    explanation: "Uoči i na dan bajrama uče se tekbiri - veličanje Allaha riječima 'Allahu ekber'."
+                },
+                {
+                    question: "SITUACIJA: Aiša je pogriješila i želi zatražiti Allahov oprost. Koje riječi treba izgovoriti?",
+                    options: ["Estagfirullah", "Inšallah", "Mašallah", "Subhanallah"],
+                    answer: "Estagfirullah",
+                    explanation: "Estagfirullah (Tražim Allahov oprost) kažemo kada se kajemo za grijehe i tražimo Allahov oprost."
+                },
+                {
+                    question: "SITUACIJA: Bilal je završio učenje Kur'ana. Koje riječi treba izgovoriti?",
+                    options: ["Sadekallahul-'azim", "Bismillah", "Inšallah", "Estagfirullah"],
+                    answer: "Sadekallahul-'azim",
+                    explanation: "Sadekallahul-'azim (Istinu je rekao Uzvišeni Allah) kažemo nakon učenja Kur'ana."
+                }
+            ]
+        };
+    </script>
+
+    <!-- Centralizovani JavaScript Engine -->
+    <script src="../core/quiz-engine.js"></script>
+</body>
+</html>
