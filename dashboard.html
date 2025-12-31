@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Mekteb.net</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- SheetJS za Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Lora', serif;
+            background: linear-gradient(135deg, #064e3b 0%, #0f766e 50%, #065f46 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 2rem;
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(251, 191, 36, 0.3);
+        }
+        
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .user-info h2 {
+            font-family: 'Playfair Display', serif;
+            color: #fbbf24;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-box {
+            background: rgba(251, 191, 36, 0.2);
+            border: 2px solid rgba(251, 191, 36, 0.5);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .stat-box .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fbbf24;
+            display: block;
+        }
+        
+        .stat-box .label {
+            font-size: 0.9rem;
+            color: #d1fae5;
+            margin-top: 0.5rem;
+        }
+        
+        .ranking-message {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.3));
+            border: 2px solid #fbbf24;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: center;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+        
+        .ranking-message .rank {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fbbf24;
+            display: block;
+            margin: 0.5rem 0;
+        }
+        
+        table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-collapse: collapse;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        
+        thead {
+            background: rgba(251, 191, 36, 0.3);
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            font-weight: 600;
+            color: #fbbf24;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .rank-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #064e3b;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 700;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .rank-badge.gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .rank-badge.silver { background: linear-gradient(135deg, #d1d5db, #9ca3af); }
+        .rank-badge.bronze { background: linear-gradient(135deg, #d97706, #92400e); }
+        
+        .percentage {
+            font-weight: 600;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+        }
+        
+        .percentage.excellent { background: rgba(34, 197, 94, 0.3); color: #6ee7b7; }
+        .percentage.good { background: rgba(59, 130, 246, 0.3); color: #93c5fd; }
+        .percentage.average { background: rgba(251, 191, 36, 0.3); color: #fde68a; }
+        .percentage.poor { background: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #064e3b;
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            border: none;
+            font-family: 'Lora', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #fbbf24;
+            color: #fbbf24;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(251, 191, 36, 0.2);
+        }
+        
+        .student-details {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid #fbbf24;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+        
+        .quiz-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .quiz-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .quiz-item strong {
+            color: #fbbf24;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 4rem 2rem;
+            font-size: 1.2rem;
+        }
+        
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid #ef4444;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .header h1 { font-size: 2rem; }
+            table { font-size: 0.85rem; }
+            th, td { padding: 0.6rem; }
+            .button-group { flex-direction: column; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Mekteb Dashboard</h1>
+            <a href="index.html" class="btn btn-secondary" style="margin-top: 1rem;">← Nazad na kvizove</a>
+        </div>
+        
+        <div id="loading" class="loading">
+            ⏳ Učitavam podatke...
+        </div>
+        
+        <div id="content" style="display: none;"></div>
+    </div>
+    
+    <script>
+        const API_URL = 'https://mekteb.net/wp-json/mekteb/v1';
+        let dashboardData = null;
+        
+        // Provjera prijave
+        document.addEventListener('DOMContentLoaded', async function() {
+            const userData = localStorage.getItem('mektebUser');
+            
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const user = JSON.parse(userData);
+            
+            if (user.role === 'muallim' || user.role === 'administrator') {
+                await loadMuallimDashboard();
+            } else if (user.role === 'ucenik') {
+                await loadStudentDashboard();
+            } else {
+                showError('Nemate pristup dashboard-u.');
+            }
+        });
+        
+        // MUALLIM DASHBOARD
+        async function loadMuallimDashboard() {
+            try {
+                const response = await fetch(API_URL + '/muallim-dashboard', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('mektebToken')
+                    }
+                });
+                
+                const data = await response.json();
+                dashboardData = data;
+                
+                if (data.success) {
+                    renderMuallimDashboard(data);
+                } else {
+                    showError('Greška pri učitavanju podataka.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Greška pri komunikaciji sa serverom.');
+            }
+        }
+        
+        function renderMuallimDashboard(data) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            
+            let html = `
+                <div class="user-info">
+                    <h2>🕌 ${data.mekteb}</h2>
+                    <div class="stat-grid">
+                        <div class="stat-box">
+                            <span class="number">${data.total_students}</span>
+                            <span class="label">Ukupno učenika</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="number">${calculateTotalAttempts(data.students)}</span>
+                            <span class="label">Ukupno pokušaja</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="number">${calculateAveragePercentage(data.students)}%</span>
+                            <span class="label">Prosječna tačnost</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button onclick="exportToExcel()" class="btn">📥 Export u Excel</button>
+                    <button onclick="toggleDetails()" class="btn btn-secondary" id="toggleBtn">📋 Prikaži detalje</button>
+                </div>
+                
+                <table id="studentsTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Učenik</th>
+                            <th>Razred</th>
+                            <th>Prosijek</th>
+                            <th>Pokušaja</th>
+                            <th>Akcija</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            data.students.forEach((student, index) => {
+                const rankClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '';
+                const percentageClass = getPercentageClass(student.average_percentage);
+                
+                html += `
+                    <tr>
+                        <td><span class="rank-badge ${rankClass}">${student.rank}</span></td>
+                        <td><strong>${student.name}</strong><br><small>${student.username}</small></td>
+                        <td>${student.razred || '-'}</td>
+                        <td><span class="percentage ${percentageClass}">${student.average_percentage}%</span></td>
+                        <td>${student.total_attempts}</td>
+                        <td><button onclick="showStudentDetails(${index})" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Detalji</button></td>
+                    </tr>
+                    <tr id="details-${index}" style="display: none;">
+                        <td colspan="6">
+                            <div class="student-details">
+                                <h3>Kvizovi koje je radio ${student.name}:</h3>
+                                <div class="quiz-list">
+                                    ${renderQuizList(student.quizzes)}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            document.getElementById('content').innerHTML = html;
+        }
+        
+        function renderQuizList(quizzes) {
+            let html = '';
+            for (const [quizName, quizData] of Object.entries(quizzes)) {
+                html += `
+                    <div class="quiz-item">
+                        <strong>${quizName}</strong>
+                        Pokušaja: ${quizData.attempts}x<br>
+                        Najbolji: ${quizData.best_score} (${quizData.best_percentage}%)
+                    </div>
+                `;
+            }
+            return html || '<p style="color: #fca5a5;">Još nema riješenih kvizova</p>';
+        }
+        
+        function showStudentDetails(index) {
+            const row = document.getElementById(`details-${index}`);
+            row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+        }
+        
+        function toggleDetails() {
+            const detailsRows = document.querySelectorAll('[id^="details-"]');
+            const btn = document.getElementById('toggleBtn');
+            const allHidden = Array.from(detailsRows).every(row => row.style.display === 'none');
+            
+            detailsRows.forEach(row => {
+                row.style.display = allHidden ? 'table-row' : 'none';
+            });
+            
+            btn.textContent = allHidden ? '📋 Sakrij detalje' : '📋 Prikaži detalje';
+        }
+        
+        // STUDENT DASHBOARD
+        async function loadStudentDashboard() {
+            try {
+                const response = await fetch(API_URL + '/student-dashboard', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('mektebToken')
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderStudentDashboard(data);
+                } else {
+                    showError('Greška pri učitavanju podataka.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Greška pri komunikaciji sa serverom.');
+            }
+        }
+        
+        function renderStudentDashboard(data) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            
+            const percentageClass = getPercentageClass(data.my_average);
+            
+            let html = `
+                <div class="user-info">
+                    <h2>👤 ${data.name}</h2>
+                    <p>🕌 Mekteb: ${data.mekteb}</p>
+                    <p>📚 Razred: ${data.razred}</p>
+                </div>
+                
+                <div class="ranking-message">
+                    💡 Iz tvog mekteba <strong>${data.total_students}</strong> učenika koriste Mekteb.net kvizove.<br>
+                    Ti si na <span class="rank">${data.my_rank}. mjestu</span>
+                    sa prosjekom tačnosti <strong class="percentage ${percentageClass}">${data.my_average}%</strong>
+                </div>
+                
+                <h2 style="margin: 2rem 0 1rem 0; font-family: 'Playfair Display', serif; color: #fbbf24;">📋 Moji rezultati</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kviz</th>
+                            <th>Datum</th>
+                            <th>Rezultat</th>
+                            <th>Tačnost</th>
+                            <th>Trajanje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            if (data.results.length === 0) {
+                html += '<tr><td colspan="5" style="text-align: center; padding: 2rem;">Još nemaš riješenih kvizova. Počni učiti! 📚</td></tr>';
+            } else {
+                data.results.forEach(result => {
+                    const percentageClass = getPercentageClass(result.percentage);
+                    html += `
+                        <tr>
+                            <td><strong>${result.quiz}</strong></td>
+                            <td>${formatDate(result.date)}</td>
+                            <td>${result.score}</td>
+                            <td><span class="percentage ${percentageClass}">${result.percentage}%</span></td>
+                            <td>${formatDuration(result.duration)}</td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            document.getElementById('content').innerHTML = html;
+        }
+        
+        // HELPER FUNCTIONS
+        function calculateTotalAttempts(students) {
+            return students.reduce((sum, s) => sum + s.total_attempts, 0);
+        }
+        
+        function calculateAveragePercentage(students) {
+            if (students.length === 0) return 0;
+            const sum = students.reduce((sum, s) => sum + s.average_percentage, 0);
+            return Math.round(sum / students.length);
+        }
+        
+        function getPercentageClass(percentage) {
+            if (percentage >= 90) return 'excellent';
+            if (percentage >= 70) return 'good';
+            if (percentage >= 50) return 'average';
+            return 'poor';
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+        
+        function formatDuration(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // EXCEL EXPORT
+        function exportToExcel() {
+            if (!dashboardData || !dashboardData.students) {
+                alert('Nema podataka za export!');
+                return;
+            }
+            
+            // Pripremi podatke za Excel
+            const excelData = [];
+            
+            // Header
+            excelData.push(['#', 'Učenik', 'Razred', 'Prosječna tačnost', 'Ukupno pokušaja', 'Kvizovi']);
+            
+            // Dodaj učenike
+            dashboardData.students.forEach(student => {
+                const quizzesList = Object.entries(student.quizzes)
+                    .map(([name, data]) => `${name} (${data.attempts}x, najbolji: ${data.best_percentage}%)`)
+                    .join('; ');
+                
+                excelData.push([
+                    student.rank,
+                    student.name,
+                    student.razred || '-',
+                    student.average_percentage + '%',
+                    student.total_attempts,
+                    quizzesList || 'Nema rezultata'
+                ]);
+            });
+            
+            // Kreiraj workbook
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(excelData);
+            
+            // Stilizuj header
+            ws['!cols'] = [
+                { wch: 5 },  // #
+                { wch: 25 }, // Učenik
+                { wch: 15 }, // Razred
+                { wch: 18 }, // Prosječna tačnost
+                { wch: 15 }, // Ukupno pokušaja
+                { wch: 60 }  // Kvizovi
+            ];
+            
+            XLSX.utils.book_append_sheet(wb, ws, 'Učenici');
+            
+            // Download
+            const fileName = `Mekteb_Rezultati_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
+        
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').innerHTML = `
+                <div class="error">
+                    <h2>❌ Greška</h2>
+                    <p>${message}</p>
+                    <button onclick="location.reload()" class="btn" style="margin-top: 1rem;">🔄 Pokušaj ponovo</button>
+                </div>
+            `;
+            document.getElementById('content').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
