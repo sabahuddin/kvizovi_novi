@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 1D - HARD</title>
+    
+    <!-- Osnovni CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+    <!-- Advanced CSS -->
+    <link rel="stylesheet" href="../core/styles-advanced.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 1D - HARD</h1>
+            <p class="subtitle">Sure i Dove - Napredni nivo</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+// CHECKBOX (13)
+            {type:'checkbox',question:'Koje su glavne sure koje učimo?',options:['El-Fatiha','El-Ihlas','El-Felek','En-Nas','El-Bekara'],correct:['El-Fatiha','El-Ihlas','El-Felek','En-Nas'],explanation:'Glavne sure: El-Fatiha, El-Ihlas, El-Felek, En-Nas.'},
+            {type:'checkbox',question:'Šta je tačno o El-Fatihi?',options:['Prva sura u Kur\'anu','Učimo je u namazu','Ima 7 ajeta','Ima 10 ajeta','Najbolja dova'],correct:['Prva sura u Kur\'anu','Učimo je u namazu','Ima 7 ajeta','Najbolja dova'],explanation:'El-Fatiha je prva sura, ima 7 ajeta, učimo je u namazu, najbolja je dova.'},
+            {type:'checkbox',question:'Šta je tačno o El-Ihlasu?',options:['Govori o Allahovom jedinstvu','Vrijedi trećinu Kur\'ana','Ima 4 ajeta','Ima 6 ajeta','Učimo je u namazu'],correct:['Govori o Allahovom jedinstvu','Vrijedi trećinu Kur\'ana','Ima 4 ajeta','Učimo je u namazu'],explanation:'El-Ihlas govori o Allahovom jedinstvu, vrijedi 1/3 Kur\'ana, ima 4 ajeta.'},
+            {type:'checkbox',question:'Koje su "zaštitnice"?',options:['El-Felek','En-Nas','El-Ihlas','El-Fatiha'],correct:['El-Felek','En-Nas'],explanation:'Zaštitnice su El-Felek i En-Nas.'},
+            {type:'checkbox',question:'Koje dove učimo?',options:['Subhaneke','Rabbi jessir','Rabbi zidni ilma','Allahu rabbi','Hasbi rabbi'],correct:['Subhaneke','Rabbi jessir','Rabbi zidni ilma','Allahu rabbi','Hasbi rabbi'],explanation:'Sve navedene su dove koje učimo.'},
+            {type:'checkbox',question:'Šta učimo na početku namaza?',options:['Subhaneke','Euzubillu','Bismillu','Fatihu','Tekbir'],correct:['Subhaneke','Euzubillu','Bismillu','Fatihu'],explanation:'Na početku: Subhaneke, Euzubillu, Bismillu, Fatiha, Sura.'},
+            {type:'checkbox',question:'Kada učimo Bismillu?',options:['Prije jela','Prije učenja','Na početku svakog posla','Poslije namaza'],correct:['Prije jela','Prije učenja','Na početku svakog posla'],explanation:'Bismillu učimo prije jela, učenja i na početku svakog posla.'},
+            {type:'checkbox',question:'Šta znači El-Fatiha?',options:['Otvarač','Početak','Prva','Zaključak'],correct:['Otvarač','Početak','Prva'],explanation:'El-Fatiha znači: otvarač, početak, prva.'},
+            {type:'checkbox',question:'Šta znači El-Ihlas?',options:['Iskrenost','Čistoća','Jedinstvo','Zaštita'],correct:['Iskrenost','Čistoća'],explanation:'El-Ihlas znači: iskrenost, čistoća.'},
+            {type:'checkbox',question:'Šta znači Subhaneke?',options:['Slava Tebi Allahu','Hvala Tebi','Blagoslovljen Si','Veličina Ti je nedostižna'],correct:['Slava Tebi Allahu','Hvala Tebi','Blagoslovljen Si','Veličina Ti je nedostižna'],explanation:'Subhaneke: slava, hvala, blagoslov, veličina.'},
+            {type:'checkbox',question:'Kada učimo Euzubillu?',options:['Prije učenja Kur\'ana','Prije namaza','Prije jela','Na početku svakog posla'],correct:['Prije učenja Kur\'ana','Prije namaza'],explanation:'Euzubillu učimo prije Kur\'ana i na početku namaza.'},
+            {type:'checkbox',question:'Šta je tačno o zaštitnicama?',options:['Učimo ih ujutro i navečer','Štite od zla','Tri puta ih učimo','Jednom dnevno'],correct:['Učimo ih ujutro i navečer','Štite od zla','Tri puta ih učimo'],explanation:'Zaštitnice učimo ujutro i navečer, 3 puta, za zaštitu od zla.'},
+            {type:'checkbox',question:'Koja sura počinje sa "Kul"?',options:['El-Ihlas','El-Felek','En-Nas','El-Fatiha'],correct:['El-Ihlas','El-Felek','En-Nas'],explanation:'El-Ihlas, El-Felek i En-Nas počinju sa "Kul" (Reci).'},
+
+            // REORDER (13)
+            {type:'reorder',question:'Poredaj Subhaneke (dio):',items:[{text:'Subhaneke Allahumme',order:1},{text:'ve bihamdike',order:2},{text:'ve tebarekesmuke',order:3},{text:'ve te\'ala džedduke',order:4}],explanation:'Subhaneke po redu.'},
+            {type:'reorder',question:'Poredaj El-Fatihu (početak):',items:[{text:'Bismillahir-Rahmanir-Rahim',order:1},{text:'El-hamdu lillahi rabbil-\'alemin',order:2},{text:'Er-Rahmanir-Rahim',order:3},{text:'Maliki jevmid-din',order:4}],explanation:'Početak El-Fatihe.'},
+            {type:'reorder',question:'Poredaj El-Ihlas:',items:[{text:'Kul huvallahu ehad',order:1},{text:'Allabus-Samed',order:2},{text:'Lem jelid ve lem juled',order:3},{text:'Ve lem jekul-lehu kufuven ehad',order:4}],explanation:'El-Ihlas po redu.'},
+            {type:'reorder',question:'Poredaj Rabbi jessir:',items:[{text:'Rabbi jessir',order:1},{text:'ve la tu\'assir',order:2},{text:'Rabbi temmim',order:3},{text:'bil-hajr!',order:4}],explanation:'Rabbi jessir po redu.'},
+            {type:'reorder',question:'Poredaj Allahu rabbi:',items:[{text:'Allahu rabbi',order:1},{text:'ve Muhammeden nebijji',order:2},{text:'vel-Kur\'anu kitabi',order:3},{text:'vel-islamu dini',order:4}],explanation:'Allahu rabbi po redu.'},
+            {type:'reorder',question:'Poredaj prvo stajanje:',items:[{text:'Subhaneke',order:1},{text:'Euzubillu',order:2},{text:'Bismillu',order:3},{text:'Fatiha',order:4},{text:'Sura',order:5}],explanation:'Prvo stajanje u namazu.'},
+            {type:'reorder',question:'Poredaj El-Felek (početak):',items:[{text:'Kul e\'uzu birabbil-felek',order:1},{text:'Min šerri ma halak',order:2},{text:'Ve min šerri gasik-in iza vekab',order:3}],explanation:'Početak El-Feleka.'},
+            {type:'reorder',question:'Poredaj En-Nas (početak):',items:[{text:'Kul e\'uzu birabbin-nas',order:1},{text:'Melikin-nas',order:2},{text:'Ilahin-nas',order:3}],explanation:'Početak En-Nasa.'},
+            {type:'reorder',question:'Poredaj Hasbi rabbi (dio):',items:[{text:'Hasbi rabbi',order:1},{text:'džellallahu',order:2},{text:'La ilahe illa huve',order:3},{text:'\'alejhi tevelkeltu',order:4}],explanation:'Hasbi rabbi po redu.'},
+            {type:'reorder',question:'Poredaj Rabbi zidni ilma:',items:[{text:'Rabbi',order:1},{text:'zidni',order:2},{text:'\'ilma',order:3}],explanation:'Rabbi zidni \'ilma.'},
+            {type:'reorder',question:'Poredaj prije jela:',items:[{text:'Bismillu',order:1},{text:'Jesti desnom rukom',order:2},{text:'El-hamdulillah (poslije)',order:3}],explanation:'Redoslijed pri jelu.'},
+            {type:'reorder',question:'Poredaj Euzubillu i Bismillu:',items:[{text:'E\'uzu billahi mineš-šejtanir-radžim',order:1},{text:'Bismillahir-Rahmanir-Rahim',order:2}],explanation:'Prvo Euzubillu, pa Bismillu.'},
+            {type:'reorder',question:'Poredaj sure po važnosti:',items:[{text:'El-Fatiha (najbolja dova)',order:1},{text:'El-Ihlas (1/3 Kur\'ana)',order:2},{text:'Zaštitnice (zaštita)',order:3}],explanation:'Hijerarhija važnosti sura.'},
+
+            // MARK WORDS (13)
+            {type:'markWords',question:'Pronađi greške:',text:'El-Fatiha je druga sura u Kur\'anu i ima 10 ajeta.',words:['El-Fatiha','je','druga','sura','u','Kur\'anu','i','ima','10','ajeta.'],incorrect:[2,8],explanation:'El-Fatiha je PRVA sura (ne druga) i ima 7 ajeta (ne 10).'},
+            {type:'markWords',question:'Pronađi greške:',text:'El-Ihlas ima 6 ajeta i vrijedi polovinu Kur\'ana.',words:['El-Ihlas','ima','6','ajeta','i','vrijedi','polovinu','Kur\'ana.'],incorrect:[2,6],explanation:'El-Ihlas ima 4 ajeta (ne 6) i vrijedi TREĆINU Kur\'ana (ne polovinu).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Zaštitnice su El-Ihlas i El-Fatiha koje učimo ujutro.',words:['Zaštitnice','su','El-Ihlas','i','El-Fatiha','koje','učimo','ujutro.'],incorrect:[2,4],explanation:'Zaštitnice su El-FELEK i En-NAS (ne El-Ihlas i El-Fatiha).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Subhaneke učimo poslije namaza i prije jela.',words:['Subhaneke','učimo','poslije','namaza','i','prije','jela.'],incorrect:[2,5,6],explanation:'Subhaneke učimo NA POČETKU namaza (ne poslije, ne prije jela).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Rabbi jessir znači: Gospodaru, otežaj a ne olakšaj.',words:['Rabbi','jessir','znači:','Gospodaru,','otežaj','a','ne','olakšaj.'],incorrect:[4,7],explanation:'Rabbi jessir: OLAKŠAJ (ne otežaj) a ne OTEŽAJ (ne olakšaj).'},
+            {type:'markWords',question:'Pronađi greške:',text:'El-Fatiha znači zaključak i učimo je poslije namaza.',words:['El-Fatiha','znači','zaključak','i','učimo','je','poslije','namaza.'],incorrect:[2,6],explanation:'El-Fatiha znači OTVARAČ/POČETAK (ne zaključak), učimo je U namazu (ne poslije).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Bismillu učimo samo prije jela, a Euzubillu prije spavanja.',words:['Bismillu','učimo','samo','prije','jela,','a','Euzubillu','prije','spavanja.'],incorrect:[2,7,8],explanation:'Bismillu učimo prije SVAKOG posla (ne samo jela), Euzubillu prije KUR\'ANA/namaza (ne spavanja).'},
+            {type:'markWords',question:'Pronađi greške:',text:'El-Ihlas govori o Poslaniku a.s. i ima 7 ajeta.',words:['El-Ihlas','govori','o','Poslaniku','a.s.','i','ima','7','ajeta.'],incorrect:[3,4,7],explanation:'El-Ihlas govori o ALLAHOVOM JEDINSTVU (ne Poslaniku) i ima 4 ajeta (ne 7).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Zaštitnice učimo jednom dnevno, samo ujutro.',words:['Zaštitnice','učimo','jednom','dnevno,','samo','ujutro.'],incorrect:[2,4],explanation:'Zaštitnice učimo UJUTRO I NAVEČER (ne jednom), TRI PUTA (ne samo ujutro).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Rabbi zidni ilma znači: Gospodaru, smanji moje znanje.',words:['Rabbi','zidni','ilma','znači:','Gospodaru,','smanji','moje','znanje.'],incorrect:[5],explanation:'Rabbi zidni ilma: PROŠIRI (ne smanji) znanje.'},
+            {type:'markWords',question:'Pronađi greške:',text:'Allahu rabbi znači: Muhammed moj poslanik i Kur\'an moj život.',words:['Allahu','rabbi','znači:','Muhammed','moj','poslanik','i','Kur\'an','moj','život.'],incorrect:[3,4,9],explanation:'Allahu rabbi znači: ALLAH moj Gospodar (ne Muhammed), Kur\'an moj KITAB (ne život).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Prvo stajanje: Fatiha, Subhaneke, Bismillu, Euzubillu, Sura.',words:['Prvo','stajanje:','Fatiha,','Subhaneke,','Bismillu,','Euzubillu,','Sura.'],incorrect:[2,3,4,5],explanation:'Redoslijed: Subhaneke, Euzubillu, Bismillu, Fatiha, Sura.'},
+            {type:'markWords',question:'Pronađi greške:',text:'Hasbi rabbi znači: Meni je dovoljan Poslanik a.s.',words:['Hasbi','rabbi','znači:','Meni','je','dovoljan','Poslanik','a.s.'],incorrect:[6,7],explanation:'Hasbi rabbi: dovoljan UZVIŠENI ALLAH (ne Poslanik).'},
+
+            // DRAG DROP (13)
+            {type:'dragDrop',question:'Dopuni El-Fatihu:',template:['El-Fatiha je','DROP','sura u Kur\'anu i ima','DROP','ajeta'],words:['prva','7','druga','10'],correct:['prva','7'],explanation:'El-Fatiha je prva sura, ima 7 ajeta.'},
+            {type:'dragDrop',question:'Dopuni El-Ihlas:',template:['El-Ihlas ima','DROP','ajeta i vrijedi','DROP','Kur\'ana'],words:['4','trećinu','6','polovinu'],correct:['4','trećinu'],explanation:'El-Ihlas: 4 ajeta, trećina Kur\'ana.'},
+            {type:'dragDrop',question:'Dopuni zaštitnice:',template:['Zaštitnice su','DROP','i','DROP'],words:['El-Felek','En-Nas','El-Ihlas','El-Fatiha'],correct:['El-Felek','En-Nas'],explanation:'Zaštitnice: El-Felek i En-Nas.'},
+            {type:'dragDrop',question:'Dopuni Subhaneke:',template:['Subhaneke učimo na','DROP','namaza i znači','DROP'],words:['početku','slava Tebi','kraju','hvala Allahu'],correct:['početku','slava Tebi'],explanation:'Subhaneke: početak namaza, slava Tebi Allahu.'},
+            {type:'dragDrop',question:'Dopuni Rabbi jessir:',template:['Rabbi jessir:','DROP','a ne otežaj, dovrši sa','DROP'],words:['olakšaj','dobrom','otežaj','zlom'],correct:['olakšaj','dobrom'],explanation:'Rabbi jessir: olakšaj, dovrši sa dobrom.'},
+            {type:'dragDrop',question:'Dopuni Rabbi zidni ilma:',template:['Rabbi','DROP','\'ilma znači:','DROP','moje proširi'],words:['zidni','znanje','jessir','snagu'],correct:['zidni','znanje'],explanation:'Rabbi zidni \'ilma: znanje moje proširi.'},
+            {type:'dragDrop',question:'Dopuni Bismillu:',template:['Bismillu učimo','DROP','jela i na početku','DROP'],words:['prije','svakog posla','poslije','namaza'],correct:['prije','svakog posla'],explanation:'Bismillu: prije jela i prije svakog posla.'},
+            {type:'dragDrop',question:'Dopuni Euzubillu:',template:['Euzubillu učimo prije','DROP','i na početku','DROP'],words:['Kur\'ana','namaza','jela','spavanja'],correct:['Kur\'ana','namaza'],explanation:'Euzubillu: prije Kur\'ana i na početku namaza.'},
+            {type:'dragDrop',question:'Dopuni Allahu rabbi:',template:['Allahu','DROP','ve Muhammeden','DROP'],words:['rabbi','nebijji','ilahi','resulullah'],correct:['rabbi','nebijji'],explanation:'Allahu rabbi ve Muhammeden nebijji.'},
+            {type:'dragDrop',question:'Dopuni prvo stajanje:',template:['Prvo: Subhaneke,','DROP','pa Bismillu, pa','DROP'],words:['Euzubillu,','Fatiha','Tekbir,','Sura'],correct:['Euzubillu,','Fatiha'],explanation:'Redoslijed: Subhaneke, Euzubillu, Bismillu, Fatiha, Sura.'},
+            {type:'dragDrop',question:'Dopuni El-Ihlas:',template:['El-Ihlas govori o','DROP','i počinje sa','DROP'],words:['Allahovom jedinstvu','Kul','Poslaniku a.s.','Bismillah'],correct:['Allahovom jedinstvu','Kul'],explanation:'El-Ihlas: Allahovo jedinstvo, počinje "Kul".'},
+            {type:'dragDrop',question:'Dopuni zaštitnice kada:',template:['Zaštitnice učimo','DROP','i navečer,','DROP','puta'],words:['ujutro','tri','podne','pet'],correct:['ujutro','tri'],explanation:'Zaštitnice: ujutro i navečer, 3 puta.'},
+            {type:'dragDrop',question:'Dopuni Hasbi rabbi:',template:['Hasbi rabbi znači: Dovoljan mi je','DROP','U mom srcu je samo','DROP'],words:['uzvišeni Allah','Allah','Poslanik','iman'],correct:['uzvišeni Allah','Allah'],explanation:'Hasbi rabbi: dovoljan uzvišeni Allah, u srcu Allah.'}
+            ]
+        };
+    </script>
+
+    <!-- Advanced JavaScript Engine -->
+    <script src="../core/quiz-engine-advanced.js"></script>
+</body>
+</html>

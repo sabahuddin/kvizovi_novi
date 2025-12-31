@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 1E - HARD</title>
+    
+    <!-- Osnovni CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+    <!-- Advanced CSS -->
+    <link rel="stylesheet" href="../core/styles-advanced.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 1E - HARD</h1>
+            <p class="subtitle">Kompletan Nivo 1 - SVE TEME - Napredni</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+// CHECKBOX (13) - MIX SVIH TEMA
+            {type:'checkbox',question:'Koje su imanski šarti?',options:['Vjerovanje u Allaha','Namaz','Vjerovanje u meleke','Vjerovanje u kader','Post'],correct:['Vjerovanje u Allaha','Vjerovanje u meleke','Vjerovanje u kader'],explanation:'Imanski šarti: vjerovanje u Allaha, meleke, knjige, poslanike, Sudnji dan, kader.'},
+            {type:'checkbox',question:'Koje su islamski šarti?',options:['Šehadet','Namaz','Vjerovanje u Allaha','Post','Zekat','Hadž'],correct:['Šehadet','Namaz','Post','Zekat','Hadž'],explanation:'Pet islamskih šartova (stubova islama).'},
+            {type:'checkbox',question:'Koji su abdeski šarti?',options:['Umiti lice','Oprati ruke','Namazati glavu','Oprati noge','Proučiti Bismillu'],correct:['Umiti lice','Oprati ruke','Namazati glavu','Oprati noge'],explanation:'Četiri abdeska šarta (farza).'},
+            {type:'checkbox',question:'Koji su namaski ruknovi?',options:['Iftitahi-tekbir','Kijam','Ruku\'','Sedžda','Abdest','Kadei-ehire'],correct:['Iftitahi-tekbir','Kijam','Ruku\'','Sedžda','Kadei-ehire'],explanation:'Šest namaskih ruknova (Kiraet spada u Kijam).'},
+            {type:'checkbox',question:'Koje dove učimo?',options:['Rabbi jessir','Allahu rabbi','Hasbi rabbi','Kelime-i šehadet'],correct:['Rabbi jessir','Allahu rabbi','Hasbi rabbi'],explanation:'Dove su: Rabbi jessir, Rabbi zidni ilma, Allahu rabbi, Hasbi rabbi. Kelime-i šehadet je svjedočenje.'},
+            {type:'checkbox',question:'Koliko dana traju bajrami?',options:['Ramazanski 3','Ramazanski 4','Kurban 3','Kurban 4'],correct:['Ramazanski 3','Kurban 4'],explanation:'Ramazanski bajram 3 dana, Kurban-bajram 4 dana.'},
+            {type:'checkbox',question:'Šta je tačno o Hidžri?',options:['Preselenje iz Mekke','622. godina','Preselenje iz Medine','Početak kalendara'],correct:['Preselenje iz Mekke','622. godina','Početak kalendara'],explanation:'Hidžra: iz Mekke u Medinu, 622. godine, početak hidžretske godine.'},
+            {type:'checkbox',question:'Koliko namaza klanjamo dnevno?',options:['Sabah','Podne','Ikindija','Akšam','Jacija','Teravih'],correct:['Sabah','Podne','Ikindija','Akšam','Jacija'],explanation:'Pet dnevnih farz namaza.'},
+            {type:'checkbox',question:'Koliko rekata ima Sabah namaz?',options:['2 sunnet','2 farz','3 sunnet','3 farz'],correct:['2 sunnet','2 farz'],explanation:'Sabah: 2 sunnet + 2 farz = ukupno 4 rekata.'},
+            {type:'checkbox',question:'Koji su mubarek-dani?',options:['Nova hidžretska godina','Mevlud','Ramazanski bajram','Kurban-bajram','Teravih'],correct:['Nova hidžretska godina','Mevlud','Ramazanski bajram','Kurban-bajram'],explanation:'Četiri glavna mubarek-dana u islamu.'},
+            {type:'checkbox',question:'Kada je rođen Muhammed a.s.?',options:['12. rebiul-evvela','571. godine','U Mekki','622. godine'],correct:['12. rebiul-evvela','571. godine','U Mekki'],explanation:'Muhammed a.s.: 12. rebiul-evvela 571. u Mekki.'},
+            {type:'checkbox',question:'Šta kvari abdest?',options:['Spavanje','Oticanje krvi','Pričanje','Povraćanje'],correct:['Spavanje','Oticanje krvi','Povraćanje'],explanation:'Abdest kvare: spavanje, oticanje krvi/tekućine, povraćanje, prirodna nužda, glasno smijanje u namazu.'},
+            {type:'checkbox',question:'Koliko poslanika je poslano?',options:['124.000 ukupno','25 u Kur\'anu','313 ukupno','1.000 u Kur\'anu'],correct:['124.000 ukupno','25 u Kur\'anu'],explanation:'Allah je poslao 124.000 poslanika, 25 je spomenuto u Kur\'anu.'},
+
+            // REORDER (13) - MIX
+            {type:'reorder',question:'Poredaj 6 imanskih šartova:',items:[{text:'Vjerovanje u Allaha',order:1},{text:'Vjerovanje u meleke',order:2},{text:'Vjerovanje u knjige',order:3},{text:'Vjerovanje u poslanike',order:4},{text:'Vjerovanje u Sudnji dan',order:5},{text:'Vjerovanje u kader',order:6}],explanation:'Šest imanskih šartova po redu.'},
+            {type:'reorder',question:'Poredaj 5 islamskih šartova:',items:[{text:'Šehadet',order:1},{text:'Namaz',order:2},{text:'Post',order:3},{text:'Zekat',order:4},{text:'Hadž',order:5}],explanation:'Pet islamskih šartova (stubova islama).'},
+            {type:'reorder',question:'Poredaj 4 abdeska šarta:',items:[{text:'Umiti lice',order:1},{text:'Oprati ruke do lakata',order:2},{text:'Namazati glavu',order:3},{text:'Oprati noge do članaka',order:4}],explanation:'Četiri abdeska farza.'},
+            {type:'reorder',question:'Poredaj 6 namaskih ruknova:',items:[{text:'Iftitahi-tekbir',order:1},{text:'Kijam',order:2},{text:'Kiraet',order:3},{text:'Ruku\'',order:4},{text:'Sedžda',order:5},{text:'Kadei-ehire',order:6}],explanation:'Šest namaskih ruknova.'},
+            {type:'reorder',question:'Poredaj Rabbi jessir:',items:[{text:'Rabbi jessir',order:1},{text:'ve la tu\'assir',order:2},{text:'Rabbi temmim',order:3},{text:'bil-hajr!',order:4}],explanation:'Dova Rabbi jessir.'},
+            {type:'reorder',question:'Poredaj 5 dnevnih namaza:',items:[{text:'Sabah',order:1},{text:'Podne',order:2},{text:'Ikindija',order:3},{text:'Akšam',order:4},{text:'Jacija',order:5}],explanation:'Pet dnevnih namaza po redu.'},
+            {type:'reorder',question:'Poredaj 4 mubarek-dana:',items:[{text:'Nova hidžretska godina',order:1},{text:'Mevlud',order:2},{text:'Ramazanski bajram',order:3},{text:'Kurban-bajram',order:4}],explanation:'Četiri glavna mubarek-dana.'},
+            {type:'reorder',question:'Poredaj prvo stajanje u namazu:',items:[{text:'Subhaneke',order:1},{text:'Euzubillu',order:2},{text:'Bismillu',order:3},{text:'Fatiha',order:4},{text:'Sura',order:5}],explanation:'Prvo stajanje u namazu.'},
+            {type:'reorder',question:'Poredaj Kelime-i šehadet:',items:[{text:'Ešhedu en la ilahe',order:1},{text:'illallah',order:2},{text:'ve ešhedu enne Muhammeden',order:3},{text:'\'abduhu ve resuluhu',order:4}],explanation:'Kelime-i šehadet po redu.'},
+            {type:'reorder',question:'Poredaj poslanike hronološki:',items:[{text:'Adem a.s.',order:1},{text:'Nuh a.s.',order:2},{text:'Ibrahim a.s.',order:3},{text:'Musa a.s.',order:4},{text:'Isa a.s.',order:5},{text:'Muhammed a.s.',order:6}],explanation:'Neki od najpoznatijih poslanika.'},
+            {type:'reorder',question:'Poredaj prvih 6 hidžretskih mjeseci:',items:[{text:'Muharrem',order:1},{text:'Safer',order:2},{text:'Rebiul-evvel',order:3},{text:'Rebiul-ahir',order:4},{text:'Džumadel-ula',order:5},{text:'Džumadel-uhra',order:6}],explanation:'Prvih 6 mjeseci hidžretske godine.'},
+            {type:'reorder',question:'Poredaj kadei-ehire:',items:[{text:'Et-Tehijatu',order:1},{text:'Salavati',order:2},{text:'Dove',order:3}],explanation:'Posljednje sjedenje u namazu.'},
+            {type:'reorder',question:'Poredaj jedan rekat:',items:[{text:'Kijam + Kiraet',order:1},{text:'Ruku\'',order:2},{text:'Sedžda',order:3},{text:'Sedžda (druga)',order:4}],explanation:'Jedan rekat po redu.'},
+
+            // MARK WORDS (13) - MIX
+            {type:'markWords',question:'Pronađi greške:',text:'Imanskih šartova ima 5. Islamskih šartova ima 6.',words:['Imanskih','šartova','ima','5.','Islamskih','šartova','ima','6.'],incorrect:[3,7],explanation:'Imanskih 6 (ne 5), islamskih 5 (ne 6).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Muhammed a.s. je prvi poslanik. Adem a.s. je zadnji poslanik.',words:['Muhammed','a.s.','je','prvi','poslanik.','Adem','a.s.','je','zadnji','poslanik.'],incorrect:[3,8],explanation:'Muhammed a.s. je ZADNJI, Adem a.s. je PRVI.'},
+            {type:'markWords',question:'Pronađi greške:',text:'Abdeskih šartova ima 5. Prvi je umiti lice, drugi oprati noge.',words:['Abdeskih','šartova','ima','5.','Prvi','je','umiti','lice,','drugi','oprati','noge.'],incorrect:[3,9,10],explanation:'Abdeskih 4 (ne 5), drugi je oprati RUKE (ne noge).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Sabah-namaz ima 3 sunnet i 3 farz rekata.',words:['Sabah-namaz','ima','3','sunnet','i','3','farz','rekata.'],incorrect:[2,5],explanation:'Sabah: 2 sunnet (ne 3) i 2 farz (ne 3).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Namaskih ruknova ima 5. Prvi je Kijam.',words:['Namaskih','ruknova','ima','5.','Prvi','je','Kijam.'],incorrect:[3,6],explanation:'Namaskih ruknova ima 6 (ne 5), prvi je Iftitahi-tekbir (ne Kijam).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Ramazanski bajram traje 4 dana. Kurban-bajram traje 3 dana.',words:['Ramazanski','bajram','traje','4','dana.','Kurban-bajram','traje','3','dana.'],incorrect:[3,7],explanation:'Ramazanski 3 dana (ne 4), Kurban 4 dana (ne 3).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Hidžra se dogodila 632. godine. To je preselenje iz Medine u Mekku.',words:['Hidžra','se','dogodila','632.','godine.','To','je','preselenje','iz','Medine','u','Mekku.'],incorrect:[3,9,11],explanation:'Hidžra 622. (ne 632), iz Mekke (ne Medine) u Medinu (ne Mekku).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Hidžretska godina ima 10 mjeseci i 365 dana.',words:['Hidžretska','godina','ima','10','mjeseci','i','365','dana.'],incorrect:[3,6],explanation:'Hidžretska: 12 mjeseci (ne 10), 355 dana (ne 365).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Muhammed a.s. rođen je 10. muharrema 622. godine u Medini.',words:['Muhammed','a.s.','rođen','je','10.','muharrema','622.','godine','u','Medini.'],incorrect:[4,5,6,9],explanation:'Rođen 12. rebiul-evvela (ne 10. muharrema) 571. (ne 622.) u Mekki (ne Medini).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Rabbi jessir znači: Gospodaru, otežaj a ne olakšaj!',words:['Rabbi','jessir','znači:','Gospodaru,','otežaj','a','ne','olakšaj!'],incorrect:[4,7],explanation:'Rabbi jessir: olakšaj (ne otežaj) a ne otežaj (ne olakšaj).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Dnevnih namaza ima četiri: Sabah, Podne, Ikindija, Akšam.',words:['Dnevnih','namaza','ima','četiri:','Sabah,','Podne,','Ikindija,','Akšam.'],incorrect:[3],explanation:'Dnevnih namaza ima PET (ne četiri): + Jacija.'},
+            {type:'markWords',question:'Pronađi greške:',text:'Na sedždi učimo: Subhane Rabbijel-\'Ažim tri puta.',words:['Na','sedždi','učimo:','Subhane','Rabbijel-\'Ažim','tri','puta.'],incorrect:[4],explanation:'Na sedždi: Subhane Rabbijel-E\'ALA (ne \'Ažim).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Mubarek-dana ima tri: Mevlud, Ramazanski i Kurban bajram.',words:['Mubarek-dana','ima','tri:','Mevlud,','Ramazanski','i','Kurban','bajram.'],incorrect:[2],explanation:'Mubarek-dana ima 4 (ne tri): + Nova hidžretska godina.'},
+
+            // DRAG DROP (13) - MIX
+            {type:'dragDrop',question:'Dopuni broj šartova:',template:['Imanskih šartova ima','DROP','a islamskih ima','DROP'],words:['6,','5','5,','6'],correct:['6,','5'],explanation:'Imanskih 6, islamskih 5.'},
+            {type:'dragDrop',question:'Dopuni poslanike:',template:['Prvi poslanik je','DROP','a zadnji je','DROP'],words:['Adem a.s.','Muhammed a.s.','Nuh a.s.','Isa a.s.'],correct:['Adem a.s.','Muhammed a.s.'],explanation:'Prvi Adem, zadnji Muhammed a.s.'},
+            {type:'dragDrop',question:'Dopuni abdest:',template:['Abdeskih šartova ima','DROP','Prvi je','DROP'],words:['4.','umiti lice','3.','oprati ruke'],correct:['4.','umiti lice'],explanation:'Abdeskih 4, prvi je umiti lice.'},
+            {type:'dragDrop',question:'Dopuni Sabah-namaz:',template:['Sabah-namaz ima','DROP','sunnet i','DROP','farz'],words:['2','2','3','3'],correct:['2','2'],explanation:'Sabah: 2 sunnet + 2 farz.'},
+            {type:'dragDrop',question:'Dopuni ruknove:',template:['Namaskih ruknova ima','DROP','Prvi je','DROP'],words:['6.','Iftitahi-tekbir','5.','Kijam'],correct:['6.','Iftitahi-tekbir'],explanation:'Namaskih ruknova 6, prvi je Iftitahi-tekbir.'},
+            {type:'dragDrop',question:'Dopuni bajrame:',template:['Ramazanski bajram traje','DROP','dana, Kurban','DROP','dana'],words:['3','4','4','3'],correct:['3','4'],explanation:'Ramazanski 3, Kurban 4 dana.'},
+            {type:'dragDrop',question:'Dopuni Hidžru:',template:['Hidžra se dogodila','DROP','godine iz','DROP','u Medinu'],words:['622.','Mekke','632.','Medine'],correct:['622.','Mekke'],explanation:'Hidžra 622. iz Mekke u Medinu.'},
+            {type:'dragDrop',question:'Dopuni godinu:',template:['Hidžretska godina ima','DROP','mjeseci i','DROP','dana'],words:['12','355','10','365'],correct:['12','355'],explanation:'Hidžretska: 12 mjeseci, 355 dana.'},
+            {type:'dragDrop',question:'Dopuni Mevlud:',template:['Muhammed a.s. rođen','DROP','rebiul-evvela','DROP','godine'],words:['12.','571.','10.','622.'],correct:['12.','571.'],explanation:'Muhammed a.s.: 12. rebiul-evvela 571.'},
+            {type:'dragDrop',question:'Dopuni Rabbi jessir:',template:['Rabbi jessir ve la','DROP','Rabbi temmim','DROP'],words:['tu\'assir,','bil-hajr!','tu\'alim,','bil-ilm!'],correct:['tu\'assir,','bil-hajr!'],explanation:'Rabbi jessir: olakšaj a ne otežaj, dovrši sa dobrom.'},
+            {type:'dragDrop',question:'Dopuni namaze:',template:['Dnevnih namaza ima','DROP','Prvi je','DROP'],words:['5.','Sabah','4.','Podne'],correct:['5.','Sabah'],explanation:'Dnevnih namaza 5, prvi je Sabah.'},
+            {type:'dragDrop',question:'Dopuni sedždu:',template:['Na sedždi učimo Subhane','DROP','tri puta'],words:['Rabbijel-E\'ala','Rabbijel-\'Ažim','Allahu ekber','La ilahe illallah'],correct:['Rabbijel-E\'ala'],explanation:'Na sedždi: Subhane Rabbijel-E\'ala.'},
+            {type:'dragDrop',question:'Dopuni mubarek-dane:',template:['Mubarek-dana ima','DROP','Treći je','DROP'],words:['4.','Ramazanski bajram','3.','Mevlud','5.','Nova godina'],correct:['4.','Ramazanski bajram'],explanation:'Mubarek-dana 4, treći je Ramazanski bajram.'}
+            ]
+        };
+    </script>
+
+    <!-- Advanced JavaScript Engine -->
+    <script src="../core/quiz-engine-advanced.js"></script>
+</body>
+</html>

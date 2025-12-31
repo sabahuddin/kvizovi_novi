@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 1B - HARD</title>
+    
+    <!-- Osnovni CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+    <!-- Advanced CSS -->
+    <link rel="stylesheet" href="../core/styles-advanced.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 1B - HARD</h1>
+            <p class="subtitle">Namaz, Abdest, Ruknovi - Napredni nivo</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+// CHECKBOX (13)
+            {type:'checkbox',question:'Koji su abdeski šarti (farzi)?',options:['Umiti lice','Oprati ruke do lakata','Namazati glavu (mesh)','Oprati noge do članaka','Proučiti dovu'],correct:['Umiti lice','Oprati ruke do lakata','Namazati glavu (mesh)','Oprati noge do članaka'],explanation:'Abdeskih šartova (farzi) ima 4: umiti lice, oprati ruke do lakata, namazati glavu (mesh), oprati noge do članaka.'},
+            {type:'checkbox',question:'Šta kvari abdest?',options:['Spavanje','Oticanje krvi','Povraćanje','Glasno smijanje u namazu','Pričanje'],correct:['Spavanje','Oticanje krvi','Povraćanje','Glasno smijanje u namazu'],explanation:'Abdest kvare: spavanje, oticanje krvi, povraćanje, prirodna nužda i glasno smijanje u namazu.'},
+            {type:'checkbox',question:'Koji su namaski ruknovi?',options:['Iftitahi-tekbir','Kijam','Kiraet','Ruku\'','Sedžda','Kadei-ehire','Abdest'],correct:['Iftitahi-tekbir','Kijam','Kiraet','Ruku\'','Sedžda','Kadei-ehire'],explanation:'Šest namaskih ruknova su: Iftitahi-tekbir, Kijam, Kiraet, Ruku\', Sedžda i Kadei-ehire.'},
+            {type:'checkbox',question:'Kada se ne može klanjati namaz?',options:['Kada sunce izlazi','Kada je sunce u zenitu','Kada sunce zalazi','Poslije podne','Ujutro'],correct:['Kada sunce izlazi','Kada je sunce u zenitu','Kada sunce zalazi'],explanation:'Namaz se ne može klanjati u 3 vremena: kada sunce izlazi, kada je u zenitu i kada zalazi.'},
+            {type:'checkbox',question:'Koliko rekata ima Sabah-namaz?',options:['2 sunnet','2 farz','4 sunnet','3 farz'],correct:['2 sunnet','2 farz'],explanation:'Sabah-namaz ima ukupno 4 rekata: 2 sunnet + 2 farz.'},
+            {type:'checkbox',question:'Koliko rekata ima Akšam-namaz?',options:['3 farz','2 sunnet','4 farz','2 farz'],correct:['3 farz','2 sunnet'],explanation:'Akšam-namaz ima ukupno 5 rekata: 3 farz + 2 sunnet.'},
+            {type:'checkbox',question:'Šta učimo na prvom stajanju u namazu?',options:['Subhaneke','Euzubillu','Fatiha','Sura','Salavati'],correct:['Subhaneke','Euzubillu','Fatiha','Sura'],explanation:'Na prvom stajanju učimo: Subhaneke, Euzubillu, Bismillu, Fatiha i jedna sura.'},
+            {type:'checkbox',question:'Koji su namaski šarti?',options:['Nijet','Biti čist','Biti prema Kibli','Klanjati na vrijeme','Biti gladan','Propisna odjeća'],correct:['Nijet','Biti čist','Biti prema Kibli','Klanjati na vrijeme','Propisna odjeća'],explanation:'Neki od 12 namaskih šartova su: nijet, čistoća, kibla, vrijeme, propisna odjeća...'},
+            {type:'checkbox',question:'Koliko ima gusulskih šartova?',options:['2','3','4','5'],correct:['3'],explanation:'Gusulski šarti su 3: gargara (isprati usta), istinšak (isprati nos), umiti cijelo tijelo.'},
+            {type:'checkbox',question:'Šta radimo na sedždi?',options:['Spuštamo čelo','Spuštamo nos','Spuštamo koljena','Stojimo uspravno','Učimo Subhane Rabbijel-E\'ala'],correct:['Spuštamo čelo','Spuštamo nos','Spuštamo koljena','Učimo Subhane Rabbijel-E\'ala'],explanation:'Na sedždi spuštamo čelo, nos i koljena na tlo, i učimo "Subhane Rabbijel-E\'ala" 3 puta.'},
+            {type:'checkbox',question:'Kada podižemo ruke?',options:['Pri iftitahi-tekbiru','Pri ruku\'u','Kod sjedenja','Poslije sedžde'],correct:['Pri iftitahi-tekbiru'],explanation:'Ruke podižemo pri iftitahi-tekbiru (početnom tekbiru).'},
+            {type:'checkbox',question:'Koji su sunneti gusula?',options:['Proučiti Bismillu','Oprati vidljive nečistoće','Saprati tijelo tri puta','Početi sa glavom','Jesti prije gusula'],correct:['Proučiti Bismillu','Oprati vidljive nečistoće','Saprati tijelo tri puta','Početi sa glavom'],explanation:'Sunneti gusula su: proučiti Bismillu, oprati nečistoće, saprati tijelo 3x, početi sa glavom.'},
+            {type:'checkbox',question:'Šta učimo na kadei-ehire?',options:['Et-Tehijatu','Salavate','Dove','Fatihu','Subhaneke'],correct:['Et-Tehijatu','Salavate','Dove'],explanation:'Na kadei-ehire (zadnjem sjedenju) učimo: Et-Tehijatu, Salavate i Dove.'},
+
+            // REORDER (13)
+            {type:'reorder',question:'Poredaj abdeste šarte:',items:[{text:'Umiti lice',order:1},{text:'Oprati ruke do lakata',order:2},{text:'Namazati glavu (mesh)',order:3},{text:'Oprati noge do članaka',order:4}],explanation:'4 abdeska šarta po redu.'},
+            {type:'reorder',question:'Poredaj 6 namaskih ruknova:',items:[{text:'Iftitahi-tekbir',order:1},{text:'Kijam',order:2},{text:'Kiraet',order:3},{text:'Ruku\'',order:4},{text:'Sedžda',order:5},{text:'Kadei-ehire',order:6}],explanation:'Šest namaskih ruknova po redu.'},
+            {type:'reorder',question:'Poredaj Sabah-namaz:',items:[{text:'2 sunnet rekata',order:1},{text:'2 farz rekata',order:2}],explanation:'Sabah-namaz: prvo 2 sunnet, pa 2 farz.'},
+            {type:'reorder',question:'Poredaj Akšam-namaz:',items:[{text:'3 farz rekata',order:1},{text:'2 sunnet rekata',order:2}],explanation:'Akšam-namaz: prvo 3 farz, pa 2 sunnet.'},
+            {type:'reorder',question:'Poredaj 5 dnevnih namaza:',items:[{text:'Sabah',order:1},{text:'Podne',order:2},{text:'Ikindija',order:3},{text:'Akšam',order:4},{text:'Jacija',order:5}],explanation:'Pet dnevnih namaza po redu.'},
+            {type:'reorder',question:'Poredaj prvo stajanje u namazu:',items:[{text:'Subhaneke',order:1},{text:'Euzubillu',order:2},{text:'Bismillu',order:3},{text:'Fatiha',order:4},{text:'Sura',order:5}],explanation:'Prvo stajanje: Subhaneke, Euzubillu, Bismillu, Fatiha, Sura.'},
+            {type:'reorder',question:'Poredaj gusulske šarte:',items:[{text:'Gargara (isprati usta)',order:1},{text:'Istinšak (ispirati nos)',order:2},{text:'Umiti cijelo tijelo',order:3}],explanation:'Tri gusulska šarta po redu.'},
+            {type:'reorder',question:'Poredaj kad spuštamo dijelove tijela na sedždu:',items:[{text:'Koljena',order:1},{text:'Dlanovi',order:2},{text:'Čelo i nos',order:3}],explanation:'Na sedždu: prvo koljena, pa dlanove, pa čelo i nos.'},
+            {type:'reorder',question:'Poredaj prvo učenje na sedždi:',items:[{text:'Subhane',order:1},{text:'Rabbijel-E\'ala',order:2},{text:'(3 puta)',order:3}],explanation:'Na sedždi učimo: Subhane Rabbijel-E\'ala (3 puta).'},
+            {type:'reorder',question:'Poredaj prvo učenje na ruku\'u:',items:[{text:'Subhane',order:1},{text:'Rabbijel-\'Ažim',order:2},{text:'(3 puta)',order:3}],explanation:'Na ruku\'u učimo: Subhane Rabbijel-\'Ažim (3 puta).'},
+            {type:'reorder',question:'Poredaj drugo stajanje:',items:[{text:'Bismillu',order:1},{text:'Fatiha',order:2},{text:'Sura',order:3}],explanation:'Drugo stajanje: Bismillu, Fatiha, Sura.'},
+            {type:'reorder',question:'Poredaj kadei-ehire:',items:[{text:'Et-Tehijatu',order:1},{text:'Salavati',order:2},{text:'Dove',order:3}],explanation:'Na kadei-ehire (zadnje sjedenje): Et-Tehijatu, Salavati, Dove.'},
+            {type:'reorder',question:'Poredaj dijelove jednog rekata:',items:[{text:'Kijam + Kiraet',order:1},{text:'Ruku\'',order:2},{text:'Sedžda',order:3},{text:'Sedžda (druga)',order:4}],explanation:'Jedan rekat: Kijam+Kiraet, Ruku\', Sedžda, Sedžda.'},
+
+            // MARK WORDS (13)
+            {type:'markWords',question:'Pronađi greške:',text:'Abdeskih šartova ima 5. Prvi je umiti lice, drugi je oprati noge.',words:['Abdeskih','šartova','ima','5.','Prvi','je','umiti','lice,','drugi','je','oprati','noge.'],incorrect:[3,8,9,10,11],explanation:'Abdeskih šartova ima 4 (ne 5), drugi je oprati RUKE do lakata (ne noge).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Sabah-namaz ima 3 sunnet rekata i 2 farz rekata.',words:['Sabah-namaz','ima','3','sunnet','rekata','i','2','farz','rekata.'],incorrect:[2],explanation:'Sabah-namaz ima 2 sunnet rekata (ne 3), i 2 farz.'},
+            {type:'markWords',question:'Pronađi greške:',text:'Akšam-namaz ima 3 farz i 3 sunnet rekata.',words:['Akšam-namaz','ima','3','farz','i','3','sunnet','rekata.'],incorrect:[5],explanation:'Akšam-namaz ima 3 farz i 2 sunnet rekata (ne 3 sunnet).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Namaskih ruknova ima 5: Kijam, Kiraet, Ruku\', Sedžda, Kadei-ehire.',words:['Namaskih','ruknova','ima','5:','Kijam,','Kiraet,','Ruku\',','Sedžda,','Kadei-ehire.'],incorrect:[3,4],explanation:'Namaskih ruknova ima 6 (ne 5), prvi je Iftitahi-tekbir.'},
+            {type:'markWords',question:'Pronađi greške:',text:'Gusulskih šartova ima 4. Prvi je gargara, drugi abdest.',words:['Gusulskih','šartova','ima','4.','Prvi','je','gargara,','drugi','abdest.'],incorrect:[3,8],explanation:'Gusulskih šartova ima 3 (ne 4), drugi je istinšak (ne abdest).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Na prvom stajanju učimo: Fatihu, Suru, Euzubillu, Bismillu.',words:['Na','prvom','stajanju','učimo:','Fatihu,','Suru,','Euzubillu,','Bismillu.'],incorrect:[4,5,6,7],explanation:'Redoslijed je: Subhaneke, Euzubillu, Bismillu, Fatiha, Sura.'},
+            {type:'markWords',question:'Pronađi greške:',text:'Na sedždi učimo: Subhane Rabbijel-\'Ažim tri puta.',words:['Na','sedždi','učimo:','Subhane','Rabbijel-\'Ažim','tri','puta.'],incorrect:[4],explanation:'Na sedždi učimo Subhane Rabbijel-E\'ALA (ne \'Ažim).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Na ruku\'u učimo: Subhane Rabbijel-E\'ala pet puta.',words:['Na','ruku\'u','učimo:','Subhane','Rabbijel-E\'ala','pet','puta.'],incorrect:[4,5],explanation:'Na ruku\'u učimo Subhane Rabbijel-\'AŽIM (ne E\'ala) TRI puta (ne pet).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Namaz se ne može klanjati u 5 vremena: izlazak sunca, podne, zenit, zalazak, noć.',words:['Namaz','se','ne','može','klanjati','u','5','vremena:','izlazak','sunca,','podne,','zenit,','zalazak,','noć.'],incorrect:[6,10,14],explanation:'Namaz se ne može klanjati u 3 vremena (ne 5): izlazak, zenit, zalazak. Podne i noć su dozvoljeni.'},
+            {type:'markWords',question:'Pronađi greške:',text:'Iftitahi-tekbir je zadnji namaski rukn.',words:['Iftitahi-tekbir','je','zadnji','namaski','rukn.'],incorrect:[2],explanation:'Iftitahi-tekbir je PRVI namaski rukn (ne zadnji).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Kadei-ehire je prvo sjedenje u namazu.',words:['Kadei-ehire','je','prvo','sjedenje','u','namazu.'],incorrect:[2],explanation:'Kadei-ehire je POSLJEDNJE sjedenje (ne prvo).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Dnevnih namaza ima četiri: Sabah, Podne, Ikindija, Akšam.',words:['Dnevnih','namaza','ima','četiri:','Sabah,','Podne,','Ikindija,','Akšam.'],incorrect:[3],explanation:'Dnevnih namaza ima PET (ne četiri): Sabah, Podne, Ikindija, Akšam, Jacija.'},
+            {type:'markWords',question:'Pronađi greške:',text:'Abdest se uzima pet puta dnevno prije svakog namaza.',words:['Abdest','se','uzima','pet','puta','dnevno','prije','svakog','namaza.'],incorrect:[3,4,5],explanation:'Abdest NE MORA uzimati pet puta - može se klanjati više namaza sa jednim abdestom ako nije pokvaren.'},
+
+            // DRAG DROP (13)
+            {type:'dragDrop',question:'Dopuni abdeste šarte:',template:['Abdeskih šartova ima','DROP','Prvi je umiti','DROP','drugi oprati','DROP'],words:['4.','lice,','ruke,','5.','nos,','noge,'],correct:['4.','lice,','ruke,'],explanation:'Abdeskih šartova ima 4: umiti lice, oprati ruke...'},
+            {type:'dragDrop',question:'Dopuni Sabah-namaz:',template:['Sabah-namaz ima','DROP','sunnet i','DROP','farz rekata'],words:['2','3','4','1'],correct:['2','2'],explanation:'Sabah-namaz: 2 sunnet + 2 farz.'},
+            {type:'dragDrop',question:'Dopuni Akšam-namaz:',template:['Akšam-namaz ima','DROP','farz i','DROP','sunnet rekata'],words:['3','2','4','5'],correct:['3','2'],explanation:'Akšam-namaz: 3 farz + 2 sunnet.'},
+            {type:'dragDrop',question:'Dopuni broj ruknova:',template:['Namaskih ruknova ima','DROP','Prvi je','DROP'],words:['6.','Iftitahi-tekbir','5.','Kijam','7.','Ruku\''],correct:['6.','Iftitahi-tekbir'],explanation:'Namaskih ruknova ima 6, prvi je Iftitahi-tekbir.'},
+            {type:'dragDrop',question:'Dopuni sedždu:',template:['Na sedždi učimo','DROP','Rabbijel-','DROP'],words:['Subhane','E\'ala','Allahu','\'Ažim'],correct:['Subhane','E\'ala'],explanation:'Na sedždi: Subhane Rabbijel-E\'ala.'},
+            {type:'dragDrop',question:'Dopuni ruku\':',template:['Na ruku\'u učimo','DROP','Rabbijel-','DROP'],words:['Subhane','\'Ažim','Allahu','E\'ala'],correct:['Subhane','\'Ažim'],explanation:'Na ruku\'u: Subhane Rabbijel-\'Ažim.'},
+            {type:'dragDrop',question:'Dopuni broj namaza:',template:['Dnevnih namaza ima','DROP','Prvi je','DROP'],words:['5.','Sabah','4.','Podne','6.','Akšam'],correct:['5.','Sabah'],explanation:'Dnevnih namaza ima 5, prvi je Sabah.'},
+            {type:'dragDrop',question:'Dopuni gusul:',template:['Gusulskih šartova ima','DROP','Prvi je','DROP'],words:['3.','gargara','4.','istinšak','2.','mesh'],correct:['3.','gargara'],explanation:'Gusulskih šartova ima 3, prvi je gargara.'},
+            {type:'dragDrop',question:'Dopuni prvo stajanje:',template:['Na prvom stajanju prvo učimo','DROP','pa','DROP'],words:['Subhaneke','Euzubillu','Fatihu','Bismillu'],correct:['Subhaneke','Euzubillu'],explanation:'Prvo stajanje: Subhaneke, Euzubillu, Bismillu, Fatiha, Sura.'},
+            {type:'dragDrop',question:'Dopuni kadei-ehire:',template:['Na kadei-ehire učimo','DROP','pa','DROP','pa dove'],words:['Et-Tehijatu,','Salavate,','Fatihu,','Subhaneke,'],correct:['Et-Tehijatu,','Salavate,'],explanation:'Kadei-ehire: Et-Tehijatu, Salavati, Dove.'},
+            {type:'dragDrop',question:'Dopuni kada se ne može klanjati:',template:['Namaz se ne može klanjati u','DROP','vremena:','DROP','sunca, zenit, zalazak'],words:['3','izlazak','4','podne','5','noć'],correct:['3','izlazak'],explanation:'U 3 vremena: izlazak sunca, zenit, zalazak.'},
+            {type:'dragDrop',question:'Dopuni koji rukn:',template:['Iftitahi-tekbir je','DROP','namaski rukn, a Kadei-ehire je','DROP'],words:['prvi','zadnji','drugi','peti','treći','četvrti'],correct:['prvi','zadnji'],explanation:'Iftitahi-tekbir je prvi, Kadei-ehire je zadnji rukn.'},
+            {type:'dragDrop',question:'Dopuni rekat:',template:['Jedan rekat čine:','DROP','+','DROP','+ Ruku\' + Sedžda + Sedžda'],words:['Kijam','Kiraet','Tekbir','Selam'],correct:['Kijam','Kiraet'],explanation:'Jedan rekat: Kijam + Kiraet + Ruku\' + 2x Sedžda.'}
+            ]
+        };
+    </script>
+
+    <!-- Advanced JavaScript Engine -->
+    <script src="../core/quiz-engine-advanced.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 1C - HARD</title>
+    
+    <!-- Osnovni CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+    <!-- Advanced CSS -->
+    <link rel="stylesheet" href="../core/styles-advanced.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 1C - HARD</h1>
+            <p class="subtitle">Dove, Bajrami, Hidžra - Napredni nivo</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+// CHECKBOX (13)
+            {type:'checkbox',question:'Koje dove učimo?',options:['Rabbi jessir','Rabbi zidni ilma','Allahu rabbi','Hasbi rabbi','Kelime-i šehadet'],correct:['Rabbi jessir','Rabbi zidni ilma','Allahu rabbi','Hasbi rabbi'],explanation:'Sve navedene su dove osim Kelime-i šehadeta koja je svjedočenje vjere.'},
+            {type:'checkbox',question:'Koliko dana traju bajrami?',options:['Ramazanski 3 dana','Ramazanski 4 dana','Kurban 3 dana','Kurban 4 dana'],correct:['Ramazanski 3 dana','Kurban 4 dana'],explanation:'Ramazanski bajram traje 3 dana, Kurban-bajram traje 4 dana.'},
+            {type:'checkbox',question:'Šta je tačno o Hidžri?',options:['Dogodila se 622. godine','Preselenje iz Mekke u Medinu','Preselenje iz Medine u Mekku','Od nje počinje islamski kalendar'],correct:['Dogodila se 622. godine','Preselenje iz Mekke u Medinu','Od nje počinje islamski kalendar'],explanation:'Hidžra je preselenje iz Mekke u Medinu 622. godine, od kada počinje hidžretska godina.'},
+            {type:'checkbox',question:'Koliko mjeseci ima hidžretska godina?',options:['10','11','12','13'],correct:['12'],explanation:'Hidžretska godina ima 12 mjeseci.'},
+            {type:'checkbox',question:'Koji su mubarek-dani?',options:['Nova hidžretska godina','Mevlud','Ramazanski bajram','Kurban-bajram','Dženaza'],correct:['Nova hidžretska godina','Mevlud','Ramazanski bajram','Kurban-bajram'],explanation:'Četiri glavna mubarek-dana su: Nova hidžretska godina, Mevlud, Ramazanski bajram i Kurban-bajram.'},
+            {type:'checkbox',question:'Kada se obilježava Ramazanski bajram?',options:['Poslije mjeseca ramazana','Prvi ševvala','Poslije posta','Poslije hadža'],correct:['Poslije mjeseca ramazana','Prvi ševvala','Poslije posta'],explanation:'Ramazanski bajram je prvi dan mjeseca ševvala, poslije mjeseca ramazana i posta.'},
+            {type:'checkbox',question:'Kada se obilježava Kurban-bajram?',options:['Deseti zul-hidžea','Poslije hadža','Poslije posta','Traje 4 dana'],correct:['Deseti zul-hidžea','Poslije hadža','Traje 4 dana'],explanation:'Kurban-bajram počinje 10. zul-hidžea, poslije hadža, i traje 4 dana.'},
+            {type:'checkbox',question:'Kada je rođen Muhammed a.s.?',options:['12. rebiul-evvela','571. godine','U Mekki','U Medini'],correct:['12. rebiul-evvela','571. godine','U Mekki'],explanation:'Muhammed a.s. rođen je 12. rebiul-evvela 571. godine u Mekki.'},
+            {type:'checkbox',question:'Šta učimo na Kurban-bajram?',options:['Tekbirje','Allahu ekber','Fatihu','Salavate'],correct:['Tekbirje','Allahu ekber'],explanation:'Na Kurban-bajram učimo tekbirje koji počinju sa "Allahu ekber...".'},
+            {type:'checkbox',question:'Prvi dan hidžretskog kalendara je:',options:['Petak','Subota','Nedjelja','Ponedjeljak'],correct:['Petak'],explanation:'Prvi dan sedmice hidžretskog kalendara je petak.'},
+            {type:'checkbox',question:'Koliko dana traje hidžretska godina?',options:['355 dana','365 dana','354 dana','366 dana'],correct:['355 dana'],explanation:'Hidžretska (lunarna) godina ima 355 dana.'},
+            {type:'checkbox',question:'Šta radimo na Ramazanski bajram?',options:['Klanjamo bajram-namaz','Idemo na mezarje','Učimo Fatihu','Posjećujemo rodbinu'],correct:['Klanjamo bajram-namaz','Idemo na mezarje','Učimo Fatihu','Posjećujemo rodbinu'],explanation:'Na Ramazanski bajram klanjamo bajram-namaz, idemo na mezarje, učimo Fatihu i posjećujemo rodbinu.'},
+            {type:'checkbox',question:'Što znače ovi izrazi?',options:['Rabbi jessir - olakšaj','Rabbi zidni ilma - proširi znanje','Allahu rabbi - Allah moj Gospodar','Hasbi rabbi - moj učitelj'],correct:['Rabbi jessir - olakšaj','Rabbi zidni ilma - proširi znanje','Allahu rabbi - Allah moj Gospodar'],explanation:'Rabbi jessir = olakšaj, Rabbi zidni ilma = proširi znanje, Allahu rabbi = Allah moj Gospodar.'},
+
+            // REORDER (13)
+            {type:'reorder',question:'Poredaj dovu Rabbi jessir:',items:[{text:'Rabbi jessir',order:1},{text:'ve la tu\'assir',order:2},{text:'Rabbi temmim',order:3},{text:'bil-hajr!',order:4}],explanation:'Rabbi jessir: Gospodaru olakšaj, a ne otežaj, dovrši sa dobrom!'},
+            {type:'reorder',question:'Poredaj dovu Rabbi zidni ilma:',items:[{text:'Rabbi',order:1},{text:'zidni',order:2},{text:'\'ilma',order:3}],explanation:'Rabbi zidni \'ilma: Gospodaru moj, znanje moje proširi!'},
+            {type:'reorder',question:'Poredaj prvih 6 mjeseci hidžretske godine:',items:[{text:'Muharrem',order:1},{text:'Safer',order:2},{text:'Rebiul-evvel',order:3},{text:'Rebiul-ahir',order:4},{text:'Džumadel-ula',order:5},{text:'Džumadel-uhra',order:6}],explanation:'Prvih 6 mjeseci hidžretske godine.'},
+            {type:'reorder',question:'Poredaj drugih 6 mjeseci hidžretske godine:',items:[{text:'Redžeb',order:1},{text:'Ša\'ban',order:2},{text:'Ramazan',order:3},{text:'Ševval',order:4},{text:'Zul-kade',order:5},{text:'Zul-hidže',order:6}],explanation:'Drugih 6 mjeseci hidžretske godine.'},
+            {type:'reorder',question:'Poredaj 4 mubarek-dana:',items:[{text:'Nova hidžretska godina',order:1},{text:'Mevlud',order:2},{text:'Ramazanski bajram',order:3},{text:'Kurban-bajram',order:4}],explanation:'Četiri glavna mubarek-dana po redu kroz hidžretsku godinu.'},
+            {type:'reorder',question:'Poredaj tekbirje (dio):',items:[{text:'Allahu ekber',order:1},{text:'Allahu ekber',order:2},{text:'La ilahe illallahu',order:3},{text:'vallahu ekber',order:4}],explanation:'Tekbirje: Allahu ekber, Allahu ekber, La ilahe illallahu vallahu ekber...'},
+            {type:'reorder',question:'Poredaj dovu Allahu rabbi:',items:[{text:'Allahu rabbi',order:1},{text:'ve Muhammeden nebijji',order:2},{text:'vel-Kur\'anu kitabi',order:3},{text:'vel-islamu dini',order:4}],explanation:'Allahu rabbi po redu.'},
+            {type:'reorder',question:'Poredaj događaje Hidžre:',items:[{text:'Život u Mekki',order:1},{text:'Preselenje',order:2},{text:'Dolazak u Medinu',order:3},{text:'Početak hidžretske godine',order:4}],explanation:'Hronologija događaja oko Hidžre.'},
+            {type:'reorder',question:'Poredaj Hasbi rabbi:',items:[{text:'Hasbi rabbi',order:1},{text:'džellallahu',order:2},{text:'La ilahe illa huve',order:3},{text:'\'alejhi tevekkeltlu',order:4}],explanation:'Dova Hasbi rabbi po redu.'},
+            {type:'reorder',question:'Poredaj radnje na Ramazanski bajram:',items:[{text:'Ujutro pojesti nešto',order:1},{text:'Otići u džamiju',order:2},{text:'Klanjati bajram-namaz',order:3},{text:'Ići na mezarje',order:4}],explanation:'Redoslijed radnji na Ramazanski bajram.'},
+            {type:'reorder',question:'Poredaj dane Ramazanskog bajrama:',items:[{text:'Prvi dan - bajram-namaz',order:1},{text:'Drugi dan - mezarje',order:2},{text:'Treći dan - posjete',order:3}],explanation:'Tri dana Ramazanskog bajrama.'},
+            {type:'reorder',question:'Poredaj dane Kurban-bajrama:',items:[{text:'Prvi dan - bajram-namaz',order:1},{text:'Drugi dan - kurban',order:2},{text:'Treći dan - kurban',order:3},{text:'Četvrti dan - kurban',order:4}],explanation:'Četiri dana Kurban-bajrama.'},
+            {type:'reorder',question:'Poredaj rođenje Muhammeda a.s.:',items:[{text:'Godina 571.',order:1},{text:'Mjesec rebiul-evvel',order:2},{text:'Dan 12.',order:3},{text:'Grad Mekka',order:4}],explanation:'Podaci o rođenju Muhammeda a.s.'},
+
+            // MARK WORDS (13)
+            {type:'markWords',question:'Pronađi greške:',text:'Ramazanski bajram traje 4 dana, a Kurban-bajram traje 3 dana.',words:['Ramazanski','bajram','traje','4','dana,','a','Kurban-bajram','traje','3','dana.'],incorrect:[3,8],explanation:'Ramazanski traje 3 dana (ne 4), Kurban traje 4 dana (ne 3).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Hidžra se dogodila 632. godine. To je preselenje iz Medine u Mekku.',words:['Hidžra','se','dogodila','632.','godine.','To','je','preselenje','iz','Medine','u','Mekku.'],incorrect:[3,9,11],explanation:'Hidžra je 622. godine (ne 632), iz MEKKE (ne Medine) u MEDINU (ne Mekku).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Hidžretska godina ima 10 mjeseci i 365 dana.',words:['Hidžretska','godina','ima','10','mjeseci','i','365','dana.'],incorrect:[3,6],explanation:'Hidžretska godina ima 12 mjeseci (ne 10) i 355 dana (ne 365).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Muhammed a.s. rođen je 10. muharrema 571. godine u Medini.',words:['Muhammed','a.s.','rođen','je','10.','muharrema','571.','godine','u','Medini.'],incorrect:[4,5,9],explanation:'Muhammed a.s. rođen je 12. REBIUL-EVVELA (ne 10. muharrema) u MEKKI (ne Medini).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Ramazanski bajram je 10. ševvala, poslije mjeseca ramazana.',words:['Ramazanski','bajram','je','10.','ševvala,','poslije','mjeseca','ramazana.'],incorrect:[3],explanation:'Ramazanski bajram je 1. ševvala (ne 10.).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Kurban-bajram je 1. zul-hidžea i traje 3 dana.',words:['Kurban-bajram','je','1.','zul-hidžea','i','traje','3','dana.'],incorrect:[2,6],explanation:'Kurban-bajram je 10. zul-hidžea (ne 1.) i traje 4 dana (ne 3).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Prvi dan hidžretskog kalendara je subota. Godina ima 400 dana.',words:['Prvi','dan','hidžretskog','kalendara','je','subota.','Godina','ima','400','dana.'],incorrect:[5,8],explanation:'Prvi dan je PETAK (ne subota), godina ima 355 dana (ne 400).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Mubarek-dana ima tri: Mevlud, Ramazanski bajram i Hidžra.',words:['Mubarek-dana','ima','tri:','Mevlud,','Ramazanski','bajram','i','Hidžra.'],incorrect:[2,7],explanation:'Mubarek-dana ima 4 (ne tri): Nova hidžretska godina, Mevlud, Ramazanski bajram, Kurban-bajram. Hidžra nije mubarek-dan.'},
+            {type:'markWords',question:'Pronađi greške:',text:'Rabbi jessir znači: Gospodaru, otežaj a ne olakšaj!',words:['Rabbi','jessir','znači:','Gospodaru,','otežaj','a','ne','olakšaj!'],incorrect:[4,7],explanation:'Rabbi jessir znači: Gospodaru, OLAKŠAJ (ne otežaj) a ne OTEŽAJ (ne olakšaj)!'},
+            {type:'markWords',question:'Pronađi greške:',text:'Rabbi zidni ilma znači: Gospodaru, smanji moje znanje!',words:['Rabbi','zidni','ilma','znači:','Gospodaru,','smanji','moje','znanje!'],incorrect:[5],explanation:'Rabbi zidni ilma znači: Gospodaru, PROŠIRI (ne smanji) moje znanje!'},
+            {type:'markWords',question:'Pronađi greške:',text:'Na Ramazanski bajram klanjamo dženaza-namaz u džamiji.',words:['Na','Ramazanski','bajram','klanjamo','dženaza-namaz','u','džamiji.'],incorrect:[4],explanation:'Klanjamo BAJRAM-NAMAZ (ne dženaza-namaz).'},
+            {type:'markWords',question:'Pronađi greške:',text:'Tekbirje učimo na Ramazanski bajram tokom sva 3 dana.',words:['Tekbirje','učimo','na','Ramazanski','bajram','tokom','sva','3','dana.'],incorrect:[3,4],explanation:'Tekbirje učimo na KURBAN-bajram (ne Ramazanski) tokom sva 4 dana.'},
+            {type:'markWords',question:'Pronađi greške:',text:'Allahu rabbi znači: Allah je veliki i moćan uvijek.',words:['Allahu','rabbi','znači:','Allah','je','veliki','i','moćan','uvijek.'],incorrect:[5,6,7,8],explanation:'Allahu rabbi znači: Allah moj Gospodar (ne "je veliki i moćan uvijek").'},
+
+            // DRAG DROP (13)
+            {type:'dragDrop',question:'Dopuni bajrame:',template:['Ramazanski bajram traje','DROP','dana, Kurban-bajram traje','DROP','dana'],words:['3','4','2','5'],correct:['3','4'],explanation:'Ramazanski 3 dana, Kurban 4 dana.'},
+            {type:'dragDrop',question:'Dopuni Hidžru:',template:['Hidžra se dogodila','DROP','godine, preselenje iz','DROP','u Medinu'],words:['622.','Mekke','632.','Medine'],correct:['622.','Mekke'],explanation:'Hidžra 622. godine iz Mekke u Medinu.'},
+            {type:'dragDrop',question:'Dopuni hidžretsku godinu:',template:['Hidžretska godina ima','DROP','mjeseci i','DROP','dana'],words:['12','355','10','365'],correct:['12','355'],explanation:'Hidžretska godina: 12 mjeseci, 355 dana.'},
+            {type:'dragDrop',question:'Dopuni Mevlud:',template:['Muhammed a.s. rođen','DROP','rebiul-evvela','DROP','godine'],words:['12.','571.','10.','622.'],correct:['12.','571.'],explanation:'Muhammed a.s. rođen 12. rebiul-evvela 571. godine.'},
+            {type:'dragDrop',question:'Dopuni Rabbi jessir:',template:['Rabbi jessir ve la','DROP','Rabbi temmim','DROP'],words:['tu\'assir,','bil-hajr!','tu\'alim,','bil-ilm!'],correct:['tu\'assir,','bil-hajr!'],explanation:'Rabbi jessir: olakšaj a ne otežaj, dovrši sa dobrom!'},
+            {type:'dragDrop',question:'Dopuni Rabbi zidni ilma:',template:['Rabbi','DROP','\'ilma - Gospodaru,','DROP','moje proširi'],words:['zidni','znanje','jessir','dobro'],correct:['zidni','znanje'],explanation:'Rabbi zidni \'ilma: Gospodaru, znanje moje proširi!'},
+            {type:'dragDrop',question:'Dopuni Ramazanski bajram:',template:['Ramazanski bajram je','DROP','dan mjeseca','DROP'],words:['prvi','ševvala','deseti','ramazana'],correct:['prvi','ševvala'],explanation:'Ramazanski bajram: 1. ševvala.'},
+            {type:'dragDrop',question:'Dopuni Kurban-bajram:',template:['Kurban-bajram je','DROP','dan mjeseca','DROP'],words:['deseti','zul-hidžea','prvi','ševvala'],correct:['deseti','zul-hidžea'],explanation:'Kurban-bajram: 10. zul-hidžea.'},
+            {type:'dragDrop',question:'Dopuni broj mubarek-dana:',template:['Mubarek-dana ima','DROP','Prvi je','DROP'],words:['4.','Nova hidžretska godina','3.','Mevlud','5.','Ramazanski bajram'],correct:['4.','Nova hidžretska godina'],explanation:'Mubarek-dana ima 4, prvi je Nova hidžretska godina.'},
+            {type:'dragDrop',question:'Dopuni mjesece:',template:['Treći mjesec je','DROP','a deveti je','DROP'],words:['Rebiul-evvel','Ramazan','Safer','Ševval'],correct:['Rebiul-evvel','Ramazan'],explanation:'Treći mjesec: Rebiul-evvel, deveti: Ramazan.'},
+            {type:'dragDrop',question:'Dopuni dan hidžretskog kalendara:',template:['Prvi dan sedmice je','DROP','Dan počinje od','DROP','sunca'],words:['petak.','zalaska','subota.','izlaska'],correct:['petak.','zalaska'],explanation:'Prvi dan petak, dan počinje od zalaska sunca.'},
+            {type:'dragDrop',question:'Dopuni tekbirje:',template:['Allahu ekber, Allahu ekber, La ilahe','DROP','vallahu ekber, ve','DROP'],words:['illallahu','lillahil-hamd','elallahu','subhanallah'],correct:['illallahu','lillahil-hamd'],explanation:'Tekbirje: ...La ilahe illallahu vallahu ekber, ve lillahil-hamd.'},
+            {type:'dragDrop',question:'Dopuni Allahu rabbi:',template:['Allahu','DROP','ve Muhammeden','DROP'],words:['rabbi','nebijji','ilahi','resulullah'],correct:['rabbi','nebijji'],explanation:'Allahu rabbi ve Muhammeden nebijji...'}
+            ]
+        };
+    </script>
+
+    <!-- Advanced JavaScript Engine -->
+    <script src="../core/quiz-engine-advanced.js"></script>
+</body>
+</html>
