@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST - Advanced Quiz Engine</title>
+    
+    <!-- Osnovni CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+    <!-- Dodatni CSS za advanced tipove -->
+    <link rel="stylesheet" href="../core/styles-advanced.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>TEST - Advanced Engine</h1>
+            <p class="subtitle">Checkbox • Reorder • Match • Standard</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/8</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/8</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 8,
+            allQuestions: [
+                // ===== STANDARD PITANJA =====
+                {
+                    type: 'standard',  // ili ne moraš navesti, default je standard
+                    question: "Ko je prvi čovjek i poslanik?",
+                    options: ["Adem a.s.", "Nuh a.s.", "Ibrahim a.s.", "Muhammed a.s."],
+                    answer: "Adem a.s.",
+                    explanation: "Adem, alejhis-selam, je bio prvi čovjek i prvi Allahov poslanik."
+                },
+                {
+                    question: "Koliko je Allahovih poslanika poslano?",
+                    options: ["124.000", "313", "25", "1.000"],
+                    answer: "124.000",
+                    explanation: "Allah je poslao 124.000 poslanika, ali samo 25 je spomenuto po imenu u Kur'anu."
+                },
+                
+                // ===== CHECKBOX PITANJA =====
+                {
+                    type: 'checkbox',
+                    question: 'Koje od sljedećih su imanski šarti?',
+                    options: [
+                        'Vjerovanje u Allaha',
+                        'Namaz',
+                        'Vjerovanje u meleke',
+                        'Vjerovanje u knjige',
+                        'Post'
+                    ],
+                    correct: ['Vjerovanje u Allaha', 'Vjerovanje u meleke', 'Vjerovanje u knjige'],
+                    explanation: 'Imanskih šartova ima 6: vjerovanje u Allaha, meleke, knjige, poslanike, Sudnji dan i kader. Namaz i post su islamski šarti.'
+                },
+                {
+                    type: 'checkbox',
+                    question: 'Koje od sljedećih su islamski šarti (stubovi islama)?',
+                    options: [
+                        'Šehadet',
+                        'Vjerovanje u kader',
+                        'Namaz',
+                        'Post',
+                        'Zekat'
+                    ],
+                    correct: ['Šehadet', 'Namaz', 'Post', 'Zekat'],
+                    explanation: 'Islamskih šartova (stubova islama) ima 5: šehadet, namaz, post, zekat i hadž.'
+                },
+                
+                // ===== REORDER PITANJA =====
+                {
+                    type: 'reorder',
+                    question: 'Poredaj pet stubova islama po redu:',
+                    items: [
+                        {text: '1. Šehadet', order: 1},
+                        {text: '2. Namaz', order: 2},
+                        {text: '3. Post', order: 3},
+                        {text: '4. Zekat', order: 4},
+                        {text: '5. Hadž', order: 5}
+                    ],
+                    explanation: 'Pet stubova islama po redu: Šehadet, Namaz, Post, Zekat, Hadž.'
+                },
+                {
+                    type: 'reorder',
+                    question: 'Poredaj šest imanskih šartova po redu:',
+                    items: [
+                        {text: '1. Vjerovanje u Allaha', order: 1},
+                        {text: '2. Vjerovanje u meleke', order: 2},
+                        {text: '3. Vjerovanje u knjige', order: 3},
+                        {text: '4. Vjerovanje u poslanike', order: 4},
+                        {text: '5. Vjerovanje u Sudnji dan', order: 5},
+                        {text: '6. Vjerovanje u kader', order: 6}
+                    ],
+                    explanation: 'Šest imanskih šartova po redu kako se uče.'
+                },
+                
+                // ===== MATCH PITANJA =====
+                {
+                    type: 'match',
+                    question: 'Spoji meleke sa njihovim zadacima:',
+                    pairs: [
+                        {left: 'Džebrail a.s.', right: 'Objava'},
+                        {left: 'Mikail a.s.', right: 'Kiša i berićet'},
+                        {left: 'Israfil a.s.', right: 'Sur (truba)'},
+                        {left: 'Azrail a.s.', right: 'Uzimanje duša'}
+                    ],
+                    explanation: 'Svaki melek ima svoj poseban zadatak od Allaha.'
+                },
+                {
+                    type: 'match',
+                    question: 'Spoji poslanike sa njihovim knjigama:',
+                    pairs: [
+                        {left: 'Musa a.s.', right: 'Tevrat'},
+                        {left: 'Davud a.s.', right: 'Zebur'},
+                        {left: 'Isa a.s.', right: 'Indžil'},
+                        {left: 'Muhammed a.s.', right: 'Kur\'an'}
+                    ],
+                    explanation: 'Četiri velika Allahova poslanika dobila su četiri velike knjige.'
+                }
+            ]
+        };
+    </script>
+
+    <!-- Advanced JavaScript Engine -->
+    <script src="../core/quiz-engine-advanced.js"></script>
+</body>
+</html>
