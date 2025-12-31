@@ -10,6 +10,40 @@ let currentQuestion = 0;
 let score = 0;
 
 /**
+ * Zvučni efekat za odgovore
+ */
+function playSound(isCorrect) {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        if (isCorrect) {
+            // Tačno - prijatan, viši ton (C6 = 1046 Hz)
+            oscillator.frequency.setValueAtTime(1046, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(1568, audioContext.currentTime + 0.1);
+        } else {
+            // Netačno - dublji, negativan ton
+            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.2);
+        }
+        
+        // Volumen fade
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+        // Ako browser ne podržava Web Audio API, ignoriši
+        console.log('Audio nije podržan');
+    }
+}
+
+/**
  * Shuffle array funkcija
  */
 function shuffleArray(array) {
@@ -95,6 +129,9 @@ function showQuestion() {
 function selectAnswer(selected) {
     const q = questions[currentQuestion];
     const isCorrect = selected === q.answer;
+    
+    // Reprodukuj zvuk
+    playSound(isCorrect);
     
     // Ako je tačno, povećaj score
     if (isCorrect) {
