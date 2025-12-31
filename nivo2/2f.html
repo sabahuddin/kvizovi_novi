@@ -210,5 +210,133 @@
 
     <!-- Centralizovani JavaScript Engine -->
     <script src="../core/quiz-engine.js"></script>
+    <!-- MEKTEB AUTO-SAVE - Inline integracija -->
+    <script>
+    console.log('🔌 MEKTEB AUTO-SAVE: Učitan!');
+    
+    // Čekaj da se stranica potpuno učita
+    window.addEventListener('load', function() {
+        console.log('📄 Stranica učitana, aktiviram auto-save...');
+        
+        // Funkcija za spremanje rezultata
+        async function saveMektebResult(score, total, time) {
+            const API_URL = 'https://mekteb.net/wp-json/mekteb/v1';
+            
+            console.log('💾 saveMektebResult pozvan:', {score, total, time});
+            
+            // Provjeri da li je korisnik prijavljen
+            const userData = localStorage.getItem('mektebUser');
+            if (!userData) {
+                console.log('⚠️ Korisnik nije prijavljen - preskačem spremanje');
+                return false;
+            }
+            
+            let user;
+            try {
+                user = JSON.parse(userData);
+                console.log('👤 Prijavljen korisnik:', user.name, '(ID:', user.id + ')');
+            } catch (e) {
+                console.error('❌ Greška pri parsiranju user podataka:', e);
+                return false;
+            }
+            
+            // Detektuj naziv kviza iz URL-a
+            const quizName = window.location.pathname.match(/\/([^\/]+)\.html$/)?.[1]?.toUpperCase() || 'UNKNOWN';
+            console.log('📝 Kviz:', quizName);
+            
+            const payload = {
+                user_id: user.id,
+                quiz: quizName,
+                score: score,
+                total: total,
+                time: time || 0
+            };
+            
+            console.log('📤 Šaljem na API:', payload);
+            
+            try {
+                const response = await fetch(API_URL + '/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                console.log('📥 API Response Status:', response.status);
+                
+                const data = await response.json();
+                console.log('📦 API Response Data:', data);
+                
+                if (data.success) {
+                    console.log('✅ REZULTAT USPJEŠNO SPREMLJEN!');
+                    console.log('   User:', user.name);
+                    console.log('   Kviz:', quizName);
+                    console.log('   Rezultat:', score + '/' + total);
+                    console.log('   Postotak:', Math.round((score/total)*100) + '%');
+                    return true;
+                } else {
+                    console.error('❌ API vratio grešku:', data.message);
+                    return false;
+                }
+            } catch (error) {
+                console.error('🔥 Greška pri slanju na API:', error);
+                return false;
+            }
+        }
+        
+        // Javna funkcija za ručno spremanje
+        window.mektebSave = saveMektebResult;
+        
+        // AUTOMATSKO DETEKTOVANJE REZULTATA
+        let resultSaved = false;
+        let lastSeenScore = '0/20';
+        
+        const observer = new MutationObserver(function(mutations) {
+            const resultScreen = document.getElementById('resultScreen');
+            const resultScore = document.getElementById('resultScore');
+            
+            if (resultScreen && resultScore && 
+                resultScreen.style.display !== 'none' && 
+                !resultSaved) {
+                
+                const scoreText = resultScore.textContent;
+                
+                // Ako se rezultat promijenio i nije 0/20
+                if (scoreText !== lastSeenScore && scoreText !== '0/20') {
+                    console.log('🎯 Rezultat se promijenio:', lastSeenScore, '→', scoreText);
+                    
+                    const match = scoreText.match(/(\d+)\/(\d+)/);
+                    if (match) {
+                        const score = parseInt(match[1]);
+                        const total = parseInt(match[2]);
+                        
+                        // Validacija: score mora biti > 0 ili ako je stvarno 0 onda total > 0
+                        if (score > 0 || (score === 0 && total > 0 && scoreText !== '0/20')) {
+                            console.log('✅ Detektovan finalni rezultat:', score + '/' + total);
+                            
+                            resultSaved = true;
+                            saveMektebResult(score, total, 0);
+                        }
+                    }
+                }
+                
+                lastSeenScore = scoreText;
+            }
+        });
+        
+        // Posmatraj cijeli body
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['style'],
+            characterData: true  // Prati promjene u tekstualnom sadržaju
+        });
+        
+        console.log('✅ Auto-save modul aktivan!');
+        console.log('   📌 Za ručno spremanje: window.mektebSave(score, total, time)');
+    });
+    </script>
 </body>
 </html>
