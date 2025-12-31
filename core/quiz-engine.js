@@ -1,7 +1,7 @@
 /**
  * MEKTEB.NET - Quiz Engine
  * Univerzalna logika za sve kvizove
- * Verzija: 1.0
+ * Verzija: 1.1 (sa audio fajlovima)
  */
 
 // Globalne varijable
@@ -11,35 +11,21 @@ let score = 0;
 
 /**
  * Zvučni efekat za odgovore
+ * Koristi audio fajlove iz assets/sounds/
  */
 function playSound(isCorrect) {
     try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        if (isCorrect) {
-            // Tačno - prijatan, viši ton (C6 = 1046 Hz)
-            oscillator.frequency.setValueAtTime(1046, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(1568, audioContext.currentTime + 0.1);
-        } else {
-            // Netačno - dublji, negativan ton
-            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.2);
-        }
-        
-        // Volumen fade
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.3);
+        const audio = new Audio(
+            isCorrect 
+                ? '../assets/sounds/correct.mp3' 
+                : '../assets/sounds/wrong.mp3'
+        );
+        audio.volume = 0.5; // 50% volumena
+        audio.play().catch(err => {
+            console.log('Audio reprodukcija blokirana:', err);
+        });
     } catch (error) {
-        // Ako browser ne podržava Web Audio API, ignoriši
-        console.log('Audio nije podržan');
+        console.log('Audio greška:', error);
     }
 }
 
