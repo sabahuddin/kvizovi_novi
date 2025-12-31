@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 3B</title>
+    
+    <!-- Centralizovani CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 3B</h1>
+            <p class="subtitle">Ahlak i Zabrane</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+                // DA/NE PITANJA (15)
+            {
+                question: "Alkohol je Poslanik, a.s., nazvao 'majkom svih zala'.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Poslanik, a.s., je alkohol nazvao 'majkom svih zala' jer ima negativan utjecaj na sve nepovredive vrijednosti u islamu."
+            },
+                {
+                question: "Islam dozvoljava konzumiranje alkohola u svrhu liječenja.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Poslanik, a.s., je rekao: 'Allah je dao i bolest i lijek, pa se liječite, ali ne zabranjenim stvarima.'"
+            },
+                {
+                question: "Kockanje i kladionice su zabranjene u islamu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Allah, dž.š., kaže: 'Vino i kocka... su odvratne stvari, šejtanovo djelo; zato se toga klonite.' (El-Maide, 90)"
+            },
+                {
+                question: "Kvizovi se ubrajaju u kocku jer se baziraju na sreći.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Kvizovi se NE ubrajaju u kocku jer se baziraju na ZNANJU, a ne na sreći."
+            },
+                {
+                question: "Ogovaranje (gibet) je u Kur'anu uporedeno sa jedenjem mesa mrtvog brata.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Allah u suri El-Hudžurat kaže: 'Zar bi nekom od vas bilo drago da jede meso svog umrlog brata?'"
+            },
+                {
+                question: "Oholost (kibur) je pohvalna osobina u islamu.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Oholost je pokuđena osobina. Poslanik, a.s., je rekao: 'U Džennet neće ući onaj u čijem srcu bude koliko trun oholosti.'"
+            },
+                {
+                question: "Hidžab je obavezan samo za udate žene.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Hidžab je obavezan za sve punoljetne muslimanke, bez obzira na bračni status."
+            },
+                {
+                question: "Duhan je potpuno zabranjen (haram) u islamu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Savremeni islamski učenjaci su zaključili da je duhan haram jer šteti zdravlju, a sve što šteti je zabranjeno."
+            },
+                {
+                question: "Musliman može sjediti za stolom na kojem se poslužuje alkohol.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Poslanik, a.s., je rekao: 'Ko vjeruje u Allaha i Sudnji dan neka ne sjeda za stol na kome kruže čaše s alkoholom.'"
+            },
+                {
+                question: "Čuvanje prirode i ekologija su dio islama.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Musliman je najbolji ekolog. Poslanik, a.s., je rekao: 'Kad god musliman zasadi biljku, imat će nagradu...'"
+            },
+                {
+                question: "Horoskop je dozvoljen muslimanu jer je samo zabava.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Vjerovanje u horoskop je zabranjeno jer je to oblik proricanja sudbine (gajba), a znanje o gajbu ima samo Allah."
+            },
+                {
+                question: "Zavist (hased) je pozitivna osobina ako nas motivira na dobro.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Zavist je negativna osobina koja uništava dobra djela. Poslanik, a.s., je rekao: 'Zavist jede dobra djela kao što vatra jede drva.'"
+            },
+                {
+                question: "Rodbinske veze (silei-rahim) su važne u islamu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Čuvanje rodbinskih veza je veoma važno. Allah, dž.š., kaže: '...i rodbinske veze ne kidajte!' (En-Nisa, 1)"
+            },
+                {
+                question: "Internet je u potpunosti zabranjen u islamu.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Internet sam po sebi nije zabranjen, ali je zabranjeno korištenje interneta za haram svrhe. Ovisnost o internetu je štetna."
+            },
+                {
+                question: "Poslanik, a.s., je prokleo deset kategorija osoba vezanih za alkohol.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Poslanik je prokleo: proizvođača, naručioca, konzumenta, distributera, skladištara, poslužitelja, prodavca, korisnika zarade, kupca i onoga kome se kupuje."
+            },
+            
+            // VIŠESTRUKI IZBOR (15)
+            {
+                question: "Koja je prva faza kur'anske zabrane alkohola?",
+                options: ["Potpuna zabrana", "Zabrana pri namazu", "Stavljanje u ravan sa štetnim stvarima", "Upozorenje na posljedice"],
+                answer: "DA",
+                explanation: "Prva faza: alkohol se spominje odvojeno od 'hrane prijatne', ukazujući da nije dobar (En-Nahl, 67)."
+            },
+                {
+                question: "U kojoj suri je objavljena potpuna zabrana alkohola?",
+                options: ["El-Bekare", "En-Nisa", "El-Maide", "El-Enfal"],
+                answer: "El-Maide",
+                explanation: "Potpuna zabrana alkohola objavljena je u suri El-Maide (ajeti 90-91)."
+            },
+                {
+                question: "Koja osobina NE pripada osobinama munafika (licemjera)?",
+                options: ["Laže kada govori", "Ispunjava obećanja", "Iznevjerava povjereno", "Prelazi granice u svađi"],
+                answer: "Ispunjava obećanja",
+                explanation: "Osobine munafika su: laže, NE ispunjava obećanja, iznevjerava i prelazi granice. 'Ispunjava obećanja' je pozitivna osobina."
+            },
+                {
+                question: "Koliko kategorija osoba je Poslanik, a.s., prokleo u vezi s alkoholom?",
+                options: ["Pet", "Sedam", "Deset", "Dvanaest"],
+                answer: "Deset",
+                explanation: "Poslanik, a.s., je prokleo DESET kategorija: proizvođač, naručilac, konzument, distributer, skladištar, poslužitelj, prodavac, korisnik zarade, kupac i onaj kome se kupuje."
+            },
+                {
+                question: "Šta Allah, dž.š., želi postići zabranom kocke i alkohola?",
+                options: ["Da nas učini tužnima", "Da spriječi neprijateljstvo i mržnju među ljudima", "Da nas kazni", "Da nam ograniči slobodu"],
+                answer: "Da spriječi neprijateljstvo i mržnju među ljudima",
+                explanation: "Allah kaže: 'Šejtan želi da pomoću vina i kocke unese među vas neprijateljstvo i mržnju...' (El-Maide, 91)"
+            },
+                {
+                question: "Koja životinja je Poslanik, a.s., posebno preporučio da se čuva?",
+                options: ["Konj", "Mačka", "Pas", "Ovca"],
+                answer: "Mačka",
+                explanation: "Poslanik, a.s., je volio mačke i preporučio lijepo postupanje prema njima."
+            },
+                {
+                question: "Šta je rija' (pretvaranje)?",
+                options: ["Veliki širk", "Mali širk", "Kufr", "Nifak"],
+                answer: "Mali širk",
+                explanation: "Rija' je mali širk - činjenje dobrih djela radi pokazivanja pred ljudima, a ne radi Allahovog zadovoljstva."
+            },
+                {
+                question: "Koja vrijednost u islamu štiti razum od uništenja?",
+                options: ["Zabrana alkohola i droge", "Zabrana krađe", "Zabrana laži", "Zabrana ogovaranja"],
+                answer: "Zabrana alkohola i droge",
+                explanation: "Zabrana alkohola i droge štiti razum - jednu od pet nepovredivih vrijednosti u islamu."
+            },
+                {
+                question: "Koja je prva od pet nepovredivih vrijednosti u islamu?",
+                options: ["Imetak", "Razum", "Vjera", "Potomstvo"],
+                answer: "Vjera",
+                explanation: "Pet nepovredivih vrijednosti: vjera, život, razum, čast/potomstvo i imetak."
+            },
+                {
+                question: "Šta islam preporučuje kao lijek protiv zavisti?",
+                options: ["Ignorisanje", "Dova za onoga kome zavidimo", "Izbjegavanje te osobe", "Takmičenje"],
+                answer: "Dova za onoga kome zavidimo",
+                explanation: "Islam preporučuje da učimo dovu za onoga kome zavidimo, jer dova briše zavist iz srca."
+            },
+                {
+                question: "Šta znači riječ 'gibet'?",
+                options: ["Laž", "Ogovaranje", "Zavist", "Oholost"],
+                answer: "Ogovaranje",
+                explanation: "Gibet je ogovaranje - govorenje o odsutnoj osobi ono što bi joj bilo mrsko da čuje."
+            },
+                {
+                question: "Koja je razlika između gibeta i potvore (buhtan)?",
+                options: ["Nema razlike", "Gibet je istina, buhtan je laž", "Gibet je laž, buhtan je istina", "Gibet je javno, buhtan je tajno"],
+                answer: "Gibet je istina",
+                explanation: "Gibet je govorenje istine o osobi što joj je mrsko, a buhtan je LAGANJE o osobi."
+            },
+                {
+                question: "Koji je islamski propis o igranju šaha za novac?",
+                options: ["Dozvoljeno", "Zabranjeno (kocka)", "Mekruh", "Mustehab"],
+                answer: "Zabranjeno (kocka)",
+                explanation: "Šah, tavla i karte ako se igraju ZA NOVAC ubrajaju se u kocku i zabranjeni su."
+            },
+                {
+                question: "Šta je mahrem?",
+                options: ["Vrsta namaza", "Osoba s kojom je zabranjen brak", "Vrsta posta", "Islamska dužnost"],
+                answer: "Osoba s kojom je zabranjen brak",
+                explanation: "Mahrem je osoba s kojom je zabranjen brak (otac, brat, sin...) i s kojom žena može putovati."
+            },
+                {
+                question: "Koji je propis o prodaji alkohola za muslimana?",
+                options: ["Dozvoljeno", "Zabranjeno", "Mekruh", "Mustehab"],
+                answer: "Zabranjeno",
+                explanation: "Prodaja alkohola je zabranjena. Poslanik, a.s., je prokleo i prodavca alkohola."
+            },
+            
+            // PAMETNA PITANJA (70)
+            {
+                question: "IZBACI ULJEZA: Koja od navedenih NIJE pohvalna osobina?",
+                options: ["Iskrenost", "Strpljivost", "Oholost", "Pravednost"],
+                answer: "Zabranjeno",
+                explanation: "Oholost (kibur) je pokuđena osobina. Iskrenost, strpljivost i pravednost su pohvalne vrline."
+            },
+                {
+                question: "KO SAM JA? Ja sam grijeh koji uništava dobra djela kao što vatra jede drva.",
+                options: ["Laž", "Zavist", "Oholost", "Ogovaranje"],
+                answer: "Zavist",
+                explanation: "Poslanik, a.s., je rekao: 'Zavist jede dobra djela kao što vatra jede drva.'"
+            },
+                {
+                question: "DOPUNI: Alkohol : razum = Kocka : ___",
+                options: ["Zdravlje", "Imetak", "Vjera", "Čast"],
+                answer: "Imetak",
+                explanation: "Alkohol uništava razum, a kocka uništava imetak (i uzrokuje mržnju među ljudima)."
+            },
+                {
+                question: "ANALOGIJA: Ogovaranje : mrtvog brata = Zavist : ___",
+                options: ["Vatra koja jede drva", "More koje guta brodove", "Zmija koja ujeda", "Mač koji siječe"],
+                answer: "Vatra koja jede drva",
+                explanation: "Ogovaranje je kao jedenje mesa mrtvog brata, a zavist jede dobra djela kao vatra drva."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Droga, alkohol, duhan, kocka",
+                options: ["Dozvoljene stvari", "Zabranjene (haram) stvari", "Mekruh stvari", "Mustehab stvari"],
+                answer: "Zabranjene (haram) stvari",
+                explanation: "Sve navedeno je zabranjeno (haram) u islamu jer nanosi štetu pojedincu i društvu."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Alkohol je zabranjen odjednom, jednim ajetom.'",
+                options: ["Zabranjen je postepeno u fazama", "Zabranjen je samo muškarcima", "Nema greške", "Zabranjen je samo za vrijeme namaza"],
+                answer: "Zabranjen je postepeno u fazama",
+                explanation: "Alkohol je zabranjen POSTEPENO u više faza/ajeta, pokazujući kur'ansku pedagogiju."
+            },
+                {
+                question: "KO SAM JA? Ja sam jedna od pet nepovredivih vrijednosti u islamu koju štiti zabrana alkohola.",
+                options: ["Vjera", "Život", "Razum", "Imetak"],
+                answer: "Razum",
+                explanation: "Zabrana alkohola i droge štiti RAZUM - jednu od pet nepovredivih vrijednosti."
+            },
+                {
+                question: "SITUACIJA: Ahmed prodaje alkohol u svojoj prodavnici, ali sam ga ne pije. Je li to dozvoljeno?",
+                options: ["Da, jer ga ne pije", "Ne, prodaja alkohola je zabranjena", "Da, ako daje sadaku", "Samo ako prodaje nemuslimanima"],
+                answer: "jer ga ne pije",
+                explanation: "Poslanik, a.s., je prokleo i PRODAVCA alkohola. Prodaja je zabranjena bez obzira pije li osoba ili ne."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE spada u osobine munafika?",
+                options: ["Laže kada govori", "Čuva povjereno", "Ne ispunjava obećanja", "Prelazi granice u svađi"],
+                answer: "Čuva povjereno",
+                explanation: "Munafik IZNEVJERAVA povjereno, ne čuva ga. Čuvanje povjerenog je pozitivna osobina."
+            },
+                {
+                question: "DOPUNI NIZ: Vjera, život, razum, ___",
+                options: ["Imetak", "Čast/potomstvo", "Zdravlje", "Znanje"],
+                answer: "Čast/potomstvo",
+                explanation: "Pet nepovredivih vrijednosti: vjera, život, razum, ČAST/POTOMSTVO, imetak."
+            },
+                {
+                question: "ANALOGIJA: Gibet : istina = Buhtan : ___",
+                options: ["Istina", "Laž", "Pretvaranje", "Oholost"],
+                answer: "Laž",
+                explanation: "Gibet je govorenje ISTINE o osobi što joj je mrsko, buhtan je LAGANJE o osobi."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Iskrenost, strpljivost, pravednost, darežljivost",
+                options: ["Grijesi", "Pohvalne vrline (ahlak)", "Osobine munafika", "Allahova imena"],
+                answer: "Pohvalne vrline (ahlak)",
+                explanation: "Sve navedeno su pohvalne vrline koje islam preporučuje."
+            },
+                {
+                question: "KO SAM JA? Ja sam osobina koju Poslanik, a.s., opisuje: 'U Džennet neće ući onaj u čijem srcu bude koliko trun od mene.'",
+                options: ["Zavist", "Oholost", "Mržnja", "Škrtost"],
+                answer: "Oholost",
+                explanation: "Poslanik, a.s., je rekao: 'U Džennet neće ući onaj u čijem srcu bude koliko trun OHOLOSTI.'"
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Nagradne igre u prodavnicama su zabranjene kao i lutrija.'",
+                options: ["Nagradne igre nisu kocka jer niko ne gubi", "Obje su zabranjene", "Nema greške", "Obje su dozvoljene"],
+                answer: "Nagradne igre nisu kocka jer niko ne gubi",
+                explanation: "Nagradne igre uz račun NISU kocka jer u njima niko ne gubi - samo neki dobijaju, za razliku od lutrije."
+            },
+                {
+                question: "SITUACIJA: Amira saznaje tajnu o prijateljici i kaže je drugima. Šta je počinila?",
+                options: ["Ništa loše", "Ogovaranje (gibet)", "Izdaju povjerenja i ogovaranje", "Laž"],
+                answer: "Izdaju povjerenja i ogovaranje",
+                explanation: "Amira je izdala povjerenje (emanet) I počinila ogovaranje (gibet) - dva grijeha."
+            },
+                {
+                question: "DOPUNI: Škrtost : ne daje = Rasipništvo : ___",
+                options: ["Štedi", "Daje s mjerom", "Troši bez mjere", "Čuva"],
+                answer: "Troši bez mjere",
+                explanation: "Škrtost je ne davati, a rasipništvo je trošiti bez mjere. Islam preporučuje umjerenost."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada kur'anskim fazama zabrane alkohola?",
+                options: ["Odvajanje od 'hrane prijatne'", "Potpuna zabrana", "Zabrana pri namazu", "Dozvoljavanje u malim količinama"],
+                answer: "Dozvoljavanje u malim količinama",
+                explanation: "Alkohol NIKADA nije bio dozvoljen u malim količinama. Faze su bile: odvajanje, šteta veća od koristi, zabrana pri namazu, potpuna zabrana."
+            },
+                {
+                question: "KO SAM JA? Ja sam islamski pojam za čuvanje rodbinskih veza.",
+                options: ["Silei-rahim", "Gibet", "Buhtan", "Rija'"],
+                answer: "Silei-rahim",
+                explanation: "Silei-rahim znači čuvanje rodbinskih veza, što je veoma važno u islamu."
+            },
+                {
+                question: "ANALOGIJA: Šah za novac : kocka = Šah bez novca : ___",
+                options: ["Kocka", "Dozvoljeno (ako ne odvraća od namaza)", "Haram", "Vadžib"],
+                answer: "Dozvoljeno (ako ne odvraća od namaza)",
+                explanation: "Šah za novac je kocka (haram), ali šah bez novca je dozvoljen ako ne odvraća od namaza i obaveza."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Otac, djed, brat, sin",
+                options: ["Nasljednici", "Mahremi za ženu", "Obveznici zekata", "Svjedoci braka"],
+                answer: "Mahremi za ženu",
+                explanation: "Ovo su mahremi za ženu - muškarci s kojima je trajno zabranjen brak i s kojima može putovati."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Duhan je mekruh, ali nije haram.'",
+                options: ["Duhan je haram po savremenim učenjacima", "Duhan je halal", "Nema greške", "Duhan je vadžib"],
+                answer: "Duhan je haram po savremenim učenjacima",
+                explanation: "Savremeni islamski učenjaci su zaključili da je duhan HARAM jer dokazano šteti zdravlju."
+            },
+                {
+                question: "SITUACIJA: Mustafa gleda horoskop 'samo iz zabave'. Je li to dozvoljeno?",
+                options: ["Da, ako ne vjeruje", "Ne, čak i gledanje je pokuđeno", "Da, ako ne plaća", "Samo ako je mjesečni"],
+                answer: "ako ne vjeruje",
+                explanation: "Čak i gledanje horoskopa 'iz zabave' je pokuđeno jer vodi ka vjerovanju u proricanje gajba."
+            },
+                {
+                question: "DOPUNI NIZ: Gibet, buhtan, nemima, ___",
+                options: ["Sadaka", "Hased (zavist)", "Namaz", "Post"],
+                answer: "Hased (zavist)",
+                explanation: "Sve navedeno su grijesi vezani za jezik i srce: ogovaranje, potvora, prenošenje tuđih riječi, zavist."
+            },
+                {
+                question: "KO SAM JA? Ja sam pojam koji označava prenošenje tuđih riječi s ciljem zavađanja.",
+                options: ["Gibet", "Buhtan", "Nemima", "Rija'"],
+                answer: "Nemima",
+                explanation: "Nemima je prenošenje tuđih riječi s ciljem zavađanja ljudi."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE ubraja se u kocku?",
+                options: ["Loto", "Kladionica", "Kviz", "Bingo"],
+                answer: "Kviz",
+                explanation: "Kviz se ne ubraja u kocku jer se bazira na ZNANJU, ne na sreći."
+            },
+                {
+                question: "ANALOGIJA: Životinje : pažljivo postupanje = Šume : ___",
+                options: ["Sječa", "Čuvanje i obnavljanje", "Ignoriranje", "Uništavanje"],
+                answer: "Čuvanje i obnavljanje",
+                explanation: "Islam naučava pažljivo postupanje sa životinjama i čuvanje/obnavljanje šuma i prirode."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Škrtost, rasipništvo, oholost, zavist",
+                options: ["Pohvalne osobine", "Pokuđene osobine (poroci)", "Allahova imena", "Vrste namaza"],
+                answer: "Pokuđene osobine (poroci)",
+                explanation: "Sve navedeno su pokuđene osobine (poroci) od kojih se musliman treba čuvati."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Islam potpuno zabranjuje korištenje interneta.'",
+                options: ["Internet je dozvoljen uz ispravno korištenje", "Nema greške", "Internet je vadžib", "Internet je haram"],
+                answer: "Internet je dozvoljen uz ispravno korištenje",
+                explanation: "Internet sam po sebi nije zabranjen. Zabranjena je zloupotreba interneta za haram svrhe."
+            },
+                {
+                question: "SITUACIJA: Fatima zavidi komšinici na novom autu. Kako da se riješi zavisti?",
+                options: ["Da ignoriše komšinicu", "Da uči dovu za komšinicu", "Da kupi bolji auto", "Da se žali drugima"],
+                answer: "Da uči dovu za komšinicu",
+                explanation: "Islam preporučuje učenje dove za osobu kojoj se zavidi - dova briše zavist iz srca."
+            },
+                {
+                question: "DOPUNI: Poštovanje roditelja : obaveza = Kidanje rodbinskih veza : ___",
+                options: ["Preporuka", "Veliki grijeh", "Mekruh", "Dozvoljeno"],
+                answer: "Veliki grijeh",
+                explanation: "Poštovanje roditelja je obaveza, a kidanje rodbinskih veza je VELIKI GRIJEH."
+            },
+                {
+                question: "KO SAM JA? Ja sam osoba čije je srce puno mržnje i koja stalno želi zlo drugima.",
+                options: ["Muhsin", "Zahid", "Hasid (zavidnik)", "Sadik"],
+                answer: "Hasid (zavidnik)",
+                explanation: "Hasid je zavidnik - osoba koja zavidi i želi da drugi izgube blagodati."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE štiti islam kao nepovredivu vrijednost?",
+                options: ["Vjera", "Bogatstvo", "Razum", "Čast"],
+                answer: "Bogatstvo",
+                explanation: "Islam štiti IMETAK, ne bogatstvo per se. Pet vrijednosti: vjera, život, razum, čast/potomstvo, imetak."
+            },
+                {
+                question: "ANALOGIJA: Komšija : prava = Roditelj : ___",
+                options: ["Imetak", "Dobročinstvo (birrul-validejn)", "Zekat", "Hadž"],
+                answer: "Dobročinstvo (birrul-validejn)",
+                explanation: "Komšija ima prava, a prema roditeljima se duguje dobročinstvo (birrul-validejn)."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Prodavač, kupac, konzument, distributer alkohola",
+                options: ["Svi su dozvoljeni", "Svi su prokleti od Poslanika", "Samo konzument je grješan", "Samo prodavač je grješan"],
+                answer: "Svi su prokleti od Poslanika",
+                explanation: "Poslanik, a.s., je prokleo SVE koji imaju doticaja s alkoholom - 10 kategorija."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Ogovaranje je dozvoljeno ako govorimo istinu.'",
+                options: ["Ogovaranje je haram čak i kada je istina", "Nema greške", "Istina je uvijek dozvoljena", "Ogovaranje je mekruh"],
+                answer: "Ogovaranje je haram čak i kada je istina",
+                explanation: "Ogovaranje (gibet) je HARAM čak i kada govorimo istinu - to je upravo definicija gibeta."
+            },
+                {
+                question: "SITUACIJA: Kemal igra online igrice 8 sati dnevno i propušta namaze. Koji je propis?",
+                options: ["Dozvoljeno ako su igrice halal", "Haram zbog zanemarivanja namaza", "Mekruh", "Potpuno dozvoljeno"],
+                answer: "Haram zbog zanemarivanja namaza",
+                explanation: "Sve što odvraća od namaza i obaveza postaje haram, uključujući i pretjeranu igru."
+            },
+                {
+                question: "DOPUNI NIZ: Pravda, istina, emanet, ___",
+                options: ["Laž", "Iskrenost", "Zavist", "Oholost"],
+                answer: "Iskrenost",
+                explanation: "Pravda, istina, emanet (povjerenje) i iskrenost su pohvalne vrline."
+            },
+                {
+                question: "KO SAM JA? Ja sam osobina suprotna oholosti i preporučena u islamu.",
+                options: ["Škrtost", "Poniznost", "Zavist", "Srdžba"],
+                answer: "Poniznost",
+                explanation: "Poniznost (tevadu') je suprotna oholosti i veoma je pohvalna u islamu."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada pravima komšije?",
+                options: ["Da ga posjetimo kad je bolestan", "Da mu pomognemo kad treba", "Da ga ogovaramo", "Da mu ne smetamo"],
+                answer: "Da ga ogovaramo",
+                explanation: "Ogovaranje komšije nije pravo već GRIJEH. Komšija ima pravo na posjetu, pomoć, neuznemiravanje..."
+            },
+                {
+                question: "ANALOGIJA: Stariji : poštovanje = Mlađi : ___",
+                options: ["Ignoriranje", "Milost i briga", "Strogost", "Zavist"],
+                answer: "Milost i briga",
+                explanation: "Prema starijima dugujemo poštovanje, a prema mlađima milost i brigu."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Zem-Zem, Hadžerul-esved, Kaba, Safa i Merva",
+                options: ["Mjesta u Medini", "Sveta mjesta u Mekki", "Vrste namaza", "Allahova imena"],
+                answer: "Sveta mjesta u Mekki",
+                explanation: "Sve navedeno su sveta mjesta u Mekki vezana za hadž."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Mržnja prema drugim muslimanima je dozvoljena ako su nam učinili nešto loše.'",
+                options: ["Mržnja je zabranjena, treba oprostiti", "Nema greške", "Mržnja je vadžib", "Mržnja je mustehab"],
+                answer: "Mržnja je zabranjena",
+                explanation: "Mržnja je zabranjena. Islam preporučuje opraštanje i pomirenje među muslimanima."
+            },
+                {
+                question: "SITUACIJA: Lejla nosi hidžab samo kada ide u džamiju. Je li to ispravno?",
+                options: ["Da, dovoljno je u džamiji", "Ne, hidžab je obavezan pred svim nenahremima", "Da, ako klanja sve namaze", "Samo ako je udata"],
+                answer: "dovoljno je u džamiji",
+                explanation: "Hidžab je obavezan pred svim muškarcima koji nisu mahremi, ne samo u džamiji."
+            },
+                {
+                question: "DOPUNI: Alkohol : hamr = Kocka : ___",
+                options: ["Harb", "Mejsir", "Širk", "Nifak"],
+                answer: "Mejsir",
+                explanation: "Arapski naziv za alkohol je HAMR, a za kocku je MEJSIR."
+            },
+                {
+                question: "KO SAM JA? Ja sam osoba koja se pretvara da je vjernik, a u srcu skriva nevjerovanje.",
+                options: ["Kafir", "Mušrik", "Munafik", "Fasik"],
+                answer: "Munafik",
+                explanation: "Munafik (licemjer) je osoba koja pokazuje vjerovanje, ali u srcu skriva nevjerovanje."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE šteti razumu?",
+                options: ["Alkohol", "Droga", "Znanje", "Kocka"],
+                answer: "Znanje",
+                explanation: "Znanje KORISTI razumu. Alkohol, droga i kocka štete razumu i drugim vrijednostima."
+            },
+                {
+                question: "ANALOGIJA: Sadnja drveća : nagrada = Uništavanje prirode : ___",
+                options: ["Nagrada", "Grijeh", "Ništa", "Pohvala"],
+                answer: "Grijeh",
+                explanation: "Sadnja drveća donosi nagradu do Sudnjeg dana, a uništavanje prirode je grijeh."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Baba, mama, djed, nana",
+                options: ["Mahremi", "Obveznici zekata", "Svjedoci braka", "Roditelji kojima se duguje dobročinstvo"],
+                answer: "Roditelji kojima se duguje dobročinstvo",
+                explanation: "Baba, mama, djed i nana su roditelji (direktni i preci) kojima se duguje dobročinstvo."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Duhan je dozvoljen jer nije spomenut u Kur'anu.'",
+                options: ["Zabranjen je na osnovu općeg principa zabrane štete", "Nema greške", "Dozvoljen je u malim količinama", "Dozvoljen je za muškarce"],
+                answer: "Zabranjen je na osnovu općeg principa zabrane štete",
+                explanation: "Duhan je zabranjen na osnovu principa: 'Sve što šteti je zabranjeno', iako nije direktno spomenut."
+            },
+                {
+                question: "SITUACIJA: Haris čuje kako prijatelji ogovaraju kolegu. Šta treba učiniti?",
+                options: ["Slušati tiho", "Pridružiti se", "Braniti odsutnog i upozoriti prijatelje", "Otići i ne reći ništa"],
+                answer: "Braniti odsutnog i upozoriti prijatelje",
+                explanation: "Islam naučava da se brani odsutna osoba i da se upozori na grijeh ogovaranja."
+            },
+                {
+                question: "DOPUNI NIZ: Škrtost, zavist, oholost, ___",
+                options: ["Darežljivost", "Mržnja", "Poniznost", "Strpljivost"],
+                answer: "Mržnja",
+                explanation: "Sve navedeno su poroci: škrtost, zavist, oholost i MRŽNJA."
+            },
+                {
+                question: "KO SAM JA? Ja sam osobina koju Allah posebno voli i koja je suprotna škrtosti.",
+                options: ["Rasipništvo", "Darežljivost", "Oholost", "Zavist"],
+                answer: "Darežljivost",
+                explanation: "Darežljivost je suprotna škrtosti i Allah je voli. Rasipništvo je drugi ekstrem koji je također loš."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada kategorijama kojima se daje zekat?",
+                options: ["Siromasi", "Bogataši", "Putnici", "Zaduženi"],
+                answer: "Bogataši",
+                explanation: "Bogataši NE primaju zekat. Zekat se daje: siromašnima, putnicima, zaduženim i drugim kategorijama iz sure Et-Tevbe."
+            },
+                {
+                question: "ANALOGIJA: Gibet : jezik = Hased : ___",
+                options: ["Ruke", "Noge", "Srce", "Oči"],
+                answer: "Srce",
+                explanation: "Gibet (ogovaranje) je grijeh jezika, a hased (zavist) je grijeh SRCA."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Loto, bingo, srećke, kladionice",
+                options: ["Dozvoljene igre", "Igre na sreću (kocka)", "Kvizovi", "Halal zabava"],
+                answer: "Igre na sreću (kocka)",
+                explanation: "Sve navedeno su igre na sreću (kocka) koje su zabranjene u islamu."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Poslanik, a.s., je prokleo samo onoga ko pije alkohol.'",
+                options: ["Prokleo je 10 kategorija vezanih za alkohol", "Nema greške", "Prokleo je samo prodavca", "Nije nikoga prokleo"],
+                answer: "Prokleo je 10 kategorija vezanih za alkohol",
+                explanation: "Poslanik, a.s., je prokleo DESET kategorija: proizvođača, naručioca, konzumenta, distributera, skladištara, poslužitelja, prodavca, korisnika zarade, kupca i onoga kome se kupuje."
+            },
+                {
+                question: "SITUACIJA: Ahmed vidi da mu prijatelj konzumira drogu. Šta treba učiniti?",
+                options: ["Ignorisati", "Pridružiti se", "Posavjetovati ga i pomoći mu da prestane", "Prijaviti policiji"],
+                answer: "Posavjetovati ga i pomoći mu da prestane",
+                explanation: "Islam naučava da savjetujemo i pomažemo braći koja su u grijehu da se vrate pravom putu."
+            },
+                {
+                question: "DOPUNI: Tuba : rajsko drvo = Zekkum : ___",
+                options: ["Rajska rijeka", "Drvo u Džehennemu", "Vrsta voća", "Allahovo ime"],
+                answer: "Drvo u Džehennemu",
+                explanation: "Tuba je drvo u Džennetu, a Zekkum je drvo u Džehennemu čiji plodovi su kazna."
+            },
+                {
+                question: "KO SAM JA? Ja sam pojam koji označava činjenje dobrih djela samo da bi nas drugi vidjeli i pohvalili.",
+                options: ["Ihsan", "Rija'", "Ihlas", "Tawakkul"],
+                answer: "Rija",
+                explanation: "Rija' (pretvaranje) je činjenje dobrih djela radi pokazivanja pred ljudima - mali širk."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada pet nepovredivih vrijednosti?",
+                options: ["Vjera", "Zabava", "Razum", "Imetak"],
+                answer: "Zabava",
+                explanation: "Pet nepovredivih vrijednosti: vjera, život, razum, čast/potomstvo, imetak. ZABAVA nije od njih."
+            },
+                {
+                question: "ANALOGIJA: Birrul-validejn : roditelji = Silei-rahim : ___",
+                options: ["Komšije", "Prijatelji", "Rodbina", "Učitelji"],
+                answer: "Rodbina",
+                explanation: "Birrul-validejn je dobročinstvo prema roditeljima, silei-rahim je čuvanje veza s RODBINOM."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Iskrenost, povjerljivost, ispunjavanje obećanja",
+                options: ["Osobine munafika", "Osobine mu'mina (vjernika)", "Vrste namaza", "Allahova imena"],
+                answer: "Osobine mu'mina (vjernika)",
+                explanation: "Iskrenost, povjerljivost i ispunjavanje obećanja su osobine pravog vjernika (mu'mina)."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Škrtost i rasipništvo su jednako loše, ali darežljivost je najbolja.'",
+                options: ["Nema greške - to je tačno", "Rasipništvo je dobro", "Škrtost je dobra", "Darežljivost je loša"],
+                answer: "Nema greške - to je tačno",
+                explanation: "Ovo je TAČNO. Islam preporučuje darežljivost - sredinu između škrtosti i rasipništva."
+            },
+                {
+                question: "SITUACIJA: Selim prodaje časopise koji promovišu alkohol i nemoral. Je li to dozvoljeno?",
+                options: ["Da, on samo prodaje papir", "Ne, pomaganje u grijehu je zabranjeno", "Da, ako ne čita", "Samo ako daje sadaku"],
+                answer: "on samo prodaje papir",
+                explanation: "Pomaganje u grijehu je zabranjeno. Prodaja materijala koji promovišu haram je također haram."
+            }
+            ]
+        };
+    </script>
+
+    <!-- Centralizovani JavaScript Engine -->
+    <script src="../core/quiz-engine.js"></script>
+</body>
+</html>

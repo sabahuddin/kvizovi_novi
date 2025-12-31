@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 3E - Završni</title>
+    
+    <!-- Centralizovani CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 3E - Završni</h1>
+            <p class="subtitle">Završni Kviz Nivo 3</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/25</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/25</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 25,
+            allQuestions: [
+                {
+                question: "Pet islamskih dužnosti (šarti) su na stepenu farza.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Kelimei-šehadet, namaz, post, zekat i hadž su stroge islamske dužnosti na stepenu farza."
+            },
+                {
+                question: "Vitr-namaz je na stepenu farza.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Vitr-namaz je na stepenu vadžiba, ne farza. Vadžib-namazi nisu strogo naređeni kao farz."
+            },
+                {
+                question: "Vjerovanje u gajb (nevidljivo) je prva osobina vjernika spomenuta u Kur'anu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "U suri El-Bekare, prva osobina vjernika je vjerovanje u gajb - nevidljivi svijet."
+            },
+                {
+                question: "Kufr je lakši grijeh od širka.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "I kufr i širk su najtežih grijeha. Širk je pripisivanje sudruga Allahu, a kufr je nevjerovanje u Allaha i temeljne istine vjere."
+            },
+                {
+                question: "Licemjeri (munafici) će biti na samom dnu Džehennema.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Kur'an kaže: 'Licemjeri će na samom dnu Džehennema biti.' (En-Nisa, 145)"
+            },
+                {
+                question: "Meleki su stvoreni od vatre.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Meleki su stvoreni od nura (svjetlosti), dok su džini stvoreni od vatre."
+            },
+                {
+                question: "Allah ima tačno 99 lijepih imena (el-esmaul-husna).",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Poslanik, a.s., je rekao: 'Allah ima devedeset devet imena, jedno manje od stotinu.'"
+            },
+                {
+                question: "Dženaza-namaz je fardi-kifaje.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Dženaza-namaz je fardi-kifaje - obaveza zajednice koju moraju izvršiti njeni članovi."
+            },
+                {
+                question: "Zekat se daje na svu imovinu bez obzira na vrijednost.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Zekat se daje samo na imovinu koja dostiže vrijednost nisaba i bila u posjedu godinu dana."
+            },
+                {
+                question: "Sadekatul-fitr se može dati i nakon bajram-namaza.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Sadekatul-fitr dat nakon bajram-namaza smatra se običnom sadakom, ne sadekatul-fitrom."
+            },
+                {
+                question: "Hadž je obavezan svakom muslimanu bez obzira na materijalne mogućnosti.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Hadž je obavezan samo onima koji ispune uvjete: punoljetnost, zdravlje, materijalne mogućnosti i sigurnost puta."
+            },
+                {
+                question: "Ihram za žene je njihova uobičajena nošnja - hidžab.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Za muškarce ihrami su dva bijela nešivena platna, a za žene je ihram uobičajena nošnja - hidžab."
+            },
+                {
+                question: "Sura El-Ihlas govori o Allahovoj jednoći (tevhidu).",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Cijela sura El-Ihlas govori o Božijoj jednoći - tevhidu. 'Reci: On je Allah - Jedan!'"
+            },
+                {
+                question: "Klanjamo ukupno 17 rekata farz-namaza dnevno.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Dnevno klanjamo 17 rekata farz-namaza: 2 sabah, 4 podne, 4 ikindija, 3 akšam i 4 jacija."
+            },
+                {
+                question: "Poslanik, a.s., je poznavao gajb (nevidljivo) u potpunosti.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Gajb nije bio poznat ni Muhammedu, a.s. On je o gajbu znao samo ono što mu je Allah objavio."
+            },
+                {
+                question: "Koliko ima imanskih šartova (temelja islamskog vjerovanja)?",
+                options: ["Pet", "Šest", "Sedam", "Četiri"],
+                answer: "Šest",
+                explanation: "Šest imanskih šartova: vjerovanje u Allaha, meleke, knjige, poslanike, Sudnji dan i kader."
+            },
+                {
+                question: "Koji melek je zadužen za dostavljanje Allahovih objava poslanicima?",
+                options: ["Mikail", "Israfil", "Džibril", "Azrail"],
+                answer: "Džibril",
+                explanation: "Džibril (Ruhul-emin, Ruhul-kudus) je donosio Allahove objave Njegovim poslanicima."
+            },
+                {
+                question: "Šta nas, prema Kur'anu, namaz odvraća?",
+                options: ["Od posla", "Od onoga što je loše", "Od druženja", "Od putovanja"],
+                answer: "Od onoga što je loše",
+                explanation: "Namaz nas odvraća od onoga što je loše, post nas čini bogobojaznijim, zekat darežljivijim."
+            },
+                {
+                question: "Koji je prvi postupak Muhammeda, a.s., po dolasku u Medinu?",
+                options: ["Gradnja kuće", "Gradnja džamije", "Sklapanje ugovora", "Organiziranje vojske"],
+                answer: "Gradnja džamije",
+                explanation: "Prvi postupak Poslanika, a.s., u Medini bila je gradnja džamije koja je postala centar svih zbivanja."
+            },
+                {
+                question: "Koliko rekata ima vitr-namaz?",
+                options: ["2 rekata", "3 rekata", "4 rekata", "1 rekat"],
+                answer: "3 rekata",
+                explanation: "Vitr-namaz ima 3 rekata i klanja se zajedno s jacija-namazom. To je vadžib-namaz."
+            },
+                {
+                question: "Šta je nisab?",
+                options: ["Vrsta namaza", "Minimalna vrijednost imovine za obavezu zekata", "Vrsta posta", "Dio hadža"],
+                answer: "Minimalna vrijednost imovine za obavezu zekata",
+                explanation: "Nisab je minimalna vrijednost imovine koja mora biti u posjedu godinu dana da bi zekat bio obavezan."
+            },
+                {
+                question: "Koji melek će puhanjem u sur najaviti Sudnji dan?",
+                options: ["Džibril", "Mikail", "Israfil", "Azrail"],
+                answer: "Israfil",
+                explanation: "Israfil će puhanjem u sur najaviti Smak svijeta i Sudnji dan."
+            },
+                {
+                question: "Kako se zove fond u koji se izdvaja zekat u Bosni i Hercegovini?",
+                options: ["Vakuf", "Bejtul-mal", "Sadaka", "Infak"],
+                answer: "Bejtul-mal",
+                explanation: "Zekat se izdvaja u fond Bejtul-mal pri Islamskoj zajednici, odakle se dijeli potrebnim kategorijama."
+            },
+                {
+                question: "Koji dan je najvažniji dan hadža?",
+                options: ["Dan tavafa", "Dan Arefata", "Dan Mine", "Dan ihrama"],
+                answer: "Dan Arefata",
+                explanation: "Poslanik, a.s., je rekao: 'Hadž je Arefat...' Deveti dan zul-hidžeta je dan Arefata."
+            },
+                {
+                question: "Koliko tekbira ima dženaza-namaz?",
+                options: ["Dva", "Tri", "Četiri", "Pet"],
+                answer: "Četiri",
+                explanation: "Dženaza-namaz ima četiri tekbira. Ruke se podižu samo kod prvog tekbira."
+            },
+                {
+                question: "Alkohol je Poslanik, a.s., nazvao 'majkom svih zala'.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Poslanik, a.s., je alkohol nazvao 'majkom svih zala' jer ima negativan utjecaj na sve nepovredive vrijednosti u islamu."
+            },
+                {
+                question: "Islam dozvoljava konzumiranje alkohola u svrhu liječenja.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Poslanik, a.s., je rekao: 'Allah je dao i bolest i lijek, pa se liječite, ali ne zabranjenim stvarima.'"
+            },
+                {
+                question: "Kockanje i kladionice su zabranjene u islamu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Allah, dž.š., kaže: 'Vino i kocka... su odvratne stvari, šejtanovo djelo; zato se toga klonite.' (El-Maide, 90)"
+            },
+                {
+                question: "Kvizovi se ubrajaju u kocku jer se baziraju na sreći.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Kvizovi se NE ubrajaju u kocku jer se baziraju na ZNANJU, a ne na sreći."
+            },
+                {
+                question: "Ogovaranje (gibet) je u Kur'anu uporedeno sa jedenjem mesa mrtvog brata.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Allah u suri El-Hudžurat kaže: 'Zar bi nekom od vas bilo drago da jede meso svog umrlog brata?'"
+            },
+                {
+                question: "Oholost (kibur) je pohvalna osobina u islamu.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Oholost je pokuđena osobina. Poslanik, a.s., je rekao: 'U Džennet neće ući onaj u čijem srcu bude koliko trun oholosti.'"
+            },
+                {
+                question: "Hidžab je obavezan samo za udate žene.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Hidžab je obavezan za sve punoljetne muslimanke, bez obzira na bračni status."
+            },
+                {
+                question: "Duhan je potpuno zabranjen (haram) u islamu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Savremeni islamski učenjaci su zaključili da je duhan haram jer šteti zdravlju, a sve što šteti je zabranjeno."
+            },
+                {
+                question: "Musliman može sjediti za stolom na kojem se poslužuje alkohol.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Poslanik, a.s., je rekao: 'Ko vjeruje u Allaha i Sudnji dan neka ne sjeda za stol na kome kruže čaše s alkoholom.'"
+            },
+                {
+                question: "Čuvanje prirode i ekologija su dio islama.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Musliman je najbolji ekolog. Poslanik, a.s., je rekao: 'Kad god musliman zasadi biljku, imat će nagradu...'"
+            },
+                {
+                question: "Horoskop je dozvoljen muslimanu jer je samo zabava.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Vjerovanje u horoskop je zabranjeno jer je to oblik proricanja sudbine (gajba), a znanje o gajbu ima samo Allah."
+            },
+                {
+                question: "Zavist (hased) je pozitivna osobina ako nas motivira na dobro.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Zavist je negativna osobina koja uništava dobra djela. Poslanik, a.s., je rekao: 'Zavist jede dobra djela kao što vatra jede drva.'"
+            },
+                {
+                question: "Rodbinske veze (silei-rahim) su važne u islamu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Čuvanje rodbinskih veza je veoma važno. Allah, dž.š., kaže: '...i rodbinske veze ne kidajte!' (En-Nisa, 1)"
+            },
+                {
+                question: "Internet je u potpunosti zabranjen u islamu.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Internet sam po sebi nije zabranjen, ali je zabranjeno korištenje interneta za haram svrhe. Ovisnost o internetu je štetna."
+            },
+                {
+                question: "Poslanik, a.s., je prokleo deset kategorija osoba vezanih za alkohol.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Poslanik je prokleo: proizvođača, naručioca, konzumenta, distributera, skladištara, poslužitelja, prodavca, korisnika zarade, kupca i onoga kome se kupuje."
+            },
+                {
+                question: "Koja je prva faza kur'anske zabrane alkohola?",
+                options: ["Potpuna zabrana", "Zabrana pri namazu", "Stavljanje u ravan sa štetnim stvarima", "Upozorenje na posljedice"],
+                answer: "Stavljanje u ravan sa štetnim stvarima",
+                explanation: "Prva faza: alkohol se spominje odvojeno od 'hrane prijatne', ukazujući da nije dobar (En-Nahl, 67)."
+            },
+                {
+                question: "U kojoj suri je objavljena potpuna zabrana alkohola?",
+                options: ["El-Bekare", "En-Nisa", "El-Maide", "El-Enfal"],
+                answer: "El-Maide",
+                explanation: "Potpuna zabrana alkohola objavljena je u suri El-Maide (ajeti 90-91)."
+            },
+                {
+                question: "Koja osobina NE pripada osobinama munafika (licemjera)?",
+                options: ["Laže kada govori", "Ispunjava obećanja", "Iznevjerava povjereno", "Prelazi granice u svađi"],
+                answer: "Ispunjava obećanja",
+                explanation: "Osobine munafika su: laže, NE ispunjava obećanja, iznevjerava i prelazi granice. 'Ispunjava obećanja' je pozitivna osobina."
+            },
+                {
+                question: "Koliko kategorija osoba je Poslanik, a.s., prokleo u vezi s alkoholom?",
+                options: ["Pet", "Sedam", "Deset", "Dvanaest"],
+                answer: "Deset",
+                explanation: "Poslanik, a.s., je prokleo DESET kategorija: proizvođač, naručilac, konzument, distributer, skladištar, poslužitelj, prodavac, korisnik zarade, kupac i onaj kome se kupuje."
+            },
+                {
+                question: "Šta Allah, dž.š., želi postići zabranom kocke i alkohola?",
+                options: ["Da nas učini tužnima", "Da spriječi neprijateljstvo i mržnju među ljudima", "Da nas kazni", "Da nam ograniči slobodu"],
+                answer: "Da spriječi neprijateljstvo i mržnju među ljudima",
+                explanation: "Allah kaže: 'Šejtan želi da pomoću vina i kocke unese među vas neprijateljstvo i mržnju...' (El-Maide, 91)"
+            },
+                {
+                question: "Koja životinja je Poslanik, a.s., posebno preporučio da se čuva?",
+                options: ["Konj", "Mačka", "Pas", "Ovca"],
+                answer: "Mačka",
+                explanation: "Poslanik, a.s., je volio mačke i preporučio lijepo postupanje prema njima."
+            },
+                {
+                question: "Šta je rija' (pretvaranje)?",
+                options: ["Veliki širk", "Mali širk", "Kufr", "Nifak"],
+                answer: "Mali širk",
+                explanation: "Rija' je mali širk - činjenje dobrih djela radi pokazivanja pred ljudima, a ne radi Allahovog zadovoljstva."
+            },
+                {
+                question: "Koja vrijednost u islamu štiti razum od uništenja?",
+                options: ["Zabrana alkohola i droge", "Zabrana krađe", "Zabrana laži", "Zabrana ogovaranja"],
+                answer: "Zabrana alkohola i droge",
+                explanation: "Zabrana alkohola i droge štiti razum - jednu od pet nepovredivih vrijednosti u islamu."
+            },
+                {
+                question: "Koja je prva od pet nepovredivih vrijednosti u islamu?",
+                options: ["Imetak", "Razum", "Vjera", "Potomstvo"],
+                answer: "Vjera",
+                explanation: "Pet nepovredivih vrijednosti: vjera, život, razum, čast/potomstvo i imetak."
+            },
+                {
+                question: "Šta islam preporučuje kao lijek protiv zavisti?",
+                options: ["Ignorisanje", "Dova za onoga kome zavidimo", "Izbjegavanje te osobe", "Takmičenje"],
+                answer: "Dova za onoga kome zavidimo",
+                explanation: "Islam preporučuje da učimo dovu za onoga kome zavidimo, jer dova briše zavist iz srca."
+            },
+                {
+                question: "Nuh, a.s., je pozivao svoj narod u islam 950 godina.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Nuh, a.s., je pozivao svoj narod u vjeru 950 godina, ali mu je malo ko vjerovao."
+            },
+                {
+                question: "Ibrahim, a.s., je sagradio Kabu zajedno sa sinom Ismailom.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Ibrahim, a.s., i njegov sin Ismail su sagradili Kabu po Allahovoj naredbi."
+            },
+                {
+                question: "Musa, a.s., je odrastao na faraonovom dvoru.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Musa, a.s., je kao beba pronađen u korpi na Nilu i odrastao na faraonovom dvoru."
+            },
+                {
+                question: "Isa, a.s., je umro na križu prema islamskom vjerovanju.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Prema islamu, Isa, a.s., NIJE umro na križu nego ga je Allah uzdigao Sebi."
+            },
+                {
+                question: "Muhammed, a.s., je bio pismen i znao čitati i pisati.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Muhammed, a.s., je bio nepismen (ummi) - nije znao čitati ni pisati, što je jedna od mu'džiza."
+            },
+                {
+                question: "Hidžra se dogodila 622. godine po Miladu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Hidžra - preseljenje iz Mekke u Medinu - dogodila se 622. godine po Miladu."
+            },
+                {
+                question: "Ebu Bekr, r.a., je bio prvi halifa nakon Poslanika, a.s.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Ebu Bekr es-Siddik, r.a., je bio prvi pravovjernihalifa nakon smrti Poslanika, a.s."
+            },
+                {
+                question: "Poslanik, a.s., je na Hidžri bio sam, bez ijednog pratioca.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Poslanika, a.s., je na Hidžri pratio vjerni drug Ebu Bekr, r.a."
+            },
+                {
+                question: "Medina se prije Hidžre zvala Jesrib.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Jesrib je predislamski naziv za Medinu. Muhammed, a.s., je promijenio naziv u Medina."
+            },
+                {
+                question: "Bitka na Bedru je bila prva velika bitka muslimana.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Bitka na Bedru (2. g. po Hidžri) bila je prva velika bitka muslimana protiv mušrika Mekke."
+            },
+                {
+                question: "Poslanik, a.s., je imao samo jednu kćerku.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Poslanik, a.s., je imao četiri kćerke: Zejneb, Rukajju, Ummu Kulsum i Fatimu."
+            },
+                {
+                question: "Hadžera je bila majka Ismaila, a.s.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Hadžera je bila supruga Ibrahima, a.s., i majka Ismaila, a.s."
+            },
+                {
+                question: "Zem-Zem je izvor vode koji je potekao pod nogama Ismaila.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Zem-Zem je izvor koji je potekao ispod nogu malog Ismaila kada je Hadžera tražila vodu."
+            },
+                {
+                question: "Islamska zajednica u BiH je osnovana u 20. vijeku.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Islamska zajednica u BiH ima korijene još od osmanskog perioda, organizirano od 1882. godine."
+            },
+                {
+                question: "Hazreti Hatidža, r.a., je bila prva supruga Poslanika, a.s.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Hatidža, r.a., je bila prva supruga Poslanika, a.s., i prva žena koja je primila islam."
+            },
+                {
+                question: "Koji poslanik je sagradio lađu (arku) po Allahovoj naredbi?",
+                options: ["Ibrahim, a.s.", "Musa, a.s.", "Nuh, a.s.", "Isa, a.s."],
+                answer: "Musa",
+                explanation: "Nuh, a.s., je sagradio lađu (arku) da spasi vjernike od potopa."
+            },
+                {
+                question: "Kako se zvala pećina u koju su se sklonili Poslanik, a.s., i Ebu Bekr na Hidžri?",
+                options: ["Hira", "Sevr", "Nur", "Kuds"],
+                answer: "Sevr",
+                explanation: "Poslanik, a.s., i Ebu Bekr su se sklonili u pećinu Sevr na putu za Medinu."
+            },
+                {
+                question: "Ko je bila faraonova žena koja je prihvatila Musaa, a.s.?",
+                options: ["Hadžera", "Merjema", "Asija", "Fatima"],
+                answer: "Asija",
+                explanation: "Asija, faraonova žena, je prihvatila Musaa, a.s., kao svoje dijete."
+            },
+                {
+                question: "Koliko je trajala poslanička misija Muhammeda, a.s.?",
+                options: ["13 godina", "23 godine", "33 godine", "40 godina"],
+                answer: "23 godine",
+                explanation: "Poslanička misija Muhammeda, a.s., trajala je 23 godine (13 u Mekki, 10 u Medini)."
+            },
+                {
+                question: "Koji halifa je prvi prikupio Kur'an u jednu knjigu?",
+                options: ["Omer, r.a.", "Osman, r.a.", "Ebu Bekr, r.a.", "Alija, r.a."],
+                answer: "Osman",
+                explanation: "Ebu Bekr, r.a., je naredio prikupljanje Kur'ana u jednu knjigu (mushaf)."
+            },
+                {
+                question: "Kako se zove kamen u istočnom uglu Kabe?",
+                options: ["Zem-Zem", "Hadžerul-esved", "Makam Ibrahim", "Saffa"],
+                answer: "Hadžerul-esved",
+                explanation: "Hadžerul-esved (Crni kamen) se nalazi u istočnom uglu Kabe."
+            },
+                {
+                question: "Ko je prvi čovjek koji je primio islam od muškaraca?",
+                options: ["Omer, r.a.", "Ebu Bekr, r.a.", "Alija, r.a.", "Hamza, r.a."],
+                answer: "r.a.",
+                explanation: "Ebu Bekr es-Siddik, r.a., je prvi odrasli muškarac koji je primio islam."
+            },
+                {
+                question: "Koja godina se naziva 'Senetul-huzn' (Godina tuge)?",
+                options: ["Godina Hidžre", "Godina smrti Hatidže i Ebu Taliba", "Godina Bedra", "Godina osvojenja Mekke"],
+                answer: "Godina smrti Hatidže i Ebu Taliba",
+                explanation: "Senetul-huzn je godina u kojoj su umrli Hatidža, r.a., i amidža Ebu Talib."
+            },
+                {
+                question: "Koliko muslimana je učestvovalo u Bitki na Bedru?",
+                options: ["100", "313", "700", "1000"],
+                answer: "313",
+                explanation: "U Bitki na Bedru učestvovalo je 313 muslimana protiv oko 1000 mušrika."
+            },
+                {
+                question: "Ko je od Poslanikove, a.s., djece nadživio Poslanika?",
+                options: ["Ibrahim", "Kasim", "Fatima", "Abdullah"],
+                answer: "Fatima",
+                explanation: "Od sve djece, samo Fatima, r.a., je nadživjela Poslanika, a.s. (umrla 6 mjeseci nakon njega)."
+            },
+                {
+                question: "Sura El-Fil je mekanska sura.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Sura El-Fil je mekanska sura i sadrži pet ajeta."
+            },
+                {
+                question: "Sura El-Fil govori o Ebrehi i njegovoj vojsci sa slonovima.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Sura El-Fil govori o Ebrehi koji je pokušao srušiti Kabu s vojskom slonova."
+            },
+                {
+                question: "Ptice ebabil su bacale komade zlata na Ebrehinu vojsku.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Ptice ebabil su bacale grumenje od PEČENE GLINE (hidžaretin min sidždžil), ne zlata."
+            },
+                {
+                question: "Sura El-Ihlas govori o Allahovoj jednoći (tevhidu).",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Sura El-Ihlas u potpunosti govori o tevhidu - Allahovoj jednoći."
+            },
+                {
+                question: "Sura El-Humeze govori o onima koji gomilaju bogatstvo.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Sura El-Humeze upozorava one koji ogovaraju, klevetaju i gomilaju bogatstvo misleći da će vječno živjeti."
+            },
+                {
+                question: "Et-Tekasur znači 'nadmetanje u imetku'.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Et-Tekasur znači nadmetanje u imetku, mnoštvu, bogatstvu - upozorenje na materijalistički život."
+            },
+                {
+                question: "Sura El-Kari'ah govori o Sudnjem danu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "El-Kari'ah (Smak svijeta) opisuje strahote Sudnjeg dana kada će ljudi biti poput raštrkanih leptira."
+            },
+                {
+                question: "Dova 'Rabbena atina fid-dunja...' traži samo dunjalučka dobra.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Ova dova traži dobra I na dunjaluku I na ahiretu: 'Gospodaru, daj nam dobro na dunjaluku i dobro na ahiretu.'"
+            },
+                {
+                question: "Subhanallah znači 'Hvala Allahu'.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Subhanallah znači 'Slavljen neka je Allah'. 'Hvala Allahu' je Elhamdulillah."
+            },
+                {
+                question: "Bismilla se uči prije svakog posla i jela.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Bismilla (U ime Allaha) se uči prije svakog posla, jela i pića."
+            },
+                {
+                question: "Ajetul-Kursijj je najvredniji ajet u Kur'anu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Poslanik, a.s., je rekao da je Ajetul-Kursijj (El-Bekare, 255) najvredniji ajet u Kur'anu."
+            },
+                {
+                question: "Sura El-Fatiha ima sedam ajeta.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Sura El-Fatiha (Otvaranje) ima sedam ajeta i naziva se 'es-seb'ul-mesani'."
+            },
+                {
+                question: "Sura El-Kevser je najkraća sura u Kur'anu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Sura El-Kevser ima samo 3 ajeta i najkraća je sura u Kur'anu."
+            },
+                {
+                question: "Innã lillãhi ve innã ilejhi rãdži'ũn se uči pri radosnim vijestima.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Ova dova se uči pri TUŽNIM vijestima i nesrećama: 'Mi smo Allahovi i Njemu se vraćamo.'"
+            },
+                {
+                question: "Salavat se uči na Poslanika, a.s.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Salavat (Allãhumme salli, Allãhumme bãrik) se uči na Poslanika Muhammeda, a.s."
+            },
+                {
+                question: "Koliko ajeta ima sura El-Fil?",
+                options: ["3 ajeta", "5 ajeta", "7 ajeta", "10 ajeta"],
+                answer: "5 ajeta",
+                explanation: "Sura El-Fil ima 5 ajeta."
+            },
+                {
+                question: "Šta znači 'El-Kari'ah'?",
+                options: ["Mnoštvo", "Slon", "Smak svijeta", "Ogovaranje"],
+                answer: "Smak svijeta",
+                explanation: "El-Kari'ah znači 'Smak svijeta' ili 'Lupnjava' - naziv za Sudnji dan."
+            },
+                {
+                question: "Šta znači 'Elhamdulillah'?",
+                options: ["Slavljen neka je Allah", "Hvala Allahu", "Allah je Najveći", "U ime Allaha"],
+                answer: "Hvala Allahu",
+                explanation: "Elhamdulillah znači 'Hvala Allahu' ili 'Sva hvala pripada Allahu'."
+            },
+                {
+                question: "Koja dova se uči prije jela?",
+                options: ["Elhamdulillah", "Bismillah", "Subhanallah", "Allahu Ekber"],
+                answer: "Bismillah",
+                explanation: "Prije jela se uči Bismillah (U ime Allaha), a poslije jela Elhamdulillah."
+            },
+                {
+                question: "Šta ptice ebabil bacaju na Ebrehinu vojsku u suri El-Fil?",
+                options: ["Vatru", "Grumenje od pečene gline", "Kamenje", "Vodu"],
+                answer: "Grumenje od pečene gline",
+                explanation: "Ptice su bacale 'hidžaretin min sidždžil' - grumenje od pečene gline."
+            },
+                {
+                question: "Koja sura počinje riječima 'Kul huwallahu ehad'?",
+                options: ["El-Fatiha", "El-Ihlas", "El-Felek", "En-Nas"],
+                answer: "El-Ihlas",
+                explanation: "Sura El-Ihlas počinje: 'Kul huwallahu ehad' - Reci: On je Allah - Jedan!"
+            },
+                {
+                question: "Šta znači 'Allahu Ekber'?",
+                options: ["Hvala Allahu", "U ime Allaha", "Allah je Najveći", "Slavljen je Allah"],
+                answer: "Allah je Najveći",
+                explanation: "Allahu Ekber znači 'Allah je Najveći' - tekbir koji se uči u namazu i drugim prilikama."
+            },
+                {
+                question: "Koja dova se uči pri izlasku iz kuće?",
+                options: ["Bismillahi tevekkeltu alallah", "Elhamdulillah", "Subhanallah", "Estagfirullah"],
+                answer: "Bismillahi tevekkeltu alallah",
+                explanation: "'Bismillahi tevekkeltu alallah' - U ime Allaha, oslanjam se na Allaha."
+            },
+                {
+                question: "Šta je Hutama spomenuta u suri El-Humeze?",
+                options: ["Džennet", "Džehennemska vatra", "Rijeka", "Planina"],
+                answer: "Džehennemska vatra",
+                explanation: "Hutama je džehennemska vatra koja plamti do srca - kazna za ogovarače i gomilače imetka."
+            },
+                {
+                question: "Koja sura se naziva 'Umm-ul-Kur'an' (Majka Kur'ana)?",
+                options: ["El-Ihlas", "El-Fatiha", "El-Bekare", "Jasin"],
+                answer: "El-Fatiha",
+                explanation: "Sura El-Fatiha se naziva Umm-ul-Kur'an (Majka Kur'ana) jer sadrži suštinu cijelog Kur'ana."
+            }
+            ]
+        };
+    </script>
+
+    <!-- Centralizovani JavaScript Engine -->
+    <script src="../core/quiz-engine.js"></script>
+</body>
+</html>

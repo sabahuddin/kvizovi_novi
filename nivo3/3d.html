@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 3D</title>
+    
+    <!-- Centralizovani CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 3D</h1>
+            <p class="subtitle">Sure i Dove</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+                // DA/NE PITANJA (15)
+            {
+                question: "Sura El-Fil je mekanska sura.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Sura El-Fil je mekanska sura i sadrži pet ajeta."
+            },
+                {
+                question: "Sura El-Fil govori o Ebrehi i njegovoj vojsci sa slonovima.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Sura El-Fil govori o Ebrehi koji je pokušao srušiti Kabu s vojskom slonova."
+            },
+                {
+                question: "Ptice ebabil su bacale komade zlata na Ebrehinu vojsku.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Ptice ebabil su bacale grumenje od PEČENE GLINE (hidžaretin min sidždžil), ne zlata."
+            },
+                {
+                question: "Sura El-Ihlas govori o Allahovoj jednoći (tevhidu).",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Sura El-Ihlas u potpunosti govori o tevhidu - Allahovoj jednoći."
+            },
+                {
+                question: "Sura El-Humeze govori o onima koji gomilaju bogatstvo.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Sura El-Humeze upozorava one koji ogovaraju, klevetaju i gomilaju bogatstvo misleći da će vječno živjeti."
+            },
+                {
+                question: "Et-Tekasur znači 'nadmetanje u imetku'.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Et-Tekasur znači nadmetanje u imetku, mnoštvu, bogatstvu - upozorenje na materijalistički život."
+            },
+                {
+                question: "Sura El-Kari'ah govori o Sudnjem danu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "El-Kari'ah (Smak svijeta) opisuje strahote Sudnjeg dana kada će ljudi biti poput raštrkanih leptira."
+            },
+                {
+                question: "Dova 'Rabbena atina fid-dunja...' traži samo dunjalučka dobra.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Ova dova traži dobra I na dunjaluku I na ahiretu: 'Gospodaru, daj nam dobro na dunjaluku i dobro na ahiretu.'"
+            },
+                {
+                question: "Subhanallah znači 'Hvala Allahu'.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Subhanallah znači 'Slavljen neka je Allah'. 'Hvala Allahu' je Elhamdulillah."
+            },
+                {
+                question: "Bismilla se uči prije svakog posla i jela.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Bismilla (U ime Allaha) se uči prije svakog posla, jela i pića."
+            },
+                {
+                question: "Ajetul-Kursijj je najvredniji ajet u Kur'anu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Poslanik, a.s., je rekao da je Ajetul-Kursijj (El-Bekare, 255) najvredniji ajet u Kur'anu."
+            },
+                {
+                question: "Sura El-Fatiha ima sedam ajeta.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Sura El-Fatiha (Otvaranje) ima sedam ajeta i naziva se 'es-seb'ul-mesani'."
+            },
+                {
+                question: "Sura El-Kevser je najkraća sura u Kur'anu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Sura El-Kevser ima samo 3 ajeta i najkraća je sura u Kur'anu."
+            },
+                {
+                question: "Innã lillãhi ve innã ilejhi rãdži'ũn se uči pri radosnim vijestima.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Ova dova se uči pri TUŽNIM vijestima i nesrećama: 'Mi smo Allahovi i Njemu se vraćamo.'"
+            },
+                {
+                question: "Salavat se uči na Poslanika, a.s.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Salavat (Allãhumme salli, Allãhumme bãrik) se uči na Poslanika Muhammeda, a.s."
+            },
+            
+            // VIŠESTRUKI IZBOR (15)
+            {
+                question: "Koliko ajeta ima sura El-Fil?",
+                options: ["3 ajeta", "5 ajeta", "7 ajeta", "10 ajeta"],
+                answer: "DA",
+                explanation: "Sura El-Fil ima 5 ajeta."
+            },
+                {
+                question: "Šta znači 'El-Kari'ah'?",
+                options: ["Mnoštvo", "Slon", "Smak svijeta", "Ogovaranje"],
+                answer: "Smak svijeta",
+                explanation: "El-Kari'ah znači 'Smak svijeta' ili 'Lupnjava' - naziv za Sudnji dan."
+            },
+                {
+                question: "Šta znači 'Elhamdulillah'?",
+                options: ["Slavljen neka je Allah", "Hvala Allahu", "Allah je Najveći", "U ime Allaha"],
+                answer: "Hvala Allahu",
+                explanation: "Elhamdulillah znači 'Hvala Allahu' ili 'Sva hvala pripada Allahu'."
+            },
+                {
+                question: "Koja dova se uči prije jela?",
+                options: ["Elhamdulillah", "Bismillah", "Subhanallah", "Allahu Ekber"],
+                answer: "Bismillah",
+                explanation: "Prije jela se uči Bismillah (U ime Allaha), a poslije jela Elhamdulillah."
+            },
+                {
+                question: "Šta ptice ebabil bacaju na Ebrehinu vojsku u suri El-Fil?",
+                options: ["Vatru", "Grumenje od pečene gline", "Kamenje", "Vodu"],
+                answer: "Grumenje od pečene gline",
+                explanation: "Ptice su bacale 'hidžaretin min sidždžil' - grumenje od pečene gline."
+            },
+                {
+                question: "Koja sura počinje riječima 'Kul huwallahu ehad'?",
+                options: ["El-Fatiha", "El-Ihlas", "El-Felek", "En-Nas"],
+                answer: "El-Ihlas",
+                explanation: "Sura El-Ihlas počinje: 'Kul huwallahu ehad' - Reci: On je Allah - Jedan!"
+            },
+                {
+                question: "Šta znači 'Allahu Ekber'?",
+                options: ["Hvala Allahu", "U ime Allaha", "Allah je Najveći", "Slavljen je Allah"],
+                answer: "Allah je Najveći",
+                explanation: "Allahu Ekber znači 'Allah je Najveći' - tekbir koji se uči u namazu i drugim prilikama."
+            },
+                {
+                question: "Koja dova se uči pri izlasku iz kuće?",
+                options: ["Bismillahi tevekkeltu alallah", "Elhamdulillah", "Subhanallah", "Estagfirullah"],
+                answer: "Bismillahi tevekkeltu alallah",
+                explanation: "'Bismillahi tevekkeltu alallah' - U ime Allaha, oslanjam se na Allaha."
+            },
+                {
+                question: "Šta je Hutama spomenuta u suri El-Humeze?",
+                options: ["Džennet", "Džehennemska vatra", "Rijeka", "Planina"],
+                answer: "Džehennemska vatra",
+                explanation: "Hutama je džehennemska vatra koja plamti do srca - kazna za ogovarače i gomilače imetka."
+            },
+                {
+                question: "Koja sura se naziva 'Umm-ul-Kur'an' (Majka Kur'ana)?",
+                options: ["El-Ihlas", "El-Fatiha", "El-Bekare", "Jasin"],
+                answer: "El-Fatiha",
+                explanation: "Sura El-Fatiha se naziva Umm-ul-Kur'an (Majka Kur'ana) jer sadrži suštinu cijelog Kur'ana."
+            },
+                {
+                question: "Koliko puta se u suri El-Kari'ah ponavlja pitanje 'Šta je El-Kari'ah?'",
+                options: ["Jednom", "Dva puta", "Tri puta", "Ne ponavlja se"],
+                answer: "Dva puta",
+                explanation: "U suri El-Kari'ah pitanje 'Šta je El-Kari'ah?' se ponavlja DVA PUTA za naglašavanje."
+            },
+                {
+                question: "Šta znači 'La ilahe illallah'?",
+                options: ["Hvala Allahu", "Nema boga osim Allaha", "Allah je Najveći", "Slavljen je Allah"],
+                answer: "Nema boga osim Allaha",
+                explanation: "La ilahe illallah znači 'Nema boga osim Allaha' - prvi dio šehadeta."
+            },
+                {
+                question: "Koja dova se uči nakon namaza?",
+                options: ["Samo Fatiha", "Tesbihat (Subhanallah, Elhamdulillah, Allahu Ekber)", "Samo bismilla", "Ništa"],
+                answer: "Tesbihat (Subhanallah",
+                explanation: "Nakon namaza se uče tesbihat: 33x Subhanallah, 33x Elhamdulillah, 33x Allahu Ekber."
+            },
+                {
+                question: "U kojoj suri se spominje Kevser (izvor u Džennetu)?",
+                options: ["El-Fatiha", "El-Ihlas", "El-Kevser", "El-Fil"],
+                answer: "El-Kevser",
+                explanation: "Sura El-Kevser govori o Kevseru - izvoru u Džennetu darovanom Poslaniku, a.s."
+            },
+                {
+                question: "Šta znači 'Estagfirullah'?",
+                options: ["Hvala Allahu", "Tražim oprost od Allaha", "Allah je Najveći", "U ime Allaha"],
+                answer: "Tražim oprost od Allaha",
+                explanation: "Estagfirullah znači 'Tražim oprost od Allaha' - istigfar koji se uči za oprost grijeha."
+            },
+            
+            // PAMETNA PITANJA (70)
+            {
+                question: "IZBACI ULJEZA: Koja sura NE pripada kratkim surama s kraja Kur'ana?",
+                options: ["El-Fil", "El-Bekare", "El-Kevser", "El-Ihlas"],
+                answer: "Tražim oprost od Allaha",
+                explanation: "El-Bekare je NAJDUŽA sura u Kur'anu, ostale su kratke sure s kraja Kur'ana."
+            },
+                {
+                question: "KO SAM JA? Ja sam abesinski vladar koji je pokušao srušiti Kabu.",
+                options: ["Faraon", "Nemrud", "Ebreha", "Karun"],
+                answer: "Ebreha",
+                explanation: "Ebreha je abesinski vladar spomenut u suri El-Fil koji je s vojskom slonova krenuo na Kabu."
+            },
+                {
+                question: "DOPUNI: El-Fatiha : 7 ajeta = El-Kevser : ___",
+                options: ["3 ajeta", "5 ajeta", "7 ajeta", "10 ajeta"],
+                answer: "3 ajeta",
+                explanation: "El-Fatiha ima 7 ajeta, a El-Kevser ima samo 3 ajeta - najkraća sura."
+            },
+                {
+                question: "ANALOGIJA: Subhanallah : slavljenje = Elhamdulillah : ___",
+                options: ["Veličanje", "Zahvaljivanje", "Traženje oprosta", "Molba"],
+                answer: "Zahvaljivanje",
+                explanation: "Subhanallah je slavljenje Allaha, a Elhamdulillah je ZAHVALJIVANJE Allahu."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? El-Fil, El-Humeze, Et-Tekasur, El-Kari'ah",
+                options: ["Medinske sure", "Mekanske sure", "Sure sa 10 ajeta", "Sure o poslanicima"],
+                answer: "Mekanske sure",
+                explanation: "Sve navedene su MEKANSKE sure objavljene u Mekki."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Sura El-Kevser ima 7 ajeta kao i Fatiha.'",
+                options: ["El-Kevser ima samo 3 ajeta", "Fatiha ima 5 ajeta", "Nema greške", "Obje imaju 10 ajeta"],
+                answer: "El-Kevser ima samo 3 ajeta",
+                explanation: "Sura El-Kevser ima samo 3 AJETA, što je čini najkraćom surom."
+            },
+                {
+                question: "KO SAM JA? Ja sam zikr koji se uči 33 puta nakon namaza i znači 'Slavljen je Allah'.",
+                options: ["Elhamdulillah", "Allahu Ekber", "Subhanallah", "La ilahe illallah"],
+                answer: "Subhanallah",
+                explanation: "Subhanallah (Slavljen je Allah) se uči 33 puta u tesbihatima nakon namaza."
+            },
+                {
+                question: "SITUACIJA: Amina čuje tužnu vijest o smrti komšije. Koju dovu uči?",
+                options: ["Elhamdulillah", "Innã lillãhi ve innã ilejhi rãdži'ũn", "Bismillah", "Mašallah"],
+                answer: "Innã lillãhi ve innã ilejhi rãdži'ũn",
+                explanation: "'Innã lillãhi...' (Mi smo Allahovi i Njemu se vraćamo) se uči pri tužnim vijestima."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada tesbihatima nakon namaza?",
+                options: ["Subhanallah", "Elhamdulillah", "Bismillah", "Allahu Ekber"],
+                answer: "Bismillah",
+                explanation: "Tesbihat čine: Subhanallah, Elhamdulillah i Allahu Ekber. BISMILLAH nije dio tih tesbihat."
+            },
+                {
+                question: "DOPUNI NIZ: Subhanallah (33x), Elhamdulillah (33x), ___",
+                options: ["La ilahe illallah (33x)", "Allahu Ekber (33x)", "Bismillah (33x)", "Estagfirullah (33x)"],
+                answer: "Allahu Ekber (33x)",
+                explanation: "Tesbihat: 33x Subhanallah, 33x Elhamdulillah, 33x ALLAHU EKBER."
+            },
+                {
+                question: "ANALOGIJA: Bismillah : prije jela = Elhamdulillah : ___",
+                options: ["Prije spavanja", "Poslije jela", "Prije namaza", "Poslije namaza"],
+                answer: "Poslije jela",
+                explanation: "Bismillah se uči PRIJE jela, a Elhamdulillah POSLIJE jela."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Rabbena atina, Rabbenagfirli, Rabbidžalni",
+                options: ["Zikrovi", "Dove (počinju sa Rabbena/Rabbi)", "Sure", "Ajeti o namazu"],
+                answer: "Dove (počinju sa Rabbena/Rabbi)",
+                explanation: "Sve navedeno su DOVE koje počinju sa Rabbena/Rabbi (Gospodaru naš/moj)."
+            },
+                {
+                question: "KO SAM JA? Ja sam sura koja kaže: 'Reci: On je Allah - Jedan!'",
+                options: ["El-Fatiha", "El-Ihlas", "El-Felek", "En-Nas"],
+                answer: "El-Ihlas",
+                explanation: "Sura El-Ihlas: 'Kul huwallahu ehad' - Reci: On je Allah - Jedan!"
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'El-Kari'ah znači slonovi.'",
+                options: ["El-Kari'ah znači Smak svijeta", "Nema greške", "El-Kari'ah je ime poslanika", "El-Kari'ah znači ogovaranje"],
+                answer: "El-Kari'ah znači Smak svijeta",
+                explanation: "El-Kari'ah znači 'SMAK SVIJETA' ili 'Lupnjava'. Slonovi su u suri El-FIL."
+            },
+                {
+                question: "SITUACIJA: Ahmed vidi nešto lijepo kod prijatelja. Šta treba reći?",
+                options: ["Subhanallah", "Mašallah", "Estagfirullah", "Inna lillahi"],
+                answer: "Mašallah",
+                explanation: "Mašallah ('Onako kako Allah hoće') se kaže kada vidimo nešto lijepo - štiti od uroka."
+            },
+                {
+                question: "DOPUNI: El-Fil : slonovi = El-Humeze : ___",
+                options: ["Ptice", "Ogovarači/klevetnici", "Vatra", "Mnoštvo"],
+                answer: "Ogovarači/klevetnici",
+                explanation: "El-Fil govori o slonovima, a El-Humeze o OGOVARAČIMA i klevetnicima."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada značenju sure El-Ihlas?",
+                options: ["Allah je Jedan", "Allah je utočište", "Allah ima sina", "Allah nema ravnog"],
+                answer: "Allah ima sina",
+                explanation: "Sura El-Ihlas NEGIRA da Allah ima sina: 'Nije rodio i rođen nije.'"
+            },
+                {
+                question: "KO SAM JA? Ja sam dova koja se uči ujutro i navečer za zaštitu.",
+                options: ["Ajetul-Kursijj", "El-Fatiha", "Salavat", "Tekbir"],
+                answer: "Ajetul-Kursijj",
+                explanation: "Ajetul-Kursijj se uči ujutro i navečer za zaštitu - najvredniji ajet u Kur'anu."
+            },
+                {
+                question: "ANALOGIJA: Mašallah : divljenje = Inšallah : ___",
+                options: ["Zahvala", "Nada/budućnost", "Oprost", "Slavljenje"],
+                answer: "Nada/budućnost",
+                explanation: "Mašallah se kaže pri divljenju, a Inšallah (Ako Bog da) za BUDUĆE planove i nade."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Hidžaretin min sidždžil, Tajren ebabil, Ashabil-fil",
+                options: ["Pojmovi iz sure El-Humeze", "Pojmovi iz sure El-Fil", "Dove", "Allahova imena"],
+                answer: "Pojmovi iz sure El-Fil",
+                explanation: "Sve navedeno su pojmovi iz sure EL-FIL: komadi gline, ptice ebabil, vlasnici slona."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Sura El-Fatiha se ne uči u svakom rekatu namaza.'",
+                options: ["Fatiha se uči u svakom rekatu", "Nema greške", "Fatiha se uči samo jednom", "Fatiha je sunnet"],
+                answer: "Fatiha se uči u svakom rekatu",
+                explanation: "Sura El-Fatiha se uči U SVAKOM REKATU namaza - to je farz namaza."
+            },
+                {
+                question: "SITUACIJA: Selma završava jelo. Koju dovu uči?",
+                options: ["Bismillah", "Elhamdulillahillezi et'amena", "Subhanallah", "Allahu Ekber"],
+                answer: "Elhamdulillahillezi et'amena",
+                explanation: "'Elhamdulillahillezi et'amena...' (Hvala Allahu koji nas je nahranio) se uči POSLIJE jela."
+            },
+                {
+                question: "DOPUNI NIZ: El-Felek, En-Nas, El-Ihlas, ___",
+                options: ["El-Bekare", "El-Kevser", "El-Fil", "Jasin"],
+                answer: "El-Kevser",
+                explanation: "Ovo su kratke sure s kraja Kur'ana. El-Kevser se također uči zajedno s njima."
+            },
+                {
+                question: "KO SAM JA? Ja sam dova koja znači 'Tražim oprosta od Allaha'.",
+                options: ["Subhanallah", "Elhamdulillah", "Estagfirullah", "La ilahe illallah"],
+                answer: "Estagfirullah",
+                explanation: "Estagfirullah znači 'Tražim oprosta od Allaha' - istigfar za oprost grijeha."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada značenjima zikra?",
+                options: ["Slavljenje", "Zahvaljivanje", "Ogovaranje", "Veličanje"],
+                answer: "Ogovaranje",
+                explanation: "Zikr uključuje slavljenje, zahvaljivanje i veličanje Allaha. OGOVARANJE je grijeh, ne zikr."
+            },
+                {
+                question: "ANALOGIJA: El-Fatiha : Umm-ul-Kur'an = Ajetul-Kursijj : ___",
+                options: ["Najkraći ajet", "Najvredniji ajet", "Prva objava", "Zadnja objava"],
+                answer: "Najvredniji ajet",
+                explanation: "El-Fatiha je 'Majka Kur'ana', a Ajetul-Kursijj je NAJVREDNIJI AJET u Kur'anu."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Rabbena atina fid-dunja haseneten ve fil-ahireti haseneten",
+                options: ["Dova za dunjaluk i ahiret", "Istigfar", "Salavat", "Tekbir"],
+                answer: "Dova za dunjaluk i ahiret",
+                explanation: "Ovo je dova koja traži dobro i na DUNJALUKU i na AHIRETU."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Et-Tekasur upozorava na pretjerano činjenje dobrih djela.'",
+                options: ["Upozorava na nadmetanje u imetku", "Nema greške", "Upozorava na namaz", "Upozorava na post"],
+                answer: "Upozorava na nadmetanje u imetku",
+                explanation: "Et-Tekasur upozorava na NADMETANJE U IMETKU i materijalizmu, ne na dobra djela."
+            },
+                {
+                question: "SITUACIJA: Haris polazi na put. Koju dovu uči?",
+                options: ["Estagfirullah", "Subhanel-lezi sehhare lena haza", "Elhamdulillah", "Tekbir"],
+                answer: "Subhanel-lezi sehhare lena haza",
+                explanation: "'Subhanel-lezi sehhare lena haza...' je dova za putovanje (iz sure Ez-Zuhruf)."
+            },
+                {
+                question: "DOPUNI: Hutama : El-Humeze = Ebabil : ___",
+                options: ["El-Ihlas", "El-Fil", "El-Fatiha", "El-Kevser"],
+                answer: "El-Fil",
+                explanation: "Hutama (džehennem) se spominje u El-Humeze, a ebabil (ptice) u EL-FIL."
+            },
+                {
+                question: "KO SAM JA? Ja sam sura koja upozorava: 'Zaokuplja vas nadmetanje u imetku!'",
+                options: ["El-Fil", "El-Humeze", "Et-Tekasur", "El-Kari'ah"],
+                answer: "Et-Tekasur",
+                explanation: "Sura Et-Tekasur počinje upozorenjem na nadmetanje u imetku i mnoštvu."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada dove za zaštitu?",
+                options: ["El-Felek", "En-Nas", "Ajetul-Kursijj", "Et-Tekasur"],
+                answer: "Et-Tekasur",
+                explanation: "El-Felek, En-Nas i Ajetul-Kursijj se uče za zaštitu. ET-TEKASUR je upozorenje na materijalizam."
+            },
+                {
+                question: "ANALOGIJA: Inšallah : budućnost = Mašallah : ___",
+                options: ["Prošlost", "Sadašnjost/divljenje", "Budućnost", "Oprost"],
+                answer: "Sadašnjost/divljenje",
+                explanation: "Inšallah se koristi za buduće planove, Mašallah za SADAŠNJE divljenje nečemu."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Prije jela bismilla, poslije jela elhamdulillah",
+                options: ["Adabi ishrane", "Adabi spavanja", "Adabi namaza", "Adabi putovanja"],
+                answer: "Adabi ishrane",
+                explanation: "Ovo su ADABI ISHRANE - islamski bonton prilikom jela."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Salavat se uči na sve ljude, ne samo na Poslanika.'",
+                options: ["Salavat se uči specifično na Poslanika, a.s.", "Nema greške", "Salavat se uči samo na umrle", "Salavat je vrsta namaza"],
+                answer: "Salavat se uči specifično na Poslanika",
+                explanation: "Salavat (Allãhumme salli, Allãhumme bãrik) se uči SPECIFIČNO na Poslanika, a.s."
+            },
+                {
+                question: "SITUACIJA: Lejla vidi bebu i želi je pohvaliti. Šta kaže da je zaštiti od uroka?",
+                options: ["Subhanallah", "Estagfirullah", "Mašallah", "Inna lillahi"],
+                answer: "Mašallah",
+                explanation: "Mašallah se kaže pri pohvali da se zaštiti od uroka."
+            },
+                {
+                question: "DOPUNI NIZ: Lahevna, Fehevna, Ilel-mekabir, ___",
+                options: ["Pojmovi iz El-Fil", "Pojmovi iz Et-Tekasur (zaokupljanje do kabura)", "Dove", "Zikrovi"],
+                answer: "Pojmovi iz Et-Tekasur (zaokupljanje do kabura)",
+                explanation: "Ovi pojmovi su iz sure Et-Tekasur koja upozorava na zaokupljenost do smrti."
+            },
+                {
+                question: "KO SAM JA? Ja sam naziv za džehennemsku vatru u suri El-Humeze.",
+                options: ["Sekar", "Hutama", "Havije", "Džehim"],
+                answer: "Hutama",
+                explanation: "HUTAMA je naziv za džehennemsku vatru spomenut u suri El-Humeze."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada kratkim surama za učenje u namazu?",
+                options: ["El-Ihlas", "El-Felek", "El-Bekare", "En-Nas"],
+                answer: "El-Bekare",
+                explanation: "El-Bekare je NAJDUŽA sura s 286 ajeta, nije kratka sura za učenje u namazu."
+            },
+                {
+                question: "ANALOGIJA: La ilahe illallah : prvi dio šehadeta = Muhammedur-resulullah : ___",
+                options: ["Zikr", "Drugi dio šehadeta", "Dova", "Tekbir"],
+                answer: "Drugi dio šehadeta",
+                explanation: "La ilahe illallah je prvi dio, a Muhammedur-resulullah je DRUGI DIO šehadeta."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Kijam, ruku', sedžda, ka'de",
+                options: ["Dijelovi hadža", "Ruknovi namaza", "Vrste dove", "Vrste zikra"],
+                answer: "Ruknovi namaza",
+                explanation: "Kijam (stajanje), ruku', sedžda i ka'de (sjedenje) su RUKNOVI NAMAZA."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Sura El-Fil ima 10 ajeta.'",
+                options: ["El-Fil ima 5 ajeta", "Nema greške", "El-Fil ima 3 ajeta", "El-Fil ima 7 ajeta"],
+                answer: "El-Fil ima 5 ajeta",
+                explanation: "Sura El-Fil ima 5 AJETA, ne 10."
+            },
+                {
+                question: "SITUACIJA: Mustafa planira sutra otići u školu. Šta kaže?",
+                options: ["Mašallah", "Inšallah", "Estagfirullah", "Inna lillahi"],
+                answer: "Inšallah",
+                explanation: "Inšallah (Ako Bog da) se kaže za BUDUĆE planove i namjere."
+            },
+                {
+                question: "DOPUNI: 'Kul e'uzu bi rabbil-felek' : El-Felek = 'Kul e'uzu bi rabbin-nas' : ___",
+                options: ["El-Ihlas", "En-Nas", "El-Fatiha", "El-Kevser"],
+                answer: "En-Nas",
+                explanation: "'Kul e'uzu bi rabbil-felek' je El-Felek, 'Kul e'uzu bi rabbin-nas' je EN-NAS."
+            },
+                {
+                question: "KO SAM JA? Ja sam sura čije učenje vrijedi kao trećina Kur'ana.",
+                options: ["El-Fatiha", "El-Ihlas", "El-Bekare", "Jasin"],
+                answer: "El-Ihlas",
+                explanation: "Poslanik, a.s., je rekao da učenje sure EL-IHLAS vrijedi kao trećina Kur'ana."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada mu'avvizetejn (dvjema surama za zaštitu)?",
+                options: ["El-Felek", "En-Nas", "El-Ihlas", "Obje su mu'avvizetejn"],
+                answer: "El-Ihlas",
+                explanation: "Mu'avvizetejn su El-Felek i En-Nas. EL-IHLAS nije dio mu'avvizetejn."
+            },
+                {
+                question: "ANALOGIJA: Fatiha : namaz = Tešehhud : ___",
+                options: ["Ruku'", "Sjedenje (ka'de)", "Sedžda", "Kijam"],
+                answer: "Sjedenje (ka'de)",
+                explanation: "Fatiha se uči u stajanju, a Tešehhud (Ettehijjatu) se uči u SJEDENJU."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? 'Allãhumme salli', 'Allãhumme bãrik'",
+                options: ["Zikrovi", "Salavati na Poslanika", "Istigfar", "Tekbir"],
+                answer: "Salavati na Poslanika",
+                explanation: "Allãhumme salli i Allãhumme bãrik su SALAVATI koji se uče na Poslanika, a.s."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Mu'avvizetejn su tri sure: El-Felek, En-Nas i El-Ihlas.'",
+                options: ["Mu'avvizetejn su samo El-Felek i En-Nas (dvije sure)", "Nema greške", "Mu'avvizetejn je samo En-Nas", "Mu'avvizetejn je samo El-Felek"],
+                answer: "Mu'avvizetejn su samo El-Felek i En-Nas (dvije sure)",
+                explanation: "Mu'avvizetejn (dvije sure za zaštitu) su SAMO El-Felek i En-Nas - DVIJE, ne tri sure."
+            },
+                {
+                question: "SITUACIJA: Fatima se budi ujutro. Koju dovu prvo uči?",
+                options: ["Elhamdulillahillezi ahjana", "Bismillah", "Estagfirullah", "Salavat"],
+                answer: "Elhamdulillahillezi ahjana",
+                explanation: "'Elhamdulillahillezi ahjana...' (Hvala Allahu koji nas je oživio) se uči pri BUĐENJU."
+            },
+                {
+                question: "DOPUNI NIZ: Kevser, Ebter, Enhur, ___",
+                options: ["Pojmovi iz sure El-Fil", "Pojmovi iz sure El-Kevser", "Pojmovi iz sure El-Fatiha", "Pojmovi iz sure El-Ihlas"],
+                answer: "Pojmovi iz sure El-Kevser",
+                explanation: "Kevser (izvor), Ebter (bez potomstva), klanje (nahr) su pojmovi iz sure EL-KEVSER."
+            },
+                {
+                question: "KO SAM JA? Ja sam ajet koji se naziva 'najveći ajet u Kur'anu'.",
+                options: ["Prvi ajet El-Fatihe", "Ajetul-Kursijj", "Zadnji ajet El-Bekare", "Prvi ajet El-Ihlas"],
+                answer: "Ajetul-Kursijj",
+                explanation: "AJETUL-KURSIJJ (El-Bekare, 255) je najveći/najvredniji ajet u Kur'anu."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada zikrovima?",
+                options: ["Subhanallah", "Elhamdulillah", "Gibet", "Allahu Ekber"],
+                answer: "Gibet",
+                explanation: "Gibet je OGOVARANJE - grijeh, ne zikr! Zikrovi su Subhanallah, Elhamdulillah, Allahu Ekber."
+            },
+                {
+                question: "ANALOGIJA: Iftitahi tekbir : početak namaza = Selam : ___",
+                options: ["Sredina namaza", "Kraj namaza", "Ruku'", "Sedžda"],
+                answer: "Kraj namaza",
+                explanation: "Iftitahi tekbir označava POČETAK namaza, a selam označava KRAJ namaza."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? 'Ve kina azaben-nar' - 'I sačuvaj nas od džehennemske vatre'",
+                options: ["Zikr", "Dova za zaštitu od vatre", "Salavat", "Istigfar"],
+                answer: "Dova za zaštitu od vatre",
+                explanation: "Ovo je DOVA za zaštitu od džehennemske vatre, dio poznate dove 'Rabbena atina'."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Elhamdulillah se uči samo u namazu.'",
+                options: ["Uči se u namazu, nakon jela, i u mnogo drugih prilika", "Nema greške", "Uči se samo nakon jela", "Ne uči se nikada u namazu"],
+                answer: "Uči se u namazu",
+                explanation: "Elhamdulillah se uči u MNOGIM prilikama: namazu, nakon jela, pri zahvali, u tesbihatima..."
+            },
+                {
+                question: "SITUACIJA: Ahmed završava namaz. Šta prvo uči?",
+                options: ["Fatihu", "Estagfirullah (3x), zatim tesbihat", "Salavat", "Ajetul-Kursijj pa onda ostalo"],
+                answer: "Estagfirullah (3x)",
+                explanation: "Nakon namaza se prvo uči Estagfirullah 3x, zatim tesbihat i dove."
+            },
+                {
+                question: "DOPUNI: Siratallezine en'amte alejhim : onima kojima si milost darovao = Gajril-magdubi alejhim : ___",
+                options: ["Onima koji su zaslužili Džennet", "Onima na koje se nije rasrdio", "Onima koji su bogati", "Onima koji su siromašni"],
+                answer: "Onima na koje se nije rasrdio",
+                explanation: "Iz Fatihe: '...onima kojima si milost darovao, a ne onima NA KOJE SE RASRDIO...'"
+            },
+                {
+                question: "KO SAM JA? Ja sam naziv za Sudnji dan u suri El-Kari'ah.",
+                options: ["El-Kijame", "El-Kari'ah (Smak)", "Es-Sa'ah", "El-Hakka"],
+                answer: "El-Kari'ah (Smak)",
+                explanation: "EL-KARI'AH je naziv za Sudnji dan u istoimenoj suri - znači 'Smak' ili 'Lupnjava'."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NIJE od pet dnevnih namaza?",
+                options: ["Sabah", "Džuma", "Akšam", "Jacija"],
+                answer: "Džuma",
+                explanation: "Džuma je SEDMIČNI namaz (petkom), ne dnevni. Pet dnevnih su: sabah, podne, ikindija, akšam, jacija."
+            },
+                {
+                question: "ANALOGIJA: Sure za zaštitu : mu'avvizetejn = Sura o jednoći : ___",
+                options: ["El-Fatiha", "El-Ihlas", "El-Kevser", "El-Bekare"],
+                answer: "El-Ihlas",
+                explanation: "Mu'avvizetejn su sure za zaštitu, a EL-IHLAS je sura o Allahovoj jednoći."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Rabbi zidni ilmen, Rabbišrahli sadri",
+                options: ["Dove koje počinju sa Rabbi (Gospodaru moj)", "Zikrovi", "Salavati", "Sure"],
+                answer: "Dove koje počinju sa Rabbi (Gospodaru moj)",
+                explanation: "Ovo su DOVE koje počinju sa 'Rabbi' (Gospodaru moj): za znanje i olakšanje."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'U suri El-Ihlas Allah kaže da ima sina.'",
+                options: ["El-Ihlas NEGIRA da Allah ima sina", "Nema greške", "To je u drugoj suri", "Allah ima kćerku, ne sina"],
+                answer: "El-Ihlas NEGIRA da Allah ima sina",
+                explanation: "Sura El-Ihlas JASNO NEGIRA: 'Nije rodio i rođen nije' - Allah NEMA sina ni potomaka."
+            },
+                {
+                question: "SITUACIJA: Kemal ulazi u džamiju. Koju dovu uči?",
+                options: ["Estagfirullah", "Allahummeftah li ebvabe rahmetik", "Bismillah samo", "Elhamdulillah"],
+                answer: "Allahummeftah li ebvabe rahmetik",
+                explanation: "'Allahummeftah li ebvabe rahmetik' (Allahu, otvori mi vrata Svoje milosti) - dova pri ulasku u džamiju."
+            }
+            ]
+        };
+    </script>
+
+    <!-- Centralizovani JavaScript Engine -->
+    <script src="../core/quiz-engine.js"></script>
+</body>
+</html>

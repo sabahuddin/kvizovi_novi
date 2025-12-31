@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 3C</title>
+    
+    <!-- Centralizovani CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 3C</h1>
+            <p class="subtitle">Poslanici i Islamska zajednica</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+                // DA/NE PITANJA (15)
+            {
+                question: "Nuh, a.s., je pozivao svoj narod u islam 950 godina.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Nuh, a.s., je pozivao svoj narod u vjeru 950 godina, ali mu je malo ko vjerovao."
+            },
+                {
+                question: "Ibrahim, a.s., je sagradio Kabu zajedno sa sinom Ismailom.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Ibrahim, a.s., i njegov sin Ismail su sagradili Kabu po Allahovoj naredbi."
+            },
+                {
+                question: "Musa, a.s., je odrastao na faraonovom dvoru.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Musa, a.s., je kao beba pronađen u korpi na Nilu i odrastao na faraonovom dvoru."
+            },
+                {
+                question: "Isa, a.s., je umro na križu prema islamskom vjerovanju.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Prema islamu, Isa, a.s., NIJE umro na križu nego ga je Allah uzdigao Sebi."
+            },
+                {
+                question: "Muhammed, a.s., je bio pismen i znao čitati i pisati.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Muhammed, a.s., je bio nepismen (ummi) - nije znao čitati ni pisati, što je jedna od mu'džiza."
+            },
+                {
+                question: "Hidžra se dogodila 622. godine po Miladu.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Hidžra - preseljenje iz Mekke u Medinu - dogodila se 622. godine po Miladu."
+            },
+                {
+                question: "Ebu Bekr, r.a., je bio prvi halifa nakon Poslanika, a.s.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Ebu Bekr es-Siddik, r.a., je bio prvi pravovjernihalifa nakon smrti Poslanika, a.s."
+            },
+                {
+                question: "Poslanik, a.s., je na Hidžri bio sam, bez ijednog pratioca.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Poslanika, a.s., je na Hidžri pratio vjerni drug Ebu Bekr, r.a."
+            },
+                {
+                question: "Medina se prije Hidžre zvala Jesrib.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Jesrib je predislamski naziv za Medinu. Muhammed, a.s., je promijenio naziv u Medina."
+            },
+                {
+                question: "Bitka na Bedru je bila prva velika bitka muslimana.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Bitka na Bedru (2. g. po Hidžri) bila je prva velika bitka muslimana protiv mušrika Mekke."
+            },
+                {
+                question: "Poslanik, a.s., je imao samo jednu kćerku.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Poslanik, a.s., je imao četiri kćerke: Zejneb, Rukajju, Ummu Kulsum i Fatimu."
+            },
+                {
+                question: "Hadžera je bila majka Ismaila, a.s.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Hadžera je bila supruga Ibrahima, a.s., i majka Ismaila, a.s."
+            },
+                {
+                question: "Zem-Zem je izvor vode koji je potekao pod nogama Ismaila.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Zem-Zem je izvor koji je potekao ispod nogu malog Ismaila kada je Hadžera tražila vodu."
+            },
+                {
+                question: "Islamska zajednica u BiH je osnovana u 20. vijeku.",
+                options: ["DA", "NE"],
+                answer: "NE",
+                explanation: "Islamska zajednica u BiH ima korijene još od osmanskog perioda, organizirano od 1882. godine."
+            },
+                {
+                question: "Hazreti Hatidža, r.a., je bila prva supruga Poslanika, a.s.",
+                options: ["DA", "NE"],
+                answer: "DA",
+                explanation: "Hatidža, r.a., je bila prva supruga Poslanika, a.s., i prva žena koja je primila islam."
+            },
+            
+            // VIŠESTRUKI IZBOR (15)
+            {
+                question: "Koji poslanik je sagradio lađu (arku) po Allahovoj naredbi?",
+                options: ["Ibrahim, a.s.", "Musa, a.s.", "Nuh, a.s.", "Isa, a.s."],
+                answer: "DA",
+                explanation: "Nuh, a.s., je sagradio lađu (arku) da spasi vjernike od potopa."
+            },
+                {
+                question: "Kako se zvala pećina u koju su se sklonili Poslanik, a.s., i Ebu Bekr na Hidžri?",
+                options: ["Hira", "Sevr", "Nur", "Kuds"],
+                answer: "Sevr",
+                explanation: "Poslanik, a.s., i Ebu Bekr su se sklonili u pećinu Sevr na putu za Medinu."
+            },
+                {
+                question: "Ko je bila faraonova žena koja je prihvatila Musaa, a.s.?",
+                options: ["Hadžera", "Merjema", "Asija", "Fatima"],
+                answer: "Asija",
+                explanation: "Asija, faraonova žena, je prihvatila Musaa, a.s., kao svoje dijete."
+            },
+                {
+                question: "Koliko je trajala poslanička misija Muhammeda, a.s.?",
+                options: ["13 godina", "23 godine", "33 godine", "40 godina"],
+                answer: "23 godine",
+                explanation: "Poslanička misija Muhammeda, a.s., trajala je 23 godine (13 u Mekki, 10 u Medini)."
+            },
+                {
+                question: "Koji halifa je prvi prikupio Kur'an u jednu knjigu?",
+                options: ["Omer, r.a.", "Osman, r.a.", "Ebu Bekr, r.a.", "Alija, r.a."],
+                answer: "Osman",
+                explanation: "Ebu Bekr, r.a., je naredio prikupljanje Kur'ana u jednu knjigu (mushaf)."
+            },
+                {
+                question: "Kako se zove kamen u istočnom uglu Kabe?",
+                options: ["Zem-Zem", "Hadžerul-esved", "Makam Ibrahim", "Saffa"],
+                answer: "Hadžerul-esved",
+                explanation: "Hadžerul-esved (Crni kamen) se nalazi u istočnom uglu Kabe."
+            },
+                {
+                question: "Ko je prvi čovjek koji je primio islam od muškaraca?",
+                options: ["Omer, r.a.", "Ebu Bekr, r.a.", "Alija, r.a.", "Hamza, r.a."],
+                answer: "r.a.",
+                explanation: "Ebu Bekr es-Siddik, r.a., je prvi odrasli muškarac koji je primio islam."
+            },
+                {
+                question: "Koja godina se naziva 'Senetul-huzn' (Godina tuge)?",
+                options: ["Godina Hidžre", "Godina smrti Hatidže i Ebu Taliba", "Godina Bedra", "Godina osvojenja Mekke"],
+                answer: "Godina smrti Hatidže i Ebu Taliba",
+                explanation: "Senetul-huzn je godina u kojoj su umrli Hatidža, r.a., i amidža Ebu Talib."
+            },
+                {
+                question: "Koliko muslimana je učestvovalo u Bitki na Bedru?",
+                options: ["100", "313", "700", "1000"],
+                answer: "313",
+                explanation: "U Bitki na Bedru učestvovalo je 313 muslimana protiv oko 1000 mušrika."
+            },
+                {
+                question: "Ko je od Poslanikove, a.s., djece nadživio Poslanika?",
+                options: ["Ibrahim", "Kasim", "Fatima", "Abdullah"],
+                answer: "Fatima",
+                explanation: "Od sve djece, samo Fatima, r.a., je nadživjela Poslanika, a.s. (umrla 6 mjeseci nakon njega)."
+            },
+                {
+                question: "Koja je prva džamija u islamu?",
+                options: ["Mesdžidul-Aksa", "Mesdžidul-Haram", "Mesdžid Kuba", "Poslanikova džamija"],
+                answer: "Mesdžid Kuba",
+                explanation: "Mesdžid Kuba je prva džamija u islamu, sagrađena na putu Hidžre."
+            },
+                {
+                question: "Ko je bio vodič na Hidžri koji je poznavao pustinjske puteve?",
+                options: ["Bilal", "Abdullah ibn Urejkit", "Suraka", "Hamza"],
+                answer: "Abdullah ibn Urejkit",
+                explanation: "Abdullah ibn Urejkit je bio vješti pustinjski vodič koji je vodio karavanu na Hidžri."
+            },
+                {
+                question: "Koji halifa je standardizirao Kur'an u jednu verziju?",
+                options: ["Ebu Bekr, r.a.", "Omer, r.a.", "Osman, r.a.", "Alija, r.a."],
+                answer: "Omer",
+                explanation: "Osman, r.a., je standardizirao Kur'an u jednu verziju i raspodijelio kopije."
+            },
+                {
+                question: "Kako se zove mjesto gdje hadžije borave noć prije odlaska na Arefat?",
+                options: ["Muzdelifa", "Mina", "Safa", "Merva"],
+                answer: "Mina",
+                explanation: "Mina je mjesto gdje hadžije borave prije i poslije Arefata."
+            },
+                {
+                question: "Ko je u snu vidio da treba žrtvovati sina?",
+                options: ["Nuh, a.s.", "Musa, a.s.", "Ibrahim, a.s.", "Jakub, a.s."],
+                answer: "Musa",
+                explanation: "Ibrahim, a.s., je u snu dobio naredbu da žrtvuje sina Ismaila, ali Allah ga je iskupio kurbanom."
+            },
+            
+            // PAMETNA PITANJA (70)
+            {
+                question: "IZBACI ULJEZA: Ko NIJE od četiri pravedne halife?",
+                options: ["Ebu Bekr", "Omer", "Hamza", "Osman"],
+                answer: "Musa",
+                explanation: "Četiri pravedne halife su: Ebu Bekr, Omer, Osman i Alija. Hamza je bio amidža Poslanika, a.s."
+            },
+                {
+                question: "KO SAM JA? Ja sam poslanik koji je 950 godina pozivao svoj narod, a sagradio sam lađu.",
+                options: ["Ibrahim, a.s.", "Musa, a.s.", "Nuh, a.s.", "Isa, a.s."],
+                answer: "Musa",
+                explanation: "Nuh, a.s., je pozivao svoj narod 950 godina i sagradio lađu (arku) za spas vjernika."
+            },
+                {
+                question: "DOPUNI: Hira : objava = Sevr : ___",
+                options: ["Namaz", "Hidžra", "Bitka", "Hadž"],
+                answer: "Hidžra",
+                explanation: "U pećini Hira je počela objava, a u pećini Sevr se Poslanik sklonio na HIDŽRI."
+            },
+                {
+                question: "ANALOGIJA: Ibrahim : Kaba = Nuh : ___",
+                options: ["Arka (lađa)", "Štap", "Tablica", "Knjiga"],
+                answer: "Arka (lađa)",
+                explanation: "Ibrahim, a.s., je sagradio Kabu, a Nuh, a.s., je sagradio ARKU (lađu)."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Ebu Bekr, Omer, Osman, Alija",
+                options: ["Poslanici", "Četiri pravedne halife", "Ashabi na Bedru", "Muhažiri"],
+                answer: "Četiri pravedne halife",
+                explanation: "Ovo su četiri pravedne halife (hulefai-rašidin) koji su vladali nakon Poslanika, a.s."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Poslanik, a.s., je na Hidžri putovao sam bez ijednog pratioca.'",
+                options: ["S njim je bio Ebu Bekr", "S njim je bio Omer", "Nema greške", "S njim je bio Alija"],
+                answer: "S njim je bio Ebu Bekr",
+                explanation: "Poslanik, a.s., je na Hidžri putovao sa vjernim drugom EBU BEKROM, r.a."
+            },
+                {
+                question: "KO SAM JA? Ja sam majka Musaa, a.s., koja ga je stavila u korpu i pustila niz Nil.",
+                options: ["Asija", "Hadžera", "Juhaned", "Merjema"],
+                answer: "Juhaned",
+                explanation: "Juhaned (Yukhabed) je majka Musaa, a.s., koja ga je pustila niz Nil da ga spasi."
+            },
+                {
+                question: "SITUACIJA: Mušrici dolaze do pećine Sevr. Šta ih je uvjerilo da u njoj niko nije?",
+                options: ["Kamenje", "Paukova mreža i golubičino gnijezdo", "Zvuk vode", "Tama"],
+                answer: "Paukova mreža i golubičino gnijezdo",
+                explanation: "Pauk je ispleo mrežu, a golubica snijela jaja na ulazu, pa mušrici nisu ušli u pećinu."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada događajima iz života Ibrahima, a.s.?",
+                options: ["Gradnja Kabe", "Bacanje u vatru", "Razdvajanje mora", "Žrtvovanje sina"],
+                answer: "Razdvajanje mora",
+                explanation: "Razdvajanje mora je mu'džiza MUSE, a.s., ne Ibrahima, a.s."
+            },
+                {
+                question: "DOPUNI NIZ: Mekka (13 godina), Medina (___)",
+                options: ["5 godina", "10 godina", "15 godina", "20 godina"],
+                answer: "10 godina",
+                explanation: "Poslanička misija: 13 godina u Mekki + 10 godina u Medini = 23 godine ukupno."
+            },
+                {
+                question: "ANALOGIJA: Hatidža : prva muslimanka = Ebu Bekr : ___",
+                options: ["Prvi musliman", "Drugi halifa", "Amidža Poslanika", "Pisac Kur'ana"],
+                answer: "Prvi musliman",
+                explanation: "Hatidža, r.a., je prva žena koja je primila islam, a Ebu Bekr prvi odrasli muškarac."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Sevr, Hira, Nur",
+                options: ["Džamije", "Pećine", "Rijeke", "Planine"],
+                answer: "Pećine",
+                explanation: "Sevr i Hira su pećine (Nur je brdo na kojem je pećina Hira) vezane za Poslanika, a.s."
+            },
+                {
+                question: "KO SAM JA? Ja sam žena koja je trčala između Safe i Merve tražeći vodu za sina.",
+                options: ["Asija", "Hadžera", "Sara", "Merjema"],
+                answer: "Hadžera",
+                explanation: "Hadžera je trčala između Safe i Merve tražeći vodu za sina Ismaila."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Bitka na Bedru se dogodila prve godine po Hidžri.'",
+                options: ["Dogodila se druge godine po Hidžri", "Dogodila se treće godine", "Nema greške", "Dogodila se prije Hidžre"],
+                answer: "Dogodila se druge godine po Hidžri",
+                explanation: "Bitka na Bedru se dogodila DRUGE godine po Hidžri (624. g.)."
+            },
+                {
+                question: "SITUACIJA: Ibrahim, a.s., je bačen u vatru. Šta se dogodilo?",
+                options: ["Izgorio je", "Vatra je postala hladna i spasonosna", "Pobjegao je", "Vatra se ugasila"],
+                answer: "Vatra je postala hladna i spasonosna",
+                explanation: "Allah je naredio vatri da bude hladna i spasonosna za Ibrahima, a.s."
+            },
+                {
+                question: "DOPUNI: Potop : Nuh = Razdvajanje mora : ___",
+                options: ["Ibrahim", "Isa", "Musa", "Jakub"],
+                answer: "Musa",
+                explanation: "Allah je spasio Nuha od potopa, a MUSI, a.s., razdvojio more."
+            },
+                {
+                question: "IZBACI ULJEZA: Ko NE pripada Poslanikovoj, a.s., porodici?",
+                options: ["Fatima", "Hatidža", "Asija", "Aiša"],
+                answer: "Asija",
+                explanation: "Asija je bila faraonova žena, ne iz Poslanikove porodice. Fatima, Hatidža i Aiša jesu."
+            },
+                {
+                question: "KO SAM JA? Ja sam melek koji je donosio objavu Muhammedu, a.s., 23 godine.",
+                options: ["Mikail", "Israfil", "Džibril", "Azrail"],
+                answer: "Džibril",
+                explanation: "Džibril, a.s., je donosio Kur'ansku objavu Muhammedu, a.s., tokom 23 godine."
+            },
+                {
+                question: "ANALOGIJA: Kuba : prva džamija = Bedr : ___",
+                options: ["Prva Hidžra", "Prva bitka", "Prvi hadž", "Prvi post"],
+                answer: "Prva bitka",
+                explanation: "Mesdžid Kuba je prva džamija, a Bedr je mjesto PRVE VELIKE BITKE muslimana."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Zejneb, Rukajja, Ummu Kulsum, Fatima",
+                options: ["Poslanikove supruge", "Poslanikove kćerke", "Pravedne halife", "Ashabi"],
+                answer: "Poslanikove kćerke",
+                explanation: "Ovo su četiri kćerke Poslanika, a.s."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Isa, a.s., je imao oca Jusufa, a.s.'",
+                options: ["Isa, a.s., je rođen bez oca", "Nema greške", "Otac mu je Imran", "Otac mu je Zekerija"],
+                answer: "Isa",
+                explanation: "Isa, a.s., je rođen BEZ OCA - to je jedna od njegovih mu'džiza."
+            },
+                {
+                question: "SITUACIJA: Suraka juri za Poslanikom na Hidžri. Šta mu se dogodilo?",
+                options: ["Uhvatio ga je", "Noge konja su propale u pijesak", "Ubijen je", "Primio je islam"],
+                answer: "Noge konja su propale u pijesak",
+                explanation: "Noge Surakinog konja su propale u pijesak i morao je moliti Poslanika za pomoć."
+            },
+                {
+                question: "DOPUNI NIZ: Ebu Bekr, Omer, Osman, ___",
+                options: ["Hamza", "Abbas", "Alija", "Bilal"],
+                answer: "Alija",
+                explanation: "Četiri pravedne halife redom: Ebu Bekr, Omer, Osman i ALIJA, r.a."
+            },
+                {
+                question: "KO SAM JA? Ja sam prvo dijete Ebu Bekra koje je pomagalo Poslaniku na Hidžri.",
+                options: ["Abdullah", "Esma", "Aiša", "Abdurrahman"],
+                answer: "Esma",
+                explanation: "Esma i Abdullah, djeca Ebu Bekra, su pomagali Poslaniku i Ebu Bekru na Hidžri."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada mu'džizama Musaa, a.s.?",
+                options: ["Štap koji se pretvara u zmiju", "Razdvajanje mora", "Oživljavanje mrtvih", "Bijela ruka"],
+                answer: "Oživljavanje mrtvih",
+                explanation: "Oživljavanje mrtvih je mu'džiza ISE, a.s., ne Musaa, a.s."
+            },
+                {
+                question: "ANALOGIJA: Safa i Merva : sa'j = Kaba : ___",
+                options: ["Namaz", "Tavaf", "Vakfa", "Ihram"],
+                answer: "Tavaf",
+                explanation: "Sa'j se obavlja između Safe i Merve, a TAVAF se obavlja oko Kabe."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? 313 muslimana, 2. godina po Hidžri, pobjeda",
+                options: ["Bitka na Uhudu", "Bitka na Bedru", "Osvojenje Mekke", "Bitka na Hendeku"],
+                answer: "Bitka na Bedru",
+                explanation: "Bitka na Bedru: 313 muslimana, 2. godina po Hidžri, velika pobjeda."
+            },
+                {
+                question: "KO SAM JA? Ja sam dijete koje je ostavljeno u pustinji, a ispod mojih nogu je potekao Zem-Zem.",
+                options: ["Ishak", "Ismail", "Jakub", "Jusuf"],
+                answer: "Ismail",
+                explanation: "Ismail, a.s., sin Ibrahima, ispod čijih nogu je potekao izvor Zem-Zem."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Muhammed, a.s., je bio obrazovan i znao čitati i pisati.'",
+                options: ["Bio je nepismen (ummi)", "Nema greške", "Znao je samo čitati", "Znao je samo pisati"],
+                answer: "Bio je nepismen (ummi)",
+                explanation: "Muhammed, a.s., je bio nepismen (ummi) - nije znao čitati ni pisati."
+            },
+                {
+                question: "SITUACIJA: Ibrahim, a.s., gleda zvijezdu, Mjesec pa Sunce. Šta zaključuje?",
+                options: ["Da su oni bogovi", "Da nestaju i nisu dostojni obožavanja", "Da je najjače Sunce", "Ništa"],
+                answer: "Da nestaju i nisu dostojni obožavanja",
+                explanation: "Ibrahim, a.s., je zaključio da sve što nestaje nije dostojno obožavanja - samo Allah je Bog."
+            },
+                {
+                question: "DOPUNI: Mesdžidul-Haram : Mekka = Mesdžidul-Aksa : ___",
+                options: ["Medina", "Kudus (Jerusalem)", "Kairo", "Damask"],
+                answer: "Kudus (Jerusalem)",
+                explanation: "Mesdžidul-Haram je u Mekki, a Mesdžidul-Aksa je u KUDUSU (Jerusalemu)."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NIJE uradio Poslanik, a.s., po dolasku u Medinu?",
+                options: ["Sagradio džamiju", "Pobratimio ensarije i muhadžire", "Napisao Medinski ustav", "Osvojio Mekku"],
+                answer: "Osvojio Mekku",
+                explanation: "Osvajanje Mekke se dogodilo 8. godine po Hidžri, ne odmah po dolasku u Medinu."
+            },
+                {
+                question: "KO SAM JA? Ja sam prva žena koja je primila islam i prva Poslanikova supruga.",
+                options: ["Aiša", "Fatima", "Hatidža", "Hafsa"],
+                answer: "Hatidža",
+                explanation: "Hatidža, r.a., je bila prva Poslanikova supruga i prva žena koja je primila islam."
+            },
+                {
+                question: "ANALOGIJA: Faraon : Musa = Nemrud : ___",
+                options: ["Nuh", "Ibrahim", "Isa", "Jakub"],
+                answer: "Ibrahim",
+                explanation: "Faraon je bio tiranin u vrijeme Muse, a Nemrud u vrijeme IBRAHIMA, a.s."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Evs i Hazredž",
+                options: ["Mekanska plemena", "Medinska plemena", "Jevrejska plemena", "Abesinska plemena"],
+                answer: "Medinska plemena",
+                explanation: "Evs i Hazredž su dva medinska plemena koja su bila u dugogodišnjem sukobu prije islama."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Omer, r.a., je bio prvi halifa nakon Poslanika, a.s.'",
+                options: ["Prvi je bio Ebu Bekr, Omer je bio drugi", "Nema greške", "Prvi je bio Alija", "Prvi je bio Osman"],
+                answer: "Prvi je bio Ebu Bekr",
+                explanation: "PRVI halifa je bio Ebu Bekr, a Omer, r.a., je bio DRUGI halifa."
+            },
+                {
+                question: "SITUACIJA: Poslanik dolazi u Medinu. Gdje se deva zaustavila?",
+                options: ["Kod Ebu Bekra", "Na parceli dva jetima", "Kod Ensarija", "Na trgu"],
+                answer: "Na parceli dva jetima",
+                explanation: "Poslanikova deva se zaustavila na parceli dva jetima (siročadi) gdje je kasnije sagrađena džamija."
+            },
+                {
+                question: "DOPUNI NIZ: Nuh, Ibrahim, Musa, Isa, ___",
+                options: ["Adem", "Muhammed", "Davud", "Sulejman"],
+                answer: "Muhammed",
+                explanation: "Ulul-azm poslanici (poslanici čvrste odlučnosti): Nuh, Ibrahim, Musa, Isa i MUHAMMED, a.s."
+            },
+                {
+                question: "KO SAM JA? Ja sam halifa koji je standardizirao Kur'an u jednu verziju.",
+                options: ["Ebu Bekr", "Omer", "Osman", "Alija"],
+                answer: "Osman",
+                explanation: "Osman, r.a., je standardizirao Kur'an u jednu verziju i raspodijelio kopije."
+            },
+                {
+                question: "IZBACI ULJEZA: Ko NIJE bio sin Ibrahima, a.s.?",
+                options: ["Ismail", "Ishak", "Jakub", "Musa"],
+                answer: "Musa",
+                explanation: "Musa, a.s., NIJE sin Ibrahima. Ismail i Ishak su sinovi, a Jakub je unuk Ibrahima."
+            },
+                {
+                question: "ANALOGIJA: Akaba : prisega = Bedr : ___",
+                options: ["Prisega", "Bitka", "Hadž", "Objava"],
+                answer: "Bitka",
+                explanation: "Na Akabi su davane prisege, a na Bedru je bila BITKA."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Muhadžiri i Ensarije",
+                options: ["Mekanski muslimani", "Medinski muslimani", "Pobratimljeni muslimani iz Mekke i Medine", "Jevreji"],
+                answer: "Pobratimljeni muslimani iz Mekke i Medine",
+                explanation: "Muhadžiri (iseljeni iz Mekke) i Ensarije (pomagači iz Medine) su pobratimljeni."
+            },
+                {
+                question: "KO SAM JA? Ja sam halifa poznat po pravednosti, a uveden je hidžretski kalendar za mog hilafeta.",
+                options: ["Ebu Bekr", "Omer", "Osman", "Alija"],
+                answer: "Omer",
+                explanation: "Omer, r.a., je bio poznat po pravednosti i za njegovog hilafeta je uveden hidžretski kalendar."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Poslanik, a.s., je imao 10 sinova koji su svi nadživjeli oca.'",
+                options: ["Imao je samo nekoliko sinova i svi su umrli prije njega", "Nema greške", "Imao je 10 kćerki", "Nije imao djece"],
+                answer: "Imao je samo nekoliko sinova i svi su umrli prije njega",
+                explanation: "Poslanik, a.s., je imao 3 sina (Kasim, Abdullah, Ibrahim) i svi su umrli prije njega."
+            },
+                {
+                question: "SITUACIJA: Musa, a.s., bježi od faraona. Pred njim je more. Šta se događa?",
+                options: ["Musa pliva", "More se razdvaja", "Musa se vraća", "Dolazi brod"],
+                answer: "More se razdvaja",
+                explanation: "Allah je razdvojio more i Musa, a.s., je prešao sa svojim narodom."
+            },
+                {
+                question: "DOPUNI: Hadžerul-esved : Kaba = Makam Ibrahim : ___",
+                options: ["Medina", "Mjesto gdje je Ibrahim stajao kod gradnje", "Mina", "Muzdelifa"],
+                answer: "Mjesto gdje je Ibrahim stajao kod gradnje",
+                explanation: "Hadžerul-esved je u Kabi, a Makam Ibrahim je mjesto gdje je IBRAHIM STAJAO kod gradnje Kabe."
+            },
+                {
+                question: "IZBACI ULJEZA: Šta NE pripada prvim stvarima u Medini?",
+                options: ["Gradnja džamije", "Bratimljenje", "Medinski ustav", "Bitka na Uhudu"],
+                answer: "Bitka na Uhudu",
+                explanation: "Bitka na Uhudu je bila 3. godine, nije od prvih stvari u Medini."
+            },
+                {
+                question: "KO SAM JA? Ja sam žena kroz čiju kuću je Isa, a.s., pričao kao beba u kolijevci.",
+                options: ["Asija", "Sara", "Merjema", "Hadžera"],
+                answer: "Merjema",
+                explanation: "Merjema je majka Ise, a.s., koji je progovorio kao beba u kolijevci."
+            },
+                {
+                question: "ANALOGIJA: Faraon : utopljen = Nemrud : ___",
+                options: ["Spaljen", "Ubijen komorcem", "Utopljen", "Pobjegao"],
+                answer: "Ubijen komorcem",
+                explanation: "Faraon je utopljen u moru, a Nemruda je UBIO KOMARAC koji mu je ušao u nos."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Sara i Hadžera",
+                options: ["Poslanikove supruge", "Ibrahimove supruge", "Musine sestre", "Pravedne halife"],
+                answer: "Ibrahimove supruge",
+                explanation: "Sara i Hadžera su bile supruge Ibrahima, a.s."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Mesdžidul-Aksa je u Mekki.'",
+                options: ["Mesdžidul-Aksa je u Kudusu (Jerusalemu)", "Nema greške", "Mesdžidul-Aksa je u Medini", "Mesdžidul-Aksa je u Kairu"],
+                answer: "Mesdžidul-Aksa je u Kudusu (Jerusalemu)",
+                explanation: "Mesdžidul-Aksa je u KUDUSU (Jerusalemu), ne u Mekki."
+            },
+                {
+                question: "SITUACIJA: Ibrahim, a.s., je u snu dobio naredbu da žrtvuje sina. Šta se dogodilo?",
+                options: ["Odbio je", "Allah je poslao kurbana umjesto sina", "Žrtvovao je sina", "Probudio se"],
+                answer: "Allah je poslao kurbana umjesto sina",
+                explanation: "Kada je Ibrahim pokazao poslušnost, Allah je poslao ovna (kurbana) umjesto sina Ismaila."
+            },
+                {
+                question: "DOPUNI NIZ: Hasan, Husejn, Muhsin, ___",
+                options: ["Ibrahim", "Ummu Kulsum", "Kasim", "Abdullah"],
+                answer: "Ummu Kulsum",
+                explanation: "Djeca Fatime i Alije: Hasan, Husejn, Muhsin, UMMU KULSUM i Zejneb."
+            },
+                {
+                question: "KO SAM JA? Ja sam Poslanikov, a.s., amidžić koji je ostao u Poslanikovoj postelji noć Hidžre.",
+                options: ["Hamza", "Abbas", "Alija", "Džafer"],
+                answer: "Alija",
+                explanation: "Alija ibn Ebi Talib je ostao u Poslanikovoj postelji da zavara mušrike noć Hidžre."
+            },
+                {
+                question: "IZBACI ULJEZA: Koje mjesto NIJE vezano za Hidžru?",
+                options: ["Pećina Sevr", "Mesdžid Kuba", "Uhud", "Jesrib"],
+                answer: "Uhud",
+                explanation: "Uhud je mjesto bitke (3. g. po Hidžri), nije direktno vezano za samu Hidžru."
+            },
+                {
+                question: "ANALOGIJA: Potop : nevjernici Nuha = Crno more : ___",
+                options: ["Nevjernici Ibrahima", "Faraon i vojska", "Nemrud", "Nevjernici Ise"],
+                answer: "Faraon i vojska",
+                explanation: "U potopu su stradali nevjernici Nuha, a u moru (Crveno more) faraon i njegova vojska."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? Gazi Husrev-beg, Ferhadija, Aladža",
+                options: ["Poslanici", "Pravedne halife", "Džamije u BiH", "Ashabi"],
+                answer: "Džamije u BiH",
+                explanation: "Gazi Husrev-begova, Ferhadija i Aladža su poznate džamije u BiH."
+            },
+                {
+                question: "KO SAM JA? Ja sam prvi muezin u islamu.",
+                options: ["Omer", "Bilal", "Hamza", "Ebu Bekr"],
+                answer: "Bilal",
+                explanation: "Bilal ibn Rebah, r.a., je bio prvi muezin u islamu."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Poslanik, a.s., je obavio hadž više puta u životu.'",
+                options: ["Obavio je hadž samo jednom (Oproštajni hadž)", "Nema greške", "Nije nikada obavio hadž", "Obavio je dva puta"],
+                answer: "Obavio je hadž samo jednom (Oproštajni hadž)",
+                explanation: "Poslanik, a.s., je obavio hadž samo JEDNOM - Oproštajni hadž (Hadždžetul-Weda')."
+            },
+                {
+                question: "SITUACIJA: Poslanik, a.s., je na Oproštajnom hadžu. Šta je objavljeno toga dana?",
+                options: ["Sura El-Fatiha", "Ajet o upotpunjenju vjere", "Sura El-Ihlas", "Ništa"],
+                answer: "Ajet o upotpunjenju vjere",
+                explanation: "Na Arefatu je objavljen ajet: 'Danas sam vam vjeru vašu usavršio...' (El-Maide, 3)"
+            },
+                {
+                question: "DOPUNI: Ensarije : pomagači = Muhadžiri : ___",
+                options: ["Učitelji", "Iseljenici", "Trgovci", "Ratnici"],
+                answer: "Iseljenici",
+                explanation: "Ensarije znači pomagači (iz Medine), a Muhadžiri znači ISELJENICI (iz Mekke)."
+            },
+                {
+                question: "IZBACI ULJEZA: Ko NIJE od ulul-azm poslanika?",
+                options: ["Nuh", "Ibrahim", "Davud", "Isa"],
+                answer: "Davud",
+                explanation: "Ulul-azm (poslanici čvrste odlučnosti) su: Nuh, Ibrahim, Musa, Isa i Muhammed. DAVUD nije od njih."
+            },
+                {
+                question: "KO SAM JA? Ja sam mjesto na kojem se Poslanik, a.s., rodio.",
+                options: ["Medina", "Taif", "Mekka", "Kudus"],
+                answer: "Mekka",
+                explanation: "Poslanik, a.s., je rođen u MEKKI 571. godine (Godina slona)."
+            },
+                {
+                question: "ANALOGIJA: Hidžra : 1. godina = Bedr : ___",
+                options: ["1. godina", "2. godina", "3. godina", "4. godina"],
+                answer: "2. godina",
+                explanation: "Hidžra je 1. godina hidžretskog kalendara, a Bitka na Bedru je 2. GODINA po Hidžri."
+            },
+                {
+                question: "ŠTA JE ZAJEDNIČKO? 12. rebiul-evvel, preseljenje na ahiret, 11. godina po Hidžri",
+                options: ["Hidžra", "Smrt Poslanika, a.s.", "Rođenje Poslanika, a.s.", "Bitka na Bedru"],
+                answer: "Smrt Poslanika",
+                explanation: "Poslanik, a.s., je preselio na ahiret 12. rebiul-evvela, 11. godine po Hidžri."
+            },
+                {
+                question: "PRONAĐI GREŠKU: 'Alija, r.a., je bio prvi halifa nakon Poslanika.'",
+                options: ["Alija je bio četvrti halifa", "Nema greške", "Alija nije bio halifa", "Alija je bio drugi halifa"],
+                answer: "Alija je bio četvrti halifa",
+                explanation: "Alija, r.a., je bio ČETVRTI halifa. Redoslijed: Ebu Bekr, Omer, Osman, Alija."
+            }
+            ]
+        };
+    </script>
+
+    <!-- Centralizovani JavaScript Engine -->
+    <script src="../core/quiz-engine.js"></script>
+</body>
+</html>
