@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 2B</title>
+    
+    <!-- Centralizovani CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 2B</h1>
+            <p class="subtitle">Islamski Šarti</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+// ===== DA/NE PITANJA (20) =====
+            {question: 'Islamskih šartova ima pet.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Pet islamskih šartova: šehadet, namaz, post, zekat i hadž.'},
+            {question: 'Prvi islamski šart je namaz.', options: ['DA', 'NE'], answer: 'NE', explanation: 'Netačno! Prvi islamski šart je KELIMEI-ŠEHADET, a namaz je drugi.'},
+            {question: 'Musliman je dužan klanjati pet namaza dnevno.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Pet dnevnih namaza: sabah, podne, ikindija, akšam i jacija.'},
+            {question: 'Namaz se može klanjati u bilo koje vrijeme.', options: ['DA', 'NE'], answer: 'NE', explanation: 'Netačno! Postoje tri vremena kada se NE SMIJE klanjati: izlazak sunca, zalazak i zenit.'},
+            {question: 'Sehvi-sedžda se čini za namjerne greške u namazu.', options: ['DA', 'NE'], answer: 'NE', explanation: 'Netačno! Sehvi-sedžda se čini za NENAMJERNE greške u namazu.'},
+            {question: 'Ako propustim manje od 6 namaza, prvo klanjam propuštene pa onda redovni.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Ako je propušteno manje od 6 namaza, prvo se naklanjava faita, pa vaktija.'},
+            {question: 'Namaz u džematu vrijedi 27 puta više od pojedinačnog.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Poslanik, a.s., je rekao da namaz u džematu vrijedi 27 puta više.'},
+            {question: 'Post je sustezanje od jela i pića od izlaska do zalaska sunca.', options: ['DA', 'NE'], answer: 'NE', explanation: 'Netačno! Post traje od ZORE (ferdžr) do zalaska sunca, ne od izlaska sunca.'},
+            {question: 'Zekat je propisan druge godine po Hidžri.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Zekat je propisan 2. godine po Hidžri u Medini.'},
+            {question: 'Hadž se obavlja od 9. do 13. zul-hidžeta.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Obredi hadža traju od 9. do 13. zul-hidžeta.'},
+            {question: 'Tavaf je obilazak oko Kabe sedam puta.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Tavaf je sedam obilazaka oko Kabe i jedan je od farzova hadža.'},
+            {question: 'Džuma-namaz se klanja umjesto podne-namaza petkom.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Džuma je sedmični namaz koji zamjenjuje podne petkom.'},
+            {question: 'Teravih-namaz se klanja tokom cijele godine.', options: ['DA', 'NE'], answer: 'NE', explanation: 'Netačno! Teravih se klanja samo u mjesecu RAMAZANU, poslije jacije.'},
+            {question: 'Vitr-namaz ima tri rekata.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Vitr-namaz ima 3 rekata i klanja se poslije jacije.'},
+            {question: 'Bajram-namaz se klanja u džematu.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Bajram-namaz je poseban namaz koji se klanja u džematu.'},
+            {question: 'Sadekatul-fitr se daje na kraju ramazana.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Sadekatul-fitr čisti post i daje se na kraju ramazana.'},
+            {question: 'Ko negira obavezu zekata, postaje nevjernik.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Ko zaniječe dužnost davanja zekata, postaje nevjernik (kafir).'},
+            {question: 'Ihram je posebna hadžska odjeća.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Ihram je bijela, nešivena hadžska odjeća za muškarce.'},
+            {question: 'Itikaf je boravak u džamiji zadnjih 10 dana ramazana.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Itikaf je povlačenje u džamiju radi ibadeta zadnjih 10 dana ramazana.'},
+            {question: 'Čistoća je pola vjere.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Poslanik, a.s., je rekao: "Čistoća je pola vjere." (Muslim)'},
+
+            // ===== VIŠESTRUKI IZBOR (30) =====
+            {question: 'Koliko ima islamskih šartova?', options: ['3', '4', '5', '6'], answer: '5', explanation: 'Pet islamskih šartova: šehadet, namaz, post, zekat i hadž.'},
+            {question: 'Prvi islamski šart je:', options: ['Namaz', 'Kelimei-šehadet', 'Post', 'Zekat'], answer: 'Kelimei-šehadet', explanation: 'KELIMEI-ŠEHADET je prvi islamski šart - svjedočenje vjere.'},
+            {question: 'Drugi islamski šart je:', options: ['Šehadet', 'Namaz', 'Post', 'Hadž'], answer: 'Namaz', explanation: 'NAMAZ je drugi islamski šart - najpotpuniji način pokornosti Allahu.'},
+            {question: 'Treći islamski šart je:', options: ['Namaz', 'Zekat', 'Post', 'Hadž'], answer: 'Zekat', explanation: 'ZEKAT je treći islamski šart - izdvajanje dijela imovine.'},
+            {question: 'Četvrti islamski šart je:', options: ['Zekat', 'Post', 'Hadž', 'Namaz'], answer: 'Post', explanation: 'POST u ramazanu je četvrti islamski šart.'},
+            {question: 'Peti islamski šart je:', options: ['Zekat', 'Post', 'Hadž', 'Namaz'], answer: 'Hadž', explanation: 'HADŽ je peti islamski šart - hodočašće u Mekku.'},
+            {question: 'Koliko dnevnih namaza klanja musliman?', options: ['3', '4', '5', '7'], answer: '5', explanation: 'Pet dnevnih namaza: sabah, podne, ikindija, akšam, jacija.'},
+            {question: 'Koji namaz se klanja od zore do izlaska sunca?', options: ['Podne', 'Sabah', 'Akšam', 'Jacija'], answer: 'Sabah', explanation: 'SABAH se klanja od pojave zore do izlaska sunca.'},
+            {question: 'Kada se klanja akšam-namaz?', options: ['Ujutro', 'U podne', 'Kada sunce zađe', 'Kada noć padne'], answer: 'Kada sunce zađe', explanation: 'AKŠAM se klanja kada sunce zađe.'},
+            {question: 'Koliko rekata ima podne-namaz (sunnet+farz+sunsunnet)?', options: ['8', '10', '12', '14'], answer: '10', explanation: 'Podne: 4 sunneta + 4 farza + 2 sunsunneta = 10 rekata.'},
+            {question: 'Šta je sehvi-sedžda?', options: ['Sedžda na početku namaza', 'Naknadna sedžda za grešku', 'Sedžda zahvalnosti', 'Sedžda u Kur\'anu'], answer: 'Naknadna sedžda za grešku', explanation: 'SEHVI-SEDŽDA je naknadna sedžda za nenamjernu grešku u namazu.'},
+            {question: 'Šta je faita-namaz?', options: ['Propušteni namaz', 'Namaz u džematu', 'Noćni namaz', 'Bajram-namaz'], answer: 'Propušteni namaz', explanation: 'FAITA je propušteni namaz koji se mora naklanjati.'},
+            {question: 'Šta je vaktija-namaz?', options: ['Propušteni namaz', 'Namaz u tekućem vremenu', 'Noćni namaz', 'Sedmični namaz'], answer: 'Namaz u tekućem vremenu', explanation: 'VAKTIJA je namaz čije vrijeme još traje - tekući namaz.'},
+            {question: 'Kada stignem na ruku\' u džematu, smatram da sam stigao na taj rekat ako:', options: ['Vidim imama', 'Kažem tekbir', 'Kažem subhane rabbijel azim jednom', 'Vidim džemat'], answer: 'Kažem subhane rabbijel azim jednom', explanation: 'Ako na ruku\'u stignem izgovoriti "subhane rabbijel azim" jednom, stigao sam na rekat.'},
+            {question: 'Koji mjesec je propisan za post?', options: ['Muharrem', 'Redžeb', 'Ramazan', 'Zul-hidže'], answer: 'Ramazan', explanation: 'RAMAZAN je mjesec u kojem je propisan obavezni post.'},
+            {question: 'Šta je sehur?', options: ['Vrijeme iftara', 'Vrijeme pripreme za post', 'Noćni namaz', 'Dova za post'], answer: 'Vrijeme pripreme za post', explanation: 'SEHUR je vrijeme pripreme za post koje traje do pojave zore.'},
+            {question: 'Šta je imsak?', options: ['Trenutak iftara', 'Trenutak početka posta', 'Noćni namaz', 'Dova za iftar'], answer: 'Trenutak početka posta', explanation: 'IMSAK je trenutak kada počinje post - prestanak jela i pića.'},
+            {question: 'Šta je iftar?', options: ['Početak posta', 'Završetak posta', 'Noćni namaz', 'Vrsta hrane'], answer: 'Završetak posta', explanation: 'IFTAR je vrijeme završetka posta - prekidanje posta pri zalasku sunca.'},
+            {question: 'Čime se Poslanik, a.s., iftario?', options: ['Hljebom', 'Hurmom ili vodom', 'Mesom', 'Mlijekom'], answer: 'Hurmom ili vodom', explanation: 'Poslanik je rekao: "Neka se iftari hurmom, a ako ne nađe, vodom."'},
+            {question: 'Šta je mukabela?', options: ['Noćni namaz', 'Zajedničko učenje Kur\'ana', 'Vrsta posta', 'Hadžski obred'], answer: 'Zajedničko učenje Kur\'ana', explanation: 'MUKABELA je zajedničko učenje Kur\'ana u džamiji tokom ramazana.'},
+            {question: 'Teravih-namaz se klanja:', options: ['Ujutro', 'U podne', 'Poslije jacije u ramazanu', 'Petkom'], answer: 'Poslije jacije u ramazanu', explanation: 'TERAVIH se klanja u ramazanskim noćima, poslije jacija-namaza.'},
+            {question: 'Šta je nisab?', options: ['Vrsta namaza', 'Količina imovine za zekat', 'Hadžski obred', 'Vrsta posta'], answer: 'Količina imovine za zekat', explanation: 'NISAB je količina imovine koju ako osoba posjeduje, dužna je dati zekat.'},
+            {question: 'Kako se zove fond za zekat u BiH?', options: ['Vakuf', 'Bejtul-mal', 'Sadaka', 'Infak'], answer: 'Bejtul-mal', explanation: 'BEJTUL-MAL je fond Islamske zajednice u koji se daje zekat.'},
+            {question: 'Koji su farzovi hadža?', options: ['Ihram, Arefat, tavaf', 'Namaz, post, zekat', 'Sehur, iftar, teravih', 'Safa, Merva, Mina'], answer: 'Ihram, Arefat, tavaf', explanation: 'Tri farza hadža: ihram, boravak na Arefatu i tavaf oko Kabe.'},
+            {question: 'Kada hadžije borave na Arefatu?', options: ['1. zul-hidžeta', '9. zul-hidžeta', '10. zul-hidžeta', '15. zul-hidžeta'], answer: '9. zul-hidžeta', explanation: '9. zul-hidžeta hadžije borave na brdu Arefat - ključni dan hadža.'},
+            {question: 'Šta hadžije uče tokom hadža?', options: ['Salavat', 'Telbiju', 'Fatihu', 'Ihlas'], answer: 'Telbiju', explanation: 'Hadžije uče TELBIJU: "Lebbejkellahumme lebbejk..."'},
+            {question: 'Džuma-namaz zamjenjuje:', options: ['Sabah', 'Podne petkom', 'Akšam', 'Jaciju'], answer: 'Podne petkom', explanation: 'DŽUMA zamjenjuje podne-namaz petkom.'},
+            {question: 'Vitr-namaz se klanja:', options: ['Ujutro', 'U podne', 'Poslije jacije', 'Petkom'], answer: 'Poslije jacije', explanation: 'VITR se klanja poslije jacija-namaza i ima 3 rekata.'},
+            {question: 'U vitr-namazu se uči:', options: ['Fatiha', 'Kunut-dova', 'Telbija', 'Salavat'], answer: 'Kunut-dova', explanation: 'U trećem rekatu vitr-namaza uči se KUNUT-DOVA.'},
+            {question: 'Koliko se puta obilazi oko Kabe u tavafu?', options: ['3 puta', '5 puta', '7 puta', '10 puta'], answer: '7 puta', explanation: 'TAVAF je sedam obilazaka oko Kabe.'},
+
+            // ===== PAMETNA PITANJA (50) =====
+            // Izbaci uljeza (10)
+            {question: 'Izbaci riječ koja NE pripada: Sabah, Podne, Džuma, Ikindija', options: ['Sabah', 'Podne', 'Džuma', 'Ikindija'], answer: 'Džuma', explanation: 'Sabah, Podne i Ikindija su DNEVNI namazi, a Džuma je SEDMIČNI.'},
+            {question: 'Izbaci riječ koja NE pripada: Šehadet, Namaz, Iman, Post', options: ['Šehadet', 'Namaz', 'Iman', 'Post'], answer: 'Iman', explanation: 'Šehadet, Namaz i Post su ISLAMSKI šarti, a Iman je VJEROVANJE.'},
+            {question: 'Izbaci riječ koja NE pripada: Sehur, Iftar, Imsak, Tavaf', options: ['Sehur', 'Iftar', 'Imsak', 'Tavaf'], answer: 'Tavaf', explanation: 'Sehur, Iftar i Imsak su RAMAZANSKI pojmovi, a Tavaf je HADŽSKI obred.'},
+            {question: 'Izbaci riječ koja NE pripada: Ihram, Arefat, Tavaf, Teravih', options: ['Ihram', 'Arefat', 'Tavaf', 'Teravih'], answer: 'Teravih', explanation: 'Ihram, Arefat i Tavaf su FARZOVI HADŽA, a Teravih je RAMAZANSKI namaz.'},
+            {question: 'Izbaci riječ koja NE pripada: Faita, Vaktija, Sehvi-sedžda, Nisab', options: ['Faita', 'Vaktija', 'Sehvi-sedžda', 'Nisab'], answer: 'Nisab', explanation: 'Faita, Vaktija i Sehvi-sedžda su NAMASKI pojmovi, a Nisab je vezan za ZEKAT.'},
+            {question: 'Izbaci riječ koja NE pripada: Zekat, Sadaka, Fitr, Telbija', options: ['Zekat', 'Sadaka', 'Fitr', 'Telbija'], answer: 'Telbija', explanation: 'Zekat, Sadaka i Fitr su vrste DAVANJA, a Telbija je HADŽSKA dova.'},
+            {question: 'Izbaci pojam koji NE pripada: Džuma, Bajram, Teravih, Podne', options: ['Džuma', 'Bajram', 'Teravih', 'Podne'], answer: 'Podne', explanation: 'Džuma, Bajram i Teravih su POSEBNI namazi, a Podne je DNEVNI namaz.'},
+            {question: 'Izbaci pojam koji NE pripada: Mukabela, Itikaf, Teravih, Tavaf', options: ['Mukabela', 'Itikaf', 'Teravih', 'Tavaf'], answer: 'Tavaf', explanation: 'Mukabela, Itikaf i Teravih su RAMAZANSKI ibadeti, a Tavaf je HADŽSKI obred.'},
+            {question: 'Izbaci pojam koji NE pripada: Bejtul-mal, Nisab, Sadekatul-fitr, Ihram', options: ['Bejtul-mal', 'Nisab', 'Sadekatul-fitr', 'Ihram'], answer: 'Ihram', explanation: 'Bejtul-mal, Nisab i Sadekatul-fitr su vezani za ZEKAT, a Ihram za HADŽ.'},
+            {question: 'Izbaci pojam koji NE pripada: Ruku\', Sedžda, Kijam, Sehur', options: ['Ruku\'', 'Sedžda', 'Kijam', 'Sehur'], answer: 'Sehur', explanation: 'Ruku\', Sedžda i Kijam su DIJELOVI NAMAZA, a Sehur je vezan za POST.'},
+            
+            // Asocijacije (8)
+            {question: 'Pojam MEKKA vas asocira na:', options: ['Post', 'Hadž', 'Zekat', 'Teravih'], answer: 'Hadž', explanation: 'MEKKA je sveti grad gdje se obavlja HADŽ i nalazi se Kaba.'},
+            {question: 'Pojam RAMAZAN vas asocira na:', options: ['Hadž', 'Zekat', 'Post i teravih', 'Džuma'], answer: 'Post i teravih', explanation: 'RAMAZAN je mjesec posta, teravije, mukabele i iftara.'},
+            {question: 'Pojam KABA vas asocira na:', options: ['Tavaf', 'Sehur', 'Zekat', 'Džuma'], answer: 'Tavaf', explanation: 'TAVAF je obilazak oko KABE sedam puta - farz hadža.'},
+            {question: 'Pojam AREFAT vas asocira na:', options: ['Ramazan', 'Hadž', 'Džuma', 'Bajram'], answer: 'Hadž', explanation: 'AREFAT je brdo gdje hadžije borave 9. zul-hidžeta - srž hadža.'},
+            {question: 'Pojam DŽEMAT vas asocira na:', options: ['Pojedinačni namaz', 'Zajednički namaz', 'Noćni namaz', 'Post'], answer: 'Zajednički namaz', explanation: 'DŽEMAT je zajednički namaz koji vrijedi 27 puta više.'},
+            {question: 'Pojam BEJTUL-MAL vas asocira na:', options: ['Namaz', 'Hadž', 'Zekat', 'Post'], answer: 'Zekat', explanation: 'BEJTUL-MAL je fond IZ u BiH gdje se prikuplja zekat.'},
+            {question: 'Pojam TELBIJA vas asocira na:', options: ['Namaz', 'Hadž', 'Post', 'Zekat'], answer: 'Hadž', explanation: 'TELBIJA je dova koju hadžije uče tokom hadžskih obreda.'},
+            {question: 'Broj 27 u kontekstu namaza asocira na:', options: ['Broj rekata', 'Vrijednost džemata', 'Broj sura', 'Broj sedždi'], answer: 'Vrijednost džemata', explanation: 'Namaz u džematu vrijedi 27 PUTA više od pojedinačnog.'},
+
+            // Analogije (8)
+            {question: 'Dopuni: Sabah : jutro = Akšam : ?', options: ['Podne', 'Ikindija', 'Zalazak sunca', 'Ponoć'], answer: 'Zalazak sunca', explanation: 'Sabah se klanja ujutro, a Akšam kada sunce zađe.'},
+            {question: 'Dopuni: Sehur : početak = Iftar : ?', options: ['Sredina', 'Završetak posta', 'Noć', 'Jutro'], answer: 'Završetak posta', explanation: 'Sehur je priprema za post, a Iftar je završetak posta.'},
+            {question: 'Dopuni: Ramazan : post = Zul-hidže : ?', options: ['Zekat', 'Hadž', 'Namaz', 'Teravih'], answer: 'Hadž', explanation: 'U ramazanu je post, a u zul-hidžetu hadž.'},
+            {question: 'Dopuni: Faita : propušteni = Vaktija : ?', options: ['Budući', 'Tekući namaz', 'Noćni', 'Sedmični'], answer: 'Tekući namaz', explanation: 'Faita je propušteni namaz, a Vaktija je namaz u tekućem vremenu.'},
+            {question: 'Dopuni: Džuma : sedmični = Bajram : ?', options: ['Dnevni', 'Mjesečni', 'Godišnji', 'Noćni'], answer: 'Godišnji', explanation: 'Džuma je sedmični namaz, a Bajram je godišnji (dva puta).'},
+            {question: 'Dopuni: Zekat : imovina = Post : ?', options: ['Novac', 'Tijelo', 'Kuća', 'Porodica'], answer: 'Tijelo', explanation: 'Zekatom čistimo imovinu, a postom čistimo tijelo.'},
+            {question: 'Dopuni: Šehadet : riječi = Namaz : ?', options: ['Misli', 'Djela/pokreti', 'Novac', 'Putovanje'], answer: 'Djela/pokreti', explanation: 'Šehadet se izgovara riječima, a namaz se izvršava djelima/pokretima.'},
+            {question: 'Dopuni: Teravih : ramazan = Vitr : ?', options: ['Samo ramazan', 'Cijela godina', 'Samo petak', 'Samo bajram'], answer: 'Cijela godina', explanation: 'Teravih je samo u ramazanu, a Vitr se klanja cijele godine.'},
+
+            // Ko/Šta sam ja? (8)
+            {question: '"Ja sam glavna islamska dužnost, klanjam se pet puta dnevno." Šta sam?', options: ['Šehadet', 'Namaz', 'Post', 'Zekat'], answer: 'Namaz', explanation: 'NAMAZ je druga islamska dužnost, klanja se 5 puta dnevno.'},
+            {question: '"Ja sam sedmični namaz i zamjenjujem podne petkom." Šta sam?', options: ['Bajram', 'Teravih', 'Džuma', 'Vitr'], answer: 'Džuma', explanation: 'DŽUMA je sedmični namaz koji zamjenjuje podne petkom.'},
+            {question: '"Ja sam posebni ramazanski namaz, klanjam se poslije jacije." Šta sam?', options: ['Vitr', 'Teravih', 'Džuma', 'Bajram'], answer: 'Teravih', explanation: 'TERAVIH je ramazanski namaz koji se klanja poslije jacije.'},
+            {question: '"Ja sam fond u koji muslimani u BiH daju zekat." Šta sam?', options: ['Vakuf', 'Bejtul-mal', 'Sadaka', 'Nisab'], answer: 'Bejtul-mal', explanation: 'BEJTUL-MAL je fond IZ u BiH za prikupljanje zekata.'},
+            {question: '"Ja sam bijela hadžska odjeća." Šta sam?', options: ['Tavaf', 'Ihram', 'Telbija', 'Arefat'], answer: 'Ihram', explanation: 'IHRAM je bijela, nešivena hadžska odjeća za muškarce.'},
+            {question: '"Ja sam brdo gdje hadžije borave 9. zul-hidžeta." Šta sam?', options: ['Safa', 'Merva', 'Arefat', 'Mina'], answer: 'Arefat', explanation: 'AREFAT je brdo gdje hadžije borave - ključni dan hadža.'},
+            {question: '"Ja sam trenutak kada počinje post." Šta sam?', options: ['Sehur', 'Imsak', 'Iftar', 'Akšam'], answer: 'Imsak', explanation: 'IMSAK je trenutak kada počinje post - prestanak jela.'},
+            {question: '"Ja sam naknadna sedžda za nenamjernu grešku u namazu." Šta sam?', options: ['Sedždei-tilavet', 'Sehvi-sedžda', 'Sedždei-šukr', 'Ruku\''], answer: 'Sehvi-sedžda', explanation: 'SEHVI-SEDŽDA je naknadna sedžda za nenamjerne greške.'},
+
+            // Pronađi grešku (6)
+            {question: 'Pronađi GREŠKU: "Islamskih šartova ima šest: šehadet, namaz, post, zekat, hadž i iman."', options: ['Ima ih pet, ne šest', 'Iman nije islamski šart', 'Obje greške', 'Nema greške'], answer: 'Obje greške', explanation: 'Islamskih šartova ima PET i IMAN nije islamski šart nego imanski.'},
+            {question: 'Pronađi GREŠKU: "Post traje od izlaska sunca do zalaska sunca."', options: ['Od ZORE, ne izlaska', 'Do PONOĆI, ne zalaska', 'Obje greške', 'Nema greške'], answer: 'Od ZORE, ne izlaska', explanation: 'Post počinje u ZORU (ferdžr), ne pri izlasku sunca.'},
+            {question: 'Pronađi GREŠKU: "Teravih-namaz se klanja cijele godine poslije jacije."', options: ['Samo u RAMAZANU', 'Poslije SABAHA', 'Obje greške', 'Nema greške'], answer: 'Samo u RAMAZANU', explanation: 'Teravih se klanja SAMO u ramazanu, ne cijele godine.'},
+            {question: 'Pronađi GREŠKU: "Tavaf je obilazak oko Kabe pet puta."', options: ['SEDAM puta, ne pet', 'Oko AREFATA, ne Kabe', 'Obje greške', 'Nema greške'], answer: 'SEDAM puta, ne pet', explanation: 'Tavaf je SEDAM obilazaka oko Kabe.'},
+            {question: 'Pronađi GREŠKU: "Hadž se obavlja u mjesecu ramazanu."', options: ['U ZUL-HIDŽETU', 'U MUHARREMU', 'U REDŽEBU', 'Nema greške'], answer: 'U ZUL-HIDŽETU', explanation: 'Hadž se obavlja u mjesecu ZUL-HIDŽE, ne ramazanu.'},
+            {question: 'Pronađi GREŠKU: "Prvi islamski šart je namaz."', options: ['ŠEHADET je prvi', 'POST je prvi', 'HADŽ je prvi', 'Nema greške'], answer: 'ŠEHADET je prvi', explanation: 'KELIMEI-ŠEHADET je prvi islamski šart, namaz je drugi.'},
+
+            // Situacijska pitanja (10)
+            {question: 'Ahmed je propustio 3 namaza. Sada je vrijeme podne. Šta treba prvo klanjati?', options: ['Podne (vaktija)', 'Propuštene (faita)', 'Svejedno', 'Ništa'], answer: 'Propuštene (faita)', explanation: 'Ako je propušteno MANJE od 6 namaza, prvo se klanja FAITA pa VAKTIJA.'},
+            {question: 'Merjem je propustila 10 namaza. Sada je vrijeme akšama. Šta treba prvo?', options: ['Akšam (vaktija)', 'Propuštene (faita)', 'Može bilo koje', 'Ne mora klanjati'], answer: 'Akšam (vaktija)', explanation: 'Ako je propušteno 6 ILI VIŠE namaza, prvo se klanja VAKTIJA.'},
+            {question: 'Hasan je u namazu nenamjerno izostavio Fatihu. Šta treba učiniti?', options: ['Ponoviti namaz', 'Učiniti sehvi-sedždu', 'Nastaviti normalno', 'Prekinuti namaz'], answer: 'Učiniti sehvi-sedždu', explanation: 'Za nenamjerno izostavljanje vadžiba (Fatiha) čini se SEHVI-SEDŽDA.'},
+            {question: 'Amina je stigla u džemat kada je imam bio na ruku\'u drugog rekata. Koliko mora naklanjati?', options: ['Ništa', 'Jedan rekat', 'Dva rekata', 'Tri rekata'], answer: 'Jedan rekat', explanation: 'Stigla je na drugi rekat, pa mora naklanjati PRVI propušteni rekat.'},
+            {question: 'Džemal posti, ali je zaboravio i popio gutljaj vode. Šta sada?', options: ['Post je pokvaren', 'Post je ispravan, nastavlja', 'Mora napostiti', 'Mora platiti fidju'], answer: 'Post je ispravan, nastavlja', explanation: 'Ako se ZABORAVI pojede ili popije, post je ISPRAVAN - nastavlja se.'},
+            {question: 'Fatima ima zlato u vrijednosti nisaba. Šta je dužna učiniti?', options: ['Ništa', 'Dati zekat', 'Prodati zlato', 'Dati sadaku'], answer: 'Dati zekat', explanation: 'Ko posjeduje imovinu u vrijednosti NISABA, dužan je dati ZEKAT.'},
+            {question: 'Jusuf je na hadžu i stoji na Arefatu 9. zul-hidžeta. Koji farz hadža ispunjava?', options: ['Ihram', 'Tavaf', 'Boravak na Arefatu', 'Sa\'j'], answer: 'Boravak na Arefatu', explanation: 'Stajanje na AREFATU 9. zul-hidžeta je jedan od tri farza hadža.'},
+            {question: 'Selma želi klanjati ikindiju, ali je sunce na sredini neba. Šta da uradi?', options: ['Klanja odmah', 'Sačeka da prođe zenit', 'Ne mora klanjati', 'Klanja sabah'], answer: 'Sačeka da prođe zenit', explanation: 'Kada je sunce na ZENITU, NE SMIJE se klanjati - treba sačekati.'},
+            {question: 'Emir je u džamiji u ramazanu poslije jacije. Koji poseban namaz može klanjati?', options: ['Džuma', 'Bajram', 'Teravih', 'Dženaza'], answer: 'Teravih', explanation: 'U ramazanu, poslije jacije, klanja se TERAVIH-namaz.'},
+            {question: 'Amra želi dati zekat. Gdje treba uplatiti u BiH?', options: ['U banku', 'U Bejtul-mal', 'Bilo kome', 'U bolnicu'], answer: 'U Bejtul-mal', explanation: 'Zekat se organizirano daje u BEJTUL-MAL - fond Islamske zajednice.'}
+            ]
+        };
+    </script>
+
+    <!-- Centralizovani JavaScript Engine -->
+    <script src="../core/quiz-engine.js"></script>
+</body>
+</html>

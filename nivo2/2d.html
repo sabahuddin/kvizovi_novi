@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 2D</title>
+    
+    <!-- Centralizovani CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 2D</h1>
+            <p class="subtitle">Sure i Dove</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+// ===== DA/NE PITANJA (20) =====
+            {question: 'Sura El-Kafirun je objavljena u Mekki.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Sura El-Kafirun je mekanska sura i ima 6 ajeta.'},
+            {question: 'Sura El-Kevser ima 3 ajeta.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! El-Kevser je najkraća sura u Kur\'anu sa samo 3 ajeta.'},
+            {question: 'Sura El-Maun ima 7 ajeta.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Sura El-Maun je objavljena u Mekki i ima 7 ajeta.'},
+            {question: 'Sura El-Kurejš ima 6 ajeta.', options: ['DA', 'NE'], answer: 'NE', explanation: 'Netačno! Sura El-Kurejš ima 4 ajeta, ne 6.'},
+            {question: 'Kunut-dova se uči u vitr-namazu.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Kunut-dova se uči u trećem rekatu vitr-namaza.'},
+            {question: 'Riječ "Kevser" znači "mnogo dobro".', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! El-Kevser znači "mnogo dobro" ili "obilje" koje je Allah dao Poslaniku.'},
+            {question: 'El-Kafirun govori o prijedlogu idolopoklonika Poslaniku.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Idolopoklonici su predložili da Poslanik obožava kipove jednu godinu, a oni Allaha drugu.'},
+            {question: '"Lekum dinukum ve lije din" znači "Vama vaša vjera, a meni moja".', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! To je posljednji ajet sure El-Kafirun.'},
+            {question: 'Sura El-Maun govori o onima koji grubo odbijaju siroče.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! El-Maun kritizira one koji odbijaju jetima i ne pomažu siromašnima.'},
+            {question: 'El-Kurejš govori o stanovnicima Medine.', options: ['DA', 'NE'], answer: 'NE', explanation: 'Netačno! El-Kurejš govori o stanovnicima MEKKE - Kurejšijama.'},
+            {question: 'Bismilla se uči na početku svake sure.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Bismillahir-rahmanir-rahim se uči na početku svake sure.'},
+            {question: 'Poslanik je bio nasmijan nakon objave sure El-Kevser.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Enes ibn Malik prenosi da je Poslanik nakratko zadrijemao pa se nasmiješen probudio.'},
+            {question: 'Riječ "ebter" znači "onaj koji će bez spomena ostati".', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Nevjernici su Poslanika prozvali "ebter", ali Allah kaže da će oni ostati bez spomena.'},
+            {question: 'Dova poslije jela počinje sa "El-hamdu lillahi".', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! El-hamdu lillahillezi at\'amena ve sekana ve dže\'alena minel-muslimin.'},
+            {question: 'Kunut-dova se uči u prvom rekatu vitr-namaza.', options: ['DA', 'NE'], answer: 'NE', explanation: 'Netačno! Kunut-dova se uči u TREĆEM rekatu vitr-namaza.'},
+            {question: 'U suri El-Maun Allah kritizira munafike koji klanjaju radi ljudi.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Drugi dio sure govori o munaficima koji klanjaju da ih ljudi vide.'},
+            {question: '"Innã e\'tajnãkel-kevser" je prvi ajet sure El-Kevser.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Znači: "Mi smo ti, uistinu, mnogo dobro dali."'},
+            {question: 'Estagfirullah je dova za traženje oprosta.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Estagfirullah znači: "Tražim Allahov oprost."'},
+            {question: 'Sura El-Kurejš spominje zimsko i ljetno putovanje Kurejšija.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! "Navike njihove da zimi i ljeti putuju" - trgovačka putovanja.'},
+            {question: 'Fatiha se uči na svakom rekatu namaza.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Fatiha je obavezna na svakom rekatu namaza.'},
+
+            // ===== VIŠESTRUKI IZBOR (30) =====
+            {question: 'Koliko ajeta ima sura El-Kafirun?', options: ['4', '5', '6', '7'], answer: '6', explanation: 'Sura El-Kafirun ima 6 ajeta.'},
+            {question: 'Koliko ajeta ima sura El-Kevser?', options: ['3', '4', '5', '6'], answer: '3', explanation: 'Sura El-Kevser ima samo 3 ajeta - najkraća sura.'},
+            {question: 'Koliko ajeta ima sura El-Maun?', options: ['5', '6', '7', '8'], answer: '7', explanation: 'Sura El-Maun ima 7 ajeta.'},
+            {question: 'Koliko ajeta ima sura El-Kurejš?', options: ['3', '4', '5', '6'], answer: '4', explanation: 'Sura El-Kurejš ima 4 ajeta.'},
+            {question: 'Gdje je objavljena sura El-Kafirun?', options: ['U Mekki', 'U Medini', 'U Taifu', 'U Jemenu'], answer: 'U Mekki', explanation: 'El-Kafirun je MEKANSKA sura.'},
+            {question: 'Koja sura počinje sa "Kul ja ejjuhel-kafirun"?', options: ['El-Ihlas', 'El-Kafirun', 'El-Kevser', 'El-Maun'], answer: 'El-Kafirun', explanation: '"Reci: O vi nevjernici" - početak sure El-Kafirun.'},
+            {question: 'Šta znači riječ "Kevser"?', options: ['Nevjernici', 'Mnogo dobro', 'Siroče', 'Kurejšije'], answer: 'Mnogo dobro', explanation: 'KEVSER znači "mnogo dobro" ili "obilje".'},
+            {question: 'Šta znači riječ "Kafirun"?', options: ['Vjernici', 'Nevjernici', 'Siromasi', 'Putnici'], answer: 'Nevjernici', explanation: 'KAFIRUN znači nevjernici.'},
+            {question: 'Šta znači riječ "Maun"?', options: ['Nevjernici', 'Siroče', 'Pomoć/zekat', 'Kurejšije'], answer: 'Pomoć/zekat', explanation: 'MA\'UN znači "pomoć" ili "ono što se daje drugima".'},
+            {question: 'Ko su Kurejšije?', options: ['Stanovnici Medine', 'Stanovnici Mekke', 'Stanovnici Taifa', 'Stanovnici Jemena'], answer: 'Stanovnici Mekke', explanation: 'KUREJŠIJE su pleme koje je živjelo u Mekki.'},
+            {question: 'Kada se uči Kunut-dova?', options: ['Na prvom rekatu', 'Na drugom rekatu', 'Na trećem rekatu vitira', 'Poslije namaza'], answer: 'Na trećem rekatu vitira', explanation: 'Kunut-dova se uči u TREĆEM rekatu vitr-namaza.'},
+            {question: 'Koji namaz ima Kunut-dovu?', options: ['Sabah', 'Podne', 'Vitr', 'Džuma'], answer: 'Vitr', explanation: 'VITR-namaz ima Kunut-dovu u trećem rekatu.'},
+            {question: '"Fesalli li rabbike venhar" znači:', options: ['Reci nevjernicima', 'Moli se i kurban kolji', 'Vama vaša vjera', 'Koji gladne hrani'], answer: 'Moli se i kurban kolji', explanation: '"Zato se Gospodaru svome moli i kurban kolji" - El-Kevser.'},
+            {question: 'Sura El-Maun kritizira one koji:', options: ['Klanjaju redovno', 'Grubo odbijaju siroče', 'Pomažu siromašne', 'Daju zekat'], answer: 'Grubo odbijaju siroče', explanation: 'El-Maun kritizira one koji grubo odbijaju jetima.'},
+            {question: 'Šta je "jetim" u suri El-Maun?', options: ['Bogataš', 'Siroče', 'Putnik', 'Nevjernik'], answer: 'Siroče', explanation: 'JETIM je siroče - dijete bez roditelja.'},
+            {question: 'Koji ajet je posljednji u suri El-Kafirun?', options: ['La e\'abudu ma ta\'budun', 'Lekum dinukum ve lije din', 'Inne šani\'eke huvel-ebter', 'Kul ja ejjuhel-kafirun'], answer: 'Lekum dinukum ve lije din', explanation: '"Vama vaša vjera, a meni moja" - posljednji ajet.'},
+            {question: '"Ellezi at\'amehum min džu\'in" znači:', options: ['Koji ih gladne hrani', 'Vama vaša vjera', 'Koji grubo odbija', 'Mnogo dobro dali'], answer: 'Koji ih gladne hrani', explanation: '"Koji ih gladne hrani" - iz sure El-Kurejš.'},
+            {question: 'Dova "Allahumme inna neste\'inuke" je dio:', options: ['Namaska dova', 'Kunut-dova', 'Dova poslije jela', 'Dova za iftar'], answer: 'Kunut-dova', explanation: 'To je početak KUNUT-DOVE.'},
+            {question: 'Koliko rekata ima vitr-namaz?', options: ['2', '3', '4', '5'], answer: '3', explanation: 'VITR-namaz ima 3 rekata.'},
+            {question: 'Koja sura govori o putovanjima Kurejšija?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kurejš', explanation: 'El-KUREJŠ govori o zimskim i ljetnim putovanjima.'},
+            {question: '"Ve amenehum min havf" znači:', options: ['Koji gladne hrani', 'Od straha brani', 'Vama vaša vjera', 'Mnogo dobro'], answer: 'Od straha brani', explanation: '"I od straha brani" - iz sure El-Kurejš.'},
+            {question: 'Sura El-Kevser je objavljena zbog:', options: ['Idolopoklonika', 'Onih koji su Poslanika prozvali ebter', 'Kurejšija', 'Siročadi'], answer: 'Onih koji su Poslanika prozvali ebter', explanation: 'Objavljena jer su nevjernici rekli da će Poslanik ostati bez spomena.'},
+            {question: 'Namaska dova počinje sa:', options: ['Bismillah', 'Subhaneke', 'Euzubillah', 'El-hamdu lillah'], answer: 'Euzubillah', explanation: 'Namaska dova počinje sa E\'UZU BILLAHI MINEŠ-ŠEJTANIR-RADŽIM.'},
+            {question: '"Fevejlun lil-musallin" znači:', options: ['Hvala Allahu', 'Teško onima koji klanjaju', 'Vama vaša vjera', 'Mnogo dobro'], answer: 'Teško onima koji klanjaju', explanation: '"A teško onima koji, kad molitvu obavljaju..." - El-Maun.'},
+            {question: 'Šta El-Maun kritizira kod nekih klanjača?', options: ['Da klanjaju previše', 'Da klanjaju radi ljudi', 'Da klanjaju noću', 'Da klanjaju sami'], answer: 'Da klanjaju radi ljudi', explanation: 'Kritizira munafike koji klanjaju radi toga da ih ljudi vide.'},
+            {question: 'Dova poslije jela završava sa:', options: ['Amin', 'Minel-muslimin', 'Subhanallah', 'Elhamdulillah'], answer: 'Minel-muslimin', explanation: '...ve dže\'alena MINEL-MUSLIMIN (i učinio nas muslimanima).'},
+            {question: 'Koja sura je najkraća u Kur\'anu?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Ihlas'], answer: 'El-Kevser', explanation: 'EL-KEVSER sa 3 ajeta je najkraća sura.'},
+            {question: '"Rabbena atina fid-dunja haseneten" je dio:', options: ['Kunut-dove', 'Namaska dove', 'Dove poslije jela', 'Fatihe'], answer: 'Namaska dove', explanation: '"Gospodaru naš, daj nam dobro na dunjaluku..." - namaska dova.'},
+            {question: 'Kunut-dova se uči poslije:', options: ['Fatihe', 'Sure', 'Tekbira', 'Fatihe i sure'], answer: 'Fatihe i sure', explanation: 'U trećem rekatu vitira, poslije Fatihe i sure, donese se tekbir pa Kunut.'},
+            {question: 'Hram spomenut u suri El-Kurejš je:', options: ['Medžid', 'Kaba', 'Aksa', 'Hira'], answer: 'Kaba', explanation: '"Neka se oni Gospodaru ovoga HRAMA klanjaju" - Kaba.'},
+
+            // ===== PAMETNA PITANJA (50) =====
+            // Izbaci uljeza (10)
+            {question: 'Izbaci suru koja NE pripada: El-Kafirun, El-Kevser, El-Fatiha, El-Maun', options: ['El-Kafirun', 'El-Kevser', 'El-Fatiha', 'El-Maun'], answer: 'El-Fatiha', explanation: 'El-Kafirun, El-Kevser i El-Maun su sure iz 2. nivoa, El-Fatiha je iz 1. nivoa.'},
+            {question: 'Izbaci pojam koji NE pripada: Kunut-dova, Namaska dova, Fatiha, Dova poslije jela', options: ['Kunut-dova', 'Namaska dova', 'Fatiha', 'Dova poslije jela'], answer: 'Fatiha', explanation: 'Kunut-dova, Namaska dova i Dova poslije jela su DOVE, Fatiha je SURA.'},
+            {question: 'Izbaci pojam koji NE pripada: Kafirun, Kurejš, Kevser, Vitr', options: ['Kafirun', 'Kurejš', 'Kevser', 'Vitr'], answer: 'Vitr', explanation: 'Kafirun, Kurejš i Kevser su SURE, Vitr je NAMAZ.'},
+            {question: 'Izbaci broj koji NE pripada (broj ajeta): 3, 4, 6, 10', options: ['3', '4', '6', '10'], answer: '10', explanation: '3 (Kevser), 4 (Kurejš), 6 (Kafirun) su brojevi ajeta, 10 nije.'},
+            {question: 'Izbaci riječ koja NE pripada: Jetim, Miskin, Kafir, Džemat', options: ['Jetim', 'Miskin', 'Kafir', 'Džemat'], answer: 'Džemat', explanation: 'Jetim (siroče), Miskin (siromah), Kafir (nevjernik) se spominju u surama; Džemat nije.'},
+            {question: 'Izbaci pojam koji NE pripada: Mekka, Medina, Kurejš, Kevser', options: ['Mekka', 'Medina', 'Kurejš', 'Kevser'], answer: 'Medina', explanation: 'Mekka, Kurejš i Kevser su povezani sa mekanskim surama; Medina nije.'},
+            {question: 'Izbaci suru koja NE pripada po broju ajeta: El-Kevser (3), El-Kurejš (4), El-Kafirun (6), El-Ihlas (6)', options: ['El-Kevser', 'El-Kurejš', 'El-Kafirun', 'El-Ihlas'], answer: 'El-Ihlas', explanation: 'El-Ihlas ima 4 ajeta, ne 6. El-Kevser(3), El-Kurejš(4), El-Kafirun(6).'},
+            {question: 'Izbaci pojam koji NE pripada: Bismilla, Euzubilla, Subhaneke, Iftar', options: ['Bismilla', 'Euzubilla', 'Subhaneke', 'Iftar'], answer: 'Iftar', explanation: 'Bismilla, Euzubilla i Subhaneke su NAMASKI ZIKROVI, Iftar je prekid posta.'},
+            {question: 'Izbaci pojam koji NE pripada: Zimsko putovanje, Ljetno putovanje, Hadž, Glad', options: ['Zimsko putovanje', 'Ljetno putovanje', 'Hadž', 'Glad'], answer: 'Hadž', explanation: 'Zimsko, Ljetno putovanje i Glad se spominju u suri El-Kurejš, Hadž ne.'},
+            {question: 'Izbaci pojam koji NE pripada: Munafik, Jetim, Miskin, Mumin', options: ['Munafik', 'Jetim', 'Miskin', 'Mumin'], answer: 'Mumin', explanation: 'Munafik, Jetim i Miskin se spominju u suri El-Maun, Mumin (vjernik) ne.'},
+
+            // Asocijacije (8)
+            {question: 'Pojam "EBTER" vas asocira na:', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kevser', explanation: 'EBTER (bez spomena) se spominje u suri El-Kevser.'},
+            {question: 'Pojam "JETIM" vas asocira na:', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Maun', explanation: 'JETIM (siroče) se spominje u suri El-Maun.'},
+            {question: 'Pojam "ZIMSKO PUTOVANJE" asocira na:', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kurejš', explanation: 'Zimsko i ljetno putovanje Kurejšija - sura El-Kurejš.'},
+            {question: 'Pojam "KURBAN" asocira na:', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kevser', explanation: '"Moli se i KURBAN kolji" - iz sure El-Kevser.'},
+            {question: 'Broj 3 u kontekstu sura asocira na:', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kevser', explanation: 'El-KEVSER ima 3 ajeta - najkraća sura.'},
+            {question: 'Pojam "MUNAFIK" asocira na:', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Maun', explanation: 'El-MAUN govori o munaficima koji klanjaju radi ljudi.'},
+            {question: 'Pojam "VITR-NAMAZ" asocira na:', options: ['Fatiha', 'Kunut-dova', 'Dova poslije jela', 'Namaska dova'], answer: 'Kunut-dova', explanation: 'KUNUT-DOVA se uči u vitr-namazu.'},
+            {question: 'Pojam "HRAM" u kontekstu sura asocira na:', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kurejš', explanation: '"Gospodaru ovoga HRAMA" - Kaba u suri El-Kurejš.'},
+
+            // Analogije (8)
+            {question: 'Dopuni: El-Kevser : 3 ajeta = El-Kafirun : ?', options: ['4 ajeta', '5 ajeta', '6 ajeta', '7 ajeta'], answer: '6 ajeta', explanation: 'El-Kevser ima 3 ajeta, El-Kafirun ima 6 ajeta.'},
+            {question: 'Dopuni: El-Kurejš : Mekka = El-Maun : ?', options: ['Jetim', 'Mekka', 'Medina', 'Taif'], answer: 'Mekka', explanation: 'Obje sure su objavljene u Mekki.'},
+            {question: 'Dopuni: Kevser : obilje = Kafirun : ?', options: ['Jetimi', 'Nevjernici', 'Siromasi', 'Kurejšije'], answer: 'Nevjernici', explanation: 'Kevser znači obilje, Kafirun znači nevjernici.'},
+            {question: 'Dopuni: Vitr : Kunut-dova = Poslije jela : ?', options: ['Namaska dova', 'El-hamdu lillah', 'Subhaneke', 'Fatiha'], answer: 'El-hamdu lillah', explanation: 'U vitru se uči Kunut-dova, poslije jela El-hamdu lillah.'},
+            {question: 'Dopuni: El-Maun : jetim = El-Kurejš : ?', options: ['Kafirun', 'Kurejšije', 'Munafik', 'Ebter'], answer: 'Kurejšije', explanation: 'El-Maun govori o jetimu, El-Kurejš o Kurejšijama.'},
+            {question: 'Dopuni: "Lekum dinukum" : El-Kafirun = "Inne šani\'eke" : ?', options: ['El-Kevser', 'El-Maun', 'El-Kurejš', 'Fatiha'], answer: 'El-Kevser', explanation: '"Inne šani\'eke huvel-ebter" je iz sure El-Kevser.'},
+            {question: 'Dopuni: Euzubilla : početak = Selam : ?', options: ['Sredina', 'Kraj namaza', 'Ruku\'', 'Sedžda'], answer: 'Kraj namaza', explanation: 'Euzubilla je na početku, Selam je na kraju namaza.'},
+            {question: 'Dopuni: Sabah : 2 rekata farza = Vitr : ?', options: ['2 rekata', '3 rekata', '4 rekata', '5 rekata'], answer: '3 rekata', explanation: 'Sabah ima 2 rekata farza, Vitr ima 3 rekata.'},
+
+            // Ko/Šta sam ja? (8)
+            {question: '"Imam samo 3 ajeta i govorim o mnogo dobru." Koja sam sura?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kevser', explanation: 'EL-KEVSER ima 3 ajeta i govori o "kevser" - mnogo dobru.'},
+            {question: '"Imam 6 ajeta i završavam sa Lekum dinukum ve lije din." Koja sam?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kafirun', explanation: 'EL-KAFIRUN ima 6 ajeta i završava tom rečenicom.'},
+            {question: '"Govorim o siročetu i siromahu." Koja sam sura?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Maun', explanation: 'EL-MAUN govori o jetimima i miskinima.'},
+            {question: '"Govorim o zimskom i ljetnom putovanju." Koja sam sura?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kurejš', explanation: 'EL-KUREJŠ govori o putovanjima Kurejšija.'},
+            {question: '"Učim se u trećem rekatu vitr-namaza." Šta sam?', options: ['Fatiha', 'Kunut-dova', 'Subhaneke', 'Tahijjat'], answer: 'Kunut-dova', explanation: 'KUNUT-DOVA se uči u trećem rekatu vitira.'},
+            {question: '"Učim se poslije jela i počinjem sa El-hamdu lillah." Šta sam?', options: ['Kunut-dova', 'Namaska dova', 'Dova poslije jela', 'Estagfirullah'], answer: 'Dova poslije jela', explanation: 'DOVA POSLIJE JELA počinje sa El-hamdu lillahillezi at\'amena...'},
+            {question: '"Kritizujem one koji klanjaju radi ljudi." Koja sam sura?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Maun', explanation: 'EL-MAUN kritizira munafike koji klanjaju radi ljudi.'},
+            {question: '"Spominjem Kabu kao hram." Koja sam sura?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kurejš', explanation: 'EL-KUREJŠ: "Neka se oni Gospodaru ovoga hrama klanjaju."'},
+
+            // Pronađi grešku (6)
+            {question: 'Pronađi GREŠKU: "Sura El-Kevser ima 6 ajeta."', options: ['Ima 3 ajeta', 'Ima 4 ajeta', 'Ima 7 ajeta', 'Nema greške'], answer: 'Ima 3 ajeta', explanation: 'Sura El-Kevser ima samo 3 ajeta - najkraća sura.'},
+            {question: 'Pronađi GREŠKU: "Kunut-dova se uči u prvom rekatu vitira."', options: ['U TREĆEM rekatu', 'U drugom rekatu', 'Poslije namaza', 'Nema greške'], answer: 'U TREĆEM rekatu', explanation: 'Kunut-dova se uči u TREĆEM rekatu vitr-namaza.'},
+            {question: 'Pronađi GREŠKU: "El-Kurejš govori o stanovnicima Medine."', options: ['MEKKE, ne Medine', 'Taifa, ne Medine', 'Jemena, ne Medine', 'Nema greške'], answer: 'MEKKE, ne Medine', explanation: 'El-Kurejš govori o stanovnicima MEKKE - Kurejšijama.'},
+            {question: 'Pronađi GREŠKU: "Sura El-Maun govori o bogatašima koji daju zekat."', options: ['O onima koji NE DAJU', 'O siromašnima', 'O putnicima', 'Nema greške'], answer: 'O onima koji NE DAJU', explanation: 'El-Maun kritizira one koji NE DAJU i grubo odbijaju siroče.'},
+            {question: 'Pronađi GREŠKU: "Lekum dinukum ve lije din" je iz sure El-Kevser.', options: ['Iz El-KAFIRUN', 'Iz El-Maun', 'Iz El-Kurejš', 'Nema greške'], answer: 'Iz El-KAFIRUN', explanation: 'Taj ajet je posljednji ajet sure El-KAFIRUN.'},
+            {question: 'Pronađi GREŠKU: "Fatiha se uči samo na prvom rekatu."', options: ['Na SVAKOM rekatu', 'Samo na drugom', 'Samo na trećem', 'Nema greške'], answer: 'Na SVAKOM rekatu', explanation: 'Fatiha se uči na SVAKOM rekatu namaza.'},
+
+            // Situacijska pitanja (10)
+            {question: 'Ahmed uči vitr-namaz i došao je na treći rekat. Šta treba proučiti poslije Fatihe i sure?', options: ['Samo tahijjat', 'Kunut-dovu', 'Salavate', 'Ništa'], answer: 'Kunut-dovu', explanation: 'U trećem rekatu vitira, poslije Fatihe i sure, uči se KUNUT-DOVA.'},
+            {question: 'Fatima želi naučiti najkraću suru. Koju treba učiti?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kevser', explanation: 'EL-KEVSER je najkraća sura sa samo 3 ajeta.'},
+            {question: 'Jusuf je završio jelo. Koju dovu treba proučiti?', options: ['Kunut-dovu', 'El-hamdu lillahillezi at\'amena...', 'Subhaneke', 'Estagfirullah'], answer: 'El-hamdu lillahillezi at\'amena...', explanation: 'Poslije jela uči se DOVA POSLIJE JELA.'},
+            {question: 'Merjem uči o suri koja kritizira munafike. Koja je to sura?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Maun', explanation: 'EL-MAUN kritizira munafike koji klanjaju radi ljudi.'},
+            {question: 'Hasan želi naučiti suru o prijedlogu idolopoklonika. Koja je?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kafirun', explanation: 'EL-KAFIRUN govori o prijedlogu idolopoklonika Poslaniku.'},
+            {question: 'Amina uči o suri koja spominje Kabu. Koja je?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kurejš', explanation: 'EL-KUREJŠ spominje "ovaj hram" - Kabu.'},
+            {question: 'Kenan traži suru koja počinje sa "Kul". Koja je?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kafirun', explanation: 'EL-KAFIRUN počinje sa "Kul ja ejjuhel-kafirun" (Reci...).'},
+            {question: 'Lejla uči o klanjanju kurbanskog namaza. Koja sura spominje kurban?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kevser', explanation: 'EL-KEVSER: "Moli se i KURBAN kolji."'},
+            {question: 'Emir želi znati koliko ajeta ima El-Kurejš. Koliko?', options: ['3', '4', '6', '7'], answer: '4', explanation: 'EL-KUREJŠ ima 4 ajeta.'},
+            {question: 'Selma uči suru o zimskim i ljetnim putovanjima. Koja je?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kurejš', explanation: 'EL-KUREJŠ govori o putovanjima Kurejšija zimi i ljeti.'}
+            ]
+        };
+    </script>
+
+    <!-- Centralizovani JavaScript Engine -->
+    <script src="../core/quiz-engine.js"></script>
+</body>
+</html>

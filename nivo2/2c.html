@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 2C</title>
+    
+    <!-- Centralizovani CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 2C</h1>
+            <p class="subtitle">Ahlak i Grijesi</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/20</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/20</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 20,
+            allQuestions: [
+// ===== DA/NE PITANJA (20) =====
+            {question: 'Grijesi se dijele na male, velike i teške.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Grijesi se dijele na tri kategorije: mali, veliki i teški grijesi.'},
+            {question: 'Mali grijesi postaju veliki ako se na njima ustraje.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Ako osoba ustraje na malim grijesima i smatra ih nevažnim, čini veliki grijeh.'},
+            {question: 'Teški grijesi izvode počinioca iz vjere islama.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Teški grijesi kao kufr, širk i riddet izvode osobu iz vjere.'},
+            {question: 'Tevba se može uputiti bilo kome, ne samo Allahu.', options: ['DA', 'NE'], answer: 'NE', explanation: 'Netačno! Tevba se upućuje SAMO Allahu, dž.š.'},
+            {question: 'Adem, a.s., i Hava su prvi učinili tevbu.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Nakon grijeha u Džennetu, Adem i Hava su se prvi pokajali Allahu.'},
+            {question: 'Čistoća je pola vjere.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Poslanik, a.s., je rekao: "Čistoća je pola vjere." (Muslim)'},
+            {question: 'Alkohol je u islamu dozvoljen u malim količinama.', options: ['DA', 'NE'], answer: 'NE', explanation: 'Netačno! Alkohol je POTPUNO zabranjen. Poslanik kaže: "Alkohol je majka svih zala."'},
+            {question: 'Širk je pripisivanje druga Allahu.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Širk je vjerovanje da uz Allaha postoje i druga božanstva - teški grijeh.'},
+            {question: 'Iskrenost podrazumijeva govorenje istine.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Iskrenost znači govoriti istinu, ispunjavati obećanja i biti pošten.'},
+            {question: 'Umjerenost je sredina između pretjerivanja i nemara.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Islam je vjera srednjeg puta - umjerenosti u svemu.'},
+            {question: 'Halal je sve ono što je Allah zabranio.', options: ['DA', 'NE'], answer: 'NE', explanation: 'Netačno! HALAL je ono što je Allah DOZVOLIO, a HARAM je zabranjeno.'},
+            {question: 'Ogovaranje i potvaranje su veliki grijesi.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Prenošenje tuđih riječi, ogovaranje i potvaranje su veliki grijesi.'},
+            {question: 'Ostavljanje namaza je veliki grijeh.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Napuštanje namaza ubraja se u velike grijehe.'},
+            {question: 'Nifak je licemjerstvo u vjeri.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Nifak je kada osoba javno ističe da vjeruje, a u tajnosti to poriče.'},
+            {question: 'Kufr je nevjerovanje u Allaha i temeljne istine vjere.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Kufr je nevjerovanje i poricanje temeljnih istina - teški grijeh.'},
+            {question: 'Grijeh je ono što te tišti u prsima.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Poslanik je rekao: "Grijeh je ono što te tišti u prsima i što ne bi volio da saznaju ljudi."'},
+            {question: 'Saosjećajnost je osjećaj naklonosti prema tuđoj nevolji.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Saosjećajnost nas čini humanijim i navodi da pomognemo drugima.'},
+            {question: 'Riddet je napuštanje vjere islama.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Riddet je javno napuštanje vjere islama - teški grijeh.'},
+            {question: 'Za tevbu je dovoljno samo srcem se pokajati.', options: ['DA', 'NE'], answer: 'NE', explanation: 'Netačno! Tevba zahtijeva: prestanak grijeha, kajanje srcem i odluku da se ne vraća na grijeh.'},
+            {question: 'Posljedice grijeha osjećaju se i na dunjaluku i na ahiretu.', options: ['DA', 'NE'], answer: 'DA', explanation: 'Tačno! Posljedice grijeha vidljive su na ovom svijetu, a najveće će biti na Sudnjem danu.'},
+
+            // ===== VIŠESTRUKI IZBOR (30) =====
+            {question: 'Grijesi se dijele na:', options: ['Dva tipa', 'Tri tipa', 'Četiri tipa', 'Pet tipova'], answer: 'Tri tipa', explanation: 'Mali, veliki i teški grijesi - tri kategorije.'},
+            {question: 'Šta je grijeh?', options: ['Sve što je Allah dozvolio', 'Sve što je Allah zabranio', 'Samo ubistvo', 'Samo krađa'], answer: 'Sve što je Allah zabranio', explanation: 'Grijeh je sve što je Allah zabranio i prelaženje Njegovih granica.'},
+            {question: 'Mali grijesi su oni za koje:', options: ['Je predviđena smrt', 'Nije predviđena šerijatska kazna', 'Osoba izlazi iz vjere', 'Nema oprosta'], answer: 'Nije predviđena šerijatska kazna', explanation: 'Mali grijesi nemaju šerijatsku kaznu niti prijetnju Džehennemom.'},
+            {question: 'Koji od navedenih je VELIKI grijeh?', options: ['Razgovor u vrijeme ezana', 'Ubistvo', 'Neurednost', 'Kasno ustajanje'], answer: 'Ubistvo', explanation: 'Ubistvo i samoubistvo su veliki grijesi - Allah daruje život i samo On ga uzima.'},
+            {question: 'Koji grijeh izvodi osobu iz vjere?', options: ['Mali grijeh', 'Veliki grijeh', 'Teški grijeh', 'Svi grijesi'], answer: 'Teški grijeh', explanation: 'Teški grijesi (kufr, širk, riddet, nifak) izvode počinioca iz vjere.'},
+            {question: 'Šta je KUFR?', options: ['Licemjerstvo', 'Nevjerovanje u Allaha', 'Napuštanje vjere', 'Pripisivanje druga'], answer: 'Nevjerovanje u Allaha', explanation: 'KUFR je nevjerovanje u Allaha i ostale temeljne istine vjere.'},
+            {question: 'Šta je ŠIRK?', options: ['Licemjerstvo', 'Nevjerovanje', 'Pripisivanje druga Allahu', 'Napuštanje vjere'], answer: 'Pripisivanje druga Allahu', explanation: 'ŠIRK je vjerovanje da uz Allaha postoje i druga božanstva.'},
+            {question: 'Šta je RIDDET?', options: ['Licemjerstvo', 'Nevjerovanje', 'Pripisivanje druga', 'Napuštanje vjere islama'], answer: 'Napuštanje vjere islama', explanation: 'RIDDET je javno napuštanje vjere islama.'},
+            {question: 'Šta je NIFAK?', options: ['Licemjerstvo u vjeri', 'Nevjerovanje', 'Širk', 'Riddet'], answer: 'Licemjerstvo u vjeri', explanation: 'NIFAK je kada osoba javno vjeruje, a u tajnosti poriče.'},
+            {question: 'Šta je tevba?', options: ['Vrsta namaza', 'Pokajanje za grijeh', 'Vrsta posta', 'Vrsta sadake'], answer: 'Pokajanje za grijeh', explanation: 'TEVBA je pokajanje za učinjeni grijeh, upućeno Allahu.'},
+            {question: 'Da bi tevba bila primljena, potrebno je:', options: ['Samo izgovoriti riječi', 'Prestati s grijehom i pokajati se srcem', 'Samo dati sadaku', 'Samo klanjati'], answer: 'Prestati s grijehom i pokajati se srcem', explanation: 'Tevba zahtijeva: prestanak grijeha, kajanje srcem i odluku da se ne vraća na grijeh.'},
+            {question: 'Kako glasi dova za pokajanje?', options: ['Bismillah', 'Elhamdulillah', 'Estagfirullah', 'Subhanallah'], answer: 'Estagfirullah', explanation: 'ESTAGFIRULLAH - Tražim Allahov oprost za grijehe.'},
+            {question: 'Šta je HALAL?', options: ['Zabranjeno', 'Dozvoljeno', 'Pokuđeno', 'Obavezno'], answer: 'Dozvoljeno', explanation: 'HALAL je sve što je Allah dozvolio.'},
+            {question: 'Šta je HARAM?', options: ['Dozvoljeno', 'Zabranjeno', 'Pohvalno', 'Obavezno'], answer: 'Zabranjeno', explanation: 'HARAM je sve što je Allah zabranio.'},
+            {question: 'Poslanik je rekao da je alkohol:', options: ['Dozvoljen u malim količinama', 'Majka svih zala', 'Lijek', 'Neutralan'], answer: 'Majka svih zala', explanation: '"Alkohol je majka svih zala." (Hakim)'},
+            {question: 'Čestitost i odgovornost znače:', options: ['Odgađanje obaveza', 'Izvršavanje obaveza na vrijeme', 'Izbjegavanje rada', 'Prepuštanje drugima'], answer: 'Izvršavanje obaveza na vrijeme', explanation: 'Čestita i odgovorna osoba svoje obaveze izvršava na vrijeme i savjesno.'},
+            {question: 'Iskrenost je nasuprot:', options: ['Istini', 'Laganju i prevari', 'Poštenju', 'Dobroti'], answer: 'Laganju i prevari', explanation: 'Iskrenost je suprotna laganju, prevari, varanju i dvoličnosti.'},
+            {question: 'Saosjećajnost je posebno potrebna prema:', options: ['Bogatima', 'Jetimima i siromašnima', 'Samo porodici', 'Nikome'], answer: 'Jetimima i siromašnima', explanation: 'Poslanik je bio posebno saosjećajan prema jetimima, siromašnima i slabima.'},
+            {question: 'Šta je jetim?', options: ['Bogataš', 'Siroče', 'Putnik', 'Starac'], answer: 'Siroče', explanation: 'JETIM je siroče - dijete bez roditelja.'},
+            {question: 'Skromnost je:', options: ['Hvalisanje bogatstvom', 'Poniznost i umjerenost', 'Škrtost', 'Gordost'], answer: 'Poniznost i umjerenost', explanation: 'Skromnost je poniznost, jednostavnost i umjerenost u svemu.'},
+            {question: 'Islam je vjera:', options: ['Krajnosti', 'Srednjeg puta', 'Pretjerivanja', 'Nemara'], answer: 'Srednjeg puta', explanation: 'Islam je vjera SREDNJEG PUTA - umjerenosti između krajnosti.'},
+            {question: 'Posljedice grijeha NISU:', options: ['Gubitak vjere', 'Bolesti', 'Siromaštvo', 'Povećanje imana'], answer: 'Povećanje imana', explanation: 'Grijesi slabe vjeru, ne jačaju je. Donose bolesti, siromaštvo i nesreću.'},
+            {question: 'Neposlušnost prema roditeljima je:', options: ['Mali grijeh', 'Veliki grijeh', 'Dozvoljena', 'Pohvalna'], answer: 'Veliki grijeh', explanation: '"Allahovo zadovoljstvo je u zadovoljstvu roditelja." (Tirmizi)'},
+            {question: 'Kidanje rodbinskih veza je:', options: ['Dozvoljeno', 'Pohvalno', 'Veliki grijeh', 'Mali grijeh'], answer: 'Veliki grijeh', explanation: '"U Džennet neće ući onaj ko bude kidao rodbinske veze!" (Buhari)'},
+            {question: 'Laž vodi ka:', options: ['Džennetu', 'Dobročinstvu', 'Onome što je loše', 'Nagradi'], answer: 'Onome što je loše', explanation: 'Laž vodi onome što je loše i štetno, nanosi štetu pojedincima i zajednici.'},
+            {question: 'Kocka i igre na sreću su:', options: ['Dozvoljene', 'Zabranjene', 'Pohvalne', 'Neutralne'], answer: 'Zabranjene', explanation: 'Kocka, kladionica i igre na sreću su HARAM - zabranjene.'},
+            {question: 'Ko se brine o siročetu, Poslanik je rekao da će biti s njim u:', options: ['Kaburu', 'Džennetu', 'Na dunjaluku', 'U džamiji'], answer: 'Džennetu', explanation: '"Ja i onaj ko zbrinjava siroče bit ćemo ovako u Džennetu!" (Buhari)'},
+            {question: 'Šta se ubraja u ličnu higijenu?', options: ['Samo pranje zuba', 'Pranje, kupanje, podrezivanje noktiju', 'Samo kupanje', 'Ništa'], answer: 'Pranje, kupanje, podrezivanje noktiju', explanation: 'Lična higijena: pranje ruku, zuba, kupanje, podrezivanje noktiju, čista odjeća.'},
+            {question: 'Poslanik je rekao: "Čistoća je pola..."', options: ['Zdravlja', 'Vjere', 'Života', 'Imana'], answer: 'Vjere', explanation: '"Čistoća je pola vjere." (Muslim)'},
+            {question: 'Islam je zabranio sve što vodi:', options: ['Dobru', 'Džennetu', 'Bludu i grijehu', 'Ibadetu'], answer: 'Bludu i grijehu', explanation: 'Islam zabranjuje sve što vodi grijehu - razgolićavanje, bestidan govor itd.'},
+
+            // ===== PAMETNA PITANJA (50) =====
+            // Izbaci uljeza (10)
+            {question: 'Izbaci riječ koja NE pripada: Kufr, Širk, Riddet, Iskrenost', options: ['Kufr', 'Širk', 'Riddet', 'Iskrenost'], answer: 'Iskrenost', explanation: 'Kufr, Širk i Riddet su TEŠKI GRIJESI, a Iskrenost je VRLINA.'},
+            {question: 'Izbaci riječ koja NE pripada: Laž, Ogovaranje, Kocka, Skromnost', options: ['Laž', 'Ogovaranje', 'Kocka', 'Skromnost'], answer: 'Skromnost', explanation: 'Laž, Ogovaranje i Kocka su GRIJESI, a Skromnost je VRLINA.'},
+            {question: 'Izbaci riječ koja NE pripada: Iskrenost, Čestitost, Saosjećajnost, Nifak', options: ['Iskrenost', 'Čestitost', 'Saosjećajnost', 'Nifak'], answer: 'Nifak', explanation: 'Iskrenost, Čestitost i Saosjećajnost su VRLINE, a Nifak je TEŠKI GRIJEH.'},
+            {question: 'Izbaci riječ koja NE pripada: Ubistvo, Blud, Alkohol, Tevba', options: ['Ubistvo', 'Blud', 'Alkohol', 'Tevba'], answer: 'Tevba', explanation: 'Ubistvo, Blud i Alkohol su VELIKI GRIJESI, a Tevba je POKAJANJE.'},
+            {question: 'Izbaci riječ koja NE pripada: Halal, Haram, Mubah, Širk', options: ['Halal', 'Haram', 'Mubah', 'Širk'], answer: 'Širk', explanation: 'Halal, Haram i Mubah su ŠERIJATSKE KATEGORIJE, a Širk je GRIJEH.'},
+            {question: 'Izbaci pojam koji NE pripada: Razgovor u vrijeme ezana, Neuredno odijevanje, Izostavljanje sunneta, Ubistvo', options: ['Razgovor u vrijeme ezana', 'Neuredno odijevanje', 'Izostavljanje sunneta', 'Ubistvo'], answer: 'Ubistvo', explanation: 'Prva tri su MALI grijesi, a Ubistvo je VELIKI grijeh.'},
+            {question: 'Izbaci pojam koji NE pripada: Čestitost, Odgovornost, Iskrenost, Oholost', options: ['Čestitost', 'Odgovornost', 'Iskrenost', 'Oholost'], answer: 'Oholost', explanation: 'Čestitost, Odgovornost i Iskrenost su VRLINE, Oholost je MANA.'},
+            {question: 'Izbaci pojam koji NE pripada: Siromaštvo, Bolesti, Gubitak vjere, Blagoslov', options: ['Siromaštvo', 'Bolesti', 'Gubitak vjere', 'Blagoslov'], answer: 'Blagoslov', explanation: 'Siromaštvo, Bolesti i Gubitak vjere su POSLJEDICE GRIJEHA.'},
+            {question: 'Izbaci pojam koji NE pripada: Svinjsko meso, Krv, Med, Alkohol', options: ['Svinjsko meso', 'Krv', 'Med', 'Alkohol'], answer: 'Med', explanation: 'Svinjsko meso, Krv i Alkohol su HARAM, a Med je HALAL.'},
+            {question: 'Izbaci pojam koji NE pripada: Kufr, Nifak, Riddet, Umjerenost', options: ['Kufr', 'Nifak', 'Riddet', 'Umjerenost'], answer: 'Umjerenost', explanation: 'Kufr, Nifak i Riddet su TEŠKI GRIJESI, Umjerenost je VRLINA.'},
+            
+            // Asocijacije (8)
+            {question: 'Pojam TEVBA vas asocira na:', options: ['Grijeh', 'Pokajanje', 'Namaz', 'Post'], answer: 'Pokajanje', explanation: 'TEVBA znači pokajanje za učinjene grijehe.'},
+            {question: 'Pojam ESTAGFIRULLAH asocira na:', options: ['Zahvalu', 'Traženje oprosta', 'Veličanje', 'Slavljenje'], answer: 'Traženje oprosta', explanation: 'ESTAGFIRULLAH - Tražim Allahov oprost.'},
+            {question: 'Pojam JETIM asocira na:', options: ['Bogataša', 'Siroče', 'Učenjaka', 'Vladara'], answer: 'Siroče', explanation: 'JETIM je siroče - dijete bez roditelja.'},
+            {question: 'Pojam HALAL asocira na:', options: ['Zabranjeno', 'Dozvoljeno', 'Pokuđeno', 'Obavezno'], answer: 'Dozvoljeno', explanation: 'HALAL je sve što je Allah dozvolio.'},
+            {question: 'Pojam HARAM asocira na:', options: ['Dozvoljeno', 'Zabranjeno', 'Pohvalno', 'Neutralno'], answer: 'Zabranjeno', explanation: 'HARAM je sve što je Allah zabranio.'},
+            {question: 'Pojam ŠIRK asocira na:', options: ['Jednoću Allaha', 'Pripisivanje druga', 'Pokajanje', 'Vrlinu'], answer: 'Pripisivanje druga', explanation: 'ŠIRK je pripisivanje druga Allahu - teški grijeh.'},
+            {question: 'Pojam AHLAK asocira na:', options: ['Namaz', 'Moral i ponašanje', 'Post', 'Hadž'], answer: 'Moral i ponašanje', explanation: 'AHLAK je islamski moral i lijepo ponašanje.'},
+            {question: 'Pojam RIDDET asocira na:', options: ['Jačanje vjere', 'Napuštanje vjere', 'Učenje', 'Ibadet'], answer: 'Napuštanje vjere', explanation: 'RIDDET je napuštanje vjere islama - teški grijeh.'},
+
+            // Analogije (8)
+            {question: 'Dopuni: Halal : dozvoljeno = Haram : ?', options: ['Pohvalno', 'Zabranjeno', 'Obavezno', 'Pokuđeno'], answer: 'Zabranjeno', explanation: 'Halal je dozvoljeno, Haram je zabranjeno.'},
+            {question: 'Dopuni: Tevba : pokajanje = Istigfar : ?', options: ['Zahvala', 'Traženje oprosta', 'Slavljenje', 'Veličanje'], answer: 'Traženje oprosta', explanation: 'Tevba je pokajanje, Istigfar je traženje oprosta.'},
+            {question: 'Dopuni: Kufr : nevjerovanje = Nifak : ?', options: ['Iskrenost', 'Licemjerstvo', 'Hrabrost', 'Skromnost'], answer: 'Licemjerstvo', explanation: 'Kufr je nevjerovanje, Nifak je licemjerstvo.'},
+            {question: 'Dopuni: Iskrenost : vrlina = Laž : ?', options: ['Vrlina', 'Grijeh', 'Pohvala', 'Nagrada'], answer: 'Grijeh', explanation: 'Iskrenost je vrlina, Laž je grijeh.'},
+            {question: 'Dopuni: Skromnost : pohvalno = Oholost : ?', options: ['Pohvalno', 'Pokuđeno', 'Obavezno', 'Neutralno'], answer: 'Pokuđeno', explanation: 'Skromnost je pohvalna, Oholost je pokuđena.'},
+            {question: 'Dopuni: Čestitost : odgovornost = Laž : ?', options: ['Iskrenost', 'Prevara', 'Poštenje', 'Hrabrost'], answer: 'Prevara', explanation: 'Čestitost ide s odgovornošću, Laž ide s prevarom.'},
+            {question: 'Dopuni: Mali grijeh : upozorenje = Teški grijeh : ?', options: ['Nagrada', 'Izlazak iz vjere', 'Pohvala', 'Blagoslov'], answer: 'Izlazak iz vjere', explanation: 'Mali grijeh nosi upozorenje, Teški grijeh izvodi iz vjere.'},
+            {question: 'Dopuni: Jetim : siroče = Ta\'zija : ?', options: ['Radost', 'Sućut', 'Svadba', 'Zabava'], answer: 'Sućut', explanation: 'Jetim je siroče, Ta\'zija je iskazivanje sućuti.'},
+
+            // Ko/Šta sam ja? (8)
+            {question: '"Ja sam pokajanje za učinjeni grijeh." Šta sam?', options: ['Namaz', 'Tevba', 'Post', 'Sadaka'], answer: 'Tevba', explanation: 'TEVBA je pokajanje za učinjene grijehe.'},
+            {question: '"Ja sam teški grijeh - nevjerovanje u Allaha." Šta sam?', options: ['Širk', 'Kufr', 'Nifak', 'Riddet'], answer: 'Kufr', explanation: 'KUFR je nevjerovanje u Allaha i temeljne istine vjere.'},
+            {question: '"Ja sam vrlina - govorim istinu i držim obećanja." Šta sam?', options: ['Oholost', 'Laž', 'Iskrenost', 'Prevara'], answer: 'Iskrenost', explanation: 'ISKRENOST znači govoriti istinu i držati obećanja.'},
+            {question: '"Ja sam dijete bez roditelja." Ko sam?', options: ['Musafir', 'Jetim', 'Muallim', 'Imam'], answer: 'Jetim', explanation: 'JETIM je siroče - dijete bez roditelja.'},
+            {question: '"Ja sam sve što je Allah dozvolio." Šta sam?', options: ['Haram', 'Mekruh', 'Halal', 'Grijeh'], answer: 'Halal', explanation: 'HALAL je sve što je Allah dozvolio.'},
+            {question: '"Ja sam licemjerstvo - javno vjerujem, tajno poričem." Šta sam?', options: ['Kufr', 'Širk', 'Nifak', 'Riddet'], answer: 'Nifak', explanation: 'NIFAK je licemjerstvo u vjeri.'},
+            {question: '"Ja sam sredina između pretjerivanja i nemara." Šta sam?', options: ['Krajnost', 'Umjerenost', 'Pretjerivanje', 'Nemar'], answer: 'Umjerenost', explanation: 'UMJERENOST je srednji put između krajnosti.'},
+            {question: '"Ja sam pripisivanje druga Allahu." Šta sam?', options: ['Kufr', 'Širk', 'Nifak', 'Tevba'], answer: 'Širk', explanation: 'ŠIRK je pripisivanje druga Allahu - teški grijeh.'},
+
+            // Pronađi grešku (6)
+            {question: 'Pronađi GREŠKU: "Grijesi se dijele na male i velike."', options: ['Ima i TEŠKI grijesi', 'Nema malih grijeha', 'Nema velikih grijeha', 'Nema greške'], answer: 'Ima i TEŠKI grijesi', explanation: 'Grijesi se dijele na MALE, VELIKE i TEŠKE.'},
+            {question: 'Pronađi GREŠKU: "Tevba se može uputiti imamu."', options: ['Samo ALLAHU', 'Samo roditeljima', 'Samo prijateljima', 'Nema greške'], answer: 'Samo ALLAHU', explanation: 'Tevba se upućuje SAMO Allahu, dž.š.'},
+            {question: 'Pronađi GREŠKU: "Halal je sve što je Allah zabranio."', options: ['DOZVOLJENO, ne zabranio', 'Tačna definicija', 'Halal ne postoji', 'Nema greške'], answer: 'DOZVOLJENO, ne zabranio', explanation: 'Halal je ono što je Allah DOZVOLIO, ne zabranio.'},
+            {question: 'Pronađi GREŠKU: "Nifak je iskrenost u vjeri."', options: ['LICEMJERSTVO, ne iskrenost', 'Tačna definicija', 'Nifak je vrlina', 'Nema greške'], answer: 'LICEMJERSTVO, ne iskrenost', explanation: 'Nifak je LICEMJERSTVO - suprotno od iskrenosti.'},
+            {question: 'Pronađi GREŠKU: "Mali grijesi nikada ne postaju veliki."', options: ['POSTAJU ako se ustraje', 'Tačno je', 'Mali grijesi ne postoje', 'Nema greške'], answer: 'POSTAJU ako se ustraje', explanation: 'Mali grijesi POSTAJU veliki ako se na njima ustraje.'},
+            {question: 'Pronađi GREŠKU: "Širk je jednoća Allahova."', options: ['To je VAHDANIJJET', 'Širk je vrlina', 'Tačna definicija', 'Nema greške'], answer: 'To je VAHDANIJJET', explanation: 'Jednoća Allaha je VAHDANIJJET. Širk je PRIPISIVANJE DRUGA.'},
+
+            // Situacijska pitanja (10)
+            {question: 'Ahmed je učinio mali grijeh i nastavlja ga činiti svaki dan. Šta se dešava?', options: ['Ostaje mali grijeh', 'Postaje veliki grijeh', 'Nema posljedica', 'Dobiva nagradu'], answer: 'Postaje veliki grijeh', explanation: 'Ustrajavanje na malom grijehu pretvara ga u VELIKI grijeh.'},
+            {question: 'Fatima je učinila grijeh i želi se pokajati. Kome treba uputiti tevbu?', options: ['Imamu', 'Roditeljima', 'Samo Allahu', 'Prijateljima'], answer: 'Samo Allahu', explanation: 'Tevba se upućuje SAMO Allahu, dž.š.'},
+            {question: 'Jusuf je ukrao novac od kolege. Za prihvatanje tevbe, šta mora učiniti PRVO?', options: ['Samo izgovoriti estagfirullah', 'Vratiti novac i zatražiti halal', 'Klanjati nafilu', 'Ništa'], answer: 'Vratiti novac i zatražiti halal', explanation: 'Ako je grijeh prema drugoj osobi, PRVO treba ispraviti štetu i zatražiti halal.'},
+            {question: 'Selma je vidjela koleginicu kako ogovara drugu. Šta treba učiniti?', options: ['Pridružiti se', 'Odvratiti od zla', 'Šutjeti', 'Prenijeti drugima'], answer: 'Odvratiti od zla', explanation: 'Naša je obaveza naređivati dobro i odvraćati od zla.'},
+            {question: 'Emir ne klanja namaz već godinama. Kakav je to grijeh?', options: ['Mali grijeh', 'Veliki grijeh', 'Nema grijeha', 'Teški grijeh'], answer: 'Veliki grijeh', explanation: 'Ostavljanje namaza je VELIKI grijeh.'},
+            {question: 'Amina javno kaže da vjeruje, ali u sebi poriče. Kakav je to grijeh?', options: ['Mali', 'Veliki', 'Nifak - teški', 'Nema grijeha'], answer: 'Nifak - teški', explanation: 'NIFAK (licemjerstvo) je teški grijeh koji izvodi iz vjere.'},
+            {question: 'Hasan vidi siromašnog jetima. Šta treba učiniti kao musliman?', options: ['Ignorisati', 'Pomoći i saosjećati', 'Ismijati', 'Pobjeći'], answer: 'Pomoći i saosjećati', explanation: 'Poslanik je posebno bio saosjećajan prema jetimima - mi trebamo slijediti njegov primjer.'},
+            {question: 'Lejla je posvađana s rodbinom već godinama. Kakav je to grijeh?', options: ['Nema grijeha', 'Mali grijeh', 'Veliki grijeh', 'Pohvalno'], answer: 'Veliki grijeh', explanation: 'Kidanje rodbinskih veza je VELIKI grijeh. "U Džennet neće ući onaj ko kida rodbinske veze."'},
+            {question: 'Kenan razmišlja da proba alkohol "samo jednom". Šta mu reći?', options: ['Može jednom', 'Alkohol je potpuno haram', 'Malo je dozvoljeno', 'Svejedno je'], answer: 'Alkohol je potpuno haram', explanation: 'Alkohol je POTPUNO zabranjen - "majka svih zala". Nema izuzetaka.'},
+            {question: 'Merjem želi biti umjerena u životu. Šta to znači?', options: ['Pretjerivati u ibadetu', 'Sredina između krajnosti', 'Potpuno se odreći dunjaluka', 'Ne raditi ništa'], answer: 'Sredina između krajnosti', explanation: 'UMJERENOST je srednji put - ni pretjerivanje ni nemar.'}
+            ]
+        };
+    </script>
+
+    <!-- Centralizovani JavaScript Engine -->
+    <script src="../core/quiz-engine.js"></script>
+</body>
+</html>

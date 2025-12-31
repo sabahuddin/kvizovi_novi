@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz 2F - Opći</title>
+    
+    <!-- Centralizovani CSS -->
+    <link rel="stylesheet" href="../core/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="quiz-header">
+            <img src="../assets/images/mekteb_logo.png" alt="MEKTEB Logo" class="quiz-icon">
+            <h1>Kviz 2F - Opći</h1>
+            <p class="subtitle">Kviz Prvog i Drugog Nivoa</p>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quizScreen" class="quiz-screen">
+            <div class="progress-info">
+                <a href="../index.html" class="back-link">← Nazad</a>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="questionCounter" style="color: #fbbf24; font-weight: 600;">1/25</span>
+            </div>
+
+            <div class="question-card">
+                <div id="questionText" class="question-text"></div>
+                <div id="optionsContainer" class="options"></div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-card">
+                <div id="resultEmoji" class="result-emoji">🌟</div>
+                <div id="resultMessage" class="result-message">Izvrsno!</div>
+                <div id="resultScore" class="result-score">0/25</div>
+                <div id="resultPercentage" class="result-percentage">0% tačnih odgovora</div>
+                <button onclick="restartQuiz()" class="restart-btn">🔄 Ponovi kviz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div id="popupIcon" class="popup-icon">✅</div>
+            <div id="popupTitle" class="popup-title">Tačno!</div>
+            <div id="popupExplanation" class="popup-explanation"></div>
+            <button onclick="nextQuestion()" class="popup-next-btn">Sljedeće pitanje →</button>
+        </div>
+    </div>
+
+    <!-- QUIZ DATA -->
+    <script>
+        const quizData = {
+            questionsToShow: 25,
+            allQuestions: [
+// ===== NIVO 1 - IZ 1A (19 pitanja) =====
+            {question: 'IZBACI ULJEZA: Koja riječ ne pripada nizu? Šehadet, Namaz, Iman, Post', options: ['Šehadet', 'Namaz', 'Iman', 'Post'], answer: 'Iman', explanation: 'Iman (vjerovanje) nije islamski šart. Šehadet, namaz i post su islamski šarti.'},
+            {question: 'IZBACI ULJEZA: Allah, Meleki, Džamija, Knjige', options: ['Allah', 'Meleki', 'Džamija', 'Knjige'], answer: 'Džamija', explanation: 'Allah, meleki i knjige su dio imanskih šarta, a džamija nije.'},
+            {question: 'Riječ BISMILLA vas asocira na:', options: ['Završetak posla', 'Početak svakog posla', 'Zahvalu', 'Oprost'], answer: 'Početak svakog posla', explanation: 'Bismilla (U ime Allaha) se uči na početku svakog posla.'},
+            {question: 'Broj 6 vas asocira na:', options: ['Islamske šarte', 'Imanske šarte', 'Namaske šarte', 'Abdeske šarte'], answer: 'Imanske šarte', explanation: 'Imanskih šarta ima šest: vjerovanje u Allaha, meleke, knjige, poslanike, Sudnji dan i kader.'},
+            {question: 'Broj 5 vas asocira na:', options: ['Imanske šarte', 'Islamske šarte', 'Namaske vremena', 'Oba odgovora B i C'], answer: 'Oba odgovora B i C', explanation: 'Broj 5 je vezan i za islamske šarte i za pet dnevnih namaza.'},
+            {question: 'DOPUNI NIZ: Sabah, Podne, Ikindija, Akšam, ?', options: ['Teravih', 'Jacija', 'Džuma', 'Bajram'], answer: 'Jacija', explanation: 'Pet dnevnih namaza: sabah, podne, ikindija, akšam i jacija.'},
+            {question: 'Ako je Mekka mjesto rođenja Poslanika, onda je Medina...', options: ['Mjesto smrti', 'Mjesto hidžre', 'Mjesto prve objave', 'Mjesto Miradža'], answer: 'Mjesto hidžre', explanation: 'Medina je grad u koji je Poslanik učinio hidžru 622. godine.'},
+            {question: 'KO SAM JA? "Ja sam islamski pozdrav koji znači mir."', options: ['Bismilla', 'Selam', 'Mašallah', 'Inšallah'], answer: 'Selam', explanation: 'Es-selamu alejkum je islamski pozdrav koji znači "Neka je na vas Allahov mir".'},
+            {question: 'KO SAM JA? "Izgovaram se kada nešto lijepo vidim."', options: ['Inšallah', 'Subhanallah', 'Mašallah', 'Bismilla'], answer: 'Mašallah', explanation: 'Mašallah se kaže kada vidimo nešto lijepo - znači "Kako Allah hoće".'},
+            {question: 'KO SAM JA? "Izgovaram se kada planiramo nešto u budućnosti."', options: ['Mašallah', 'Subhanallah', 'Inšallah', 'El-hamdu lillah'], answer: 'Inšallah', explanation: 'Inšallah znači "Ako Bog da" i kaže se za buduće planove.'},
+            {question: 'PRONAĐI GREŠKU: "Muhammed, a.s., je rođen u Medini."', options: ['Tačno je', 'Rođen je u Mekki', 'Rođen je u Taifu', 'Rođen je u Jerusalemu'], answer: 'Rođen je u Mekki', explanation: 'Muhammed, a.s., je rođen u MEKKI 571. godine, a u Medinu se preselio 622.'},
+            {question: 'PRONAĐI GREŠKU: "Islamskih šarta ima šest."', options: ['Tačno je', 'Ima ih pet', 'Ima ih četiri', 'Ima ih sedam'], answer: 'Ima ih pet', explanation: 'Islamskih šarta ima PET: šehadet, namaz, post, zekat i hadž.'},
+            {question: 'ŠTA JE ZAJEDNIČKO: Subhanallah, El-hamdu lillah, Allahu ekber?', options: ['Dove prije jela', 'Zikrovi - veličanje Allaha', 'Pozdravne riječi', 'Namaski pojmovi'], answer: 'Zikrovi - veličanje Allaha', explanation: 'Sve tri su zikrovi kojima veličamo Allaha, dž.š.'},
+            {question: 'Koji broj dolazi sljedeći u nizu dinskih šarta: 6 + 5 + 4 + 3 + 3 + ?', options: ['10', '11', '12', '13'], answer: '12', explanation: '6 imanskih + 5 islamskih + 4 abdeska + 3 gusulska + 3 tejemumska + 12 namaskih = 33'},
+            {question: 'Muhammed, a.s., je prije poslanstva radio kao:', options: ['Kovač', 'Pastir i trgovac', 'Ribar', 'Zemljoradnik'], answer: 'Pastir i trgovac', explanation: 'U djetinjstvu je čuvao ovce, a kasnije radio kao pošten trgovac.'},
+            {question: 'Sura El-Ihlas govori o:', options: ['Poslanicima', 'Allahovom jedinstvu', 'Sudnjem danu', 'Namazu'], answer: 'Allahovom jedinstvu', explanation: 'El-Ihlas opisuje Allahovo jedinstvo - "On je Allah Jedan".'},
+            {question: 'Koliko ajeta ima sura El-Fatiha?', options: ['5', '6', '7', '8'], answer: '7', explanation: 'El-Fatiha ima 7 ajeta i zove se "Majka Kur\'ana".'},
+            {question: 'Hidžra označava:', options: ['Rođenje Poslanika', 'Preseljenje iz Mekke u Medinu', 'Početak objave', 'Osvajanje Mekke'], answer: 'Preseljenje iz Mekke u Medinu', explanation: 'Hidžra je preseljenje Muhammeda, a.s., iz Mekke u Medinu 622. godine.'},
+            {question: 'Ihsan je:', options: ['Vrsta namaza', 'Najniži stepen vjere', 'Najviši stepen vjere', 'Vrsta zekata'], answer: 'Najviši stepen vjere', explanation: 'Ihsan je obožavanje Allaha kao da Ga vidiš - najviši stepen vjere.'},
+
+            // ===== NIVO 1 - IZ 1B (19 pitanja) =====
+            {question: 'IZBACI ULJEZA: Lice, Ruke do lakata, Mesh glave, Prsa', options: ['Lice', 'Ruke do lakata', 'Mesh glave', 'Prsa'], answer: 'Prsa', explanation: 'Lice, ruke do lakata i mesh glave su abdeski farzovi, a prsa nisu.'},
+            {question: 'IZBACI ULJEZA: Sabah, Podne, Teravih, Akšam', options: ['Sabah', 'Podne', 'Teravih', 'Akšam'], answer: 'Teravih', explanation: 'Sabah, podne i akšam su dnevni namazi, a teravih je ramazanski namaz.'},
+            {question: 'Ako je "Subhane Rabbijel-azim" za ruku\', šta je za sedždu?', options: ['Subhaneke', 'Subhane Rabbijel-e\'ala', 'Et-tehijjatu', 'Allahu ekber'], answer: 'Subhane Rabbijel-e\'ala', explanation: 'Na ruku\' se uči "Subhane Rabbijel-azim", a na sedždi "Subhane Rabbijel-e\'ala".'},
+            {question: 'Broj 4 vas asocira na:', options: ['Islamske šarte', 'Abdeske šarte', 'Imanske šarte', 'Gusulske šarte'], answer: 'Abdeske šarte', explanation: 'Abdeskih šarta ima 4: pranje lica, ruku do lakata, mesh glave i pranje nogu.'},
+            {question: 'Broj 3 vas asocira na:', options: ['Abdeske šarte', 'Gusulske šarte', 'Islamske šarte', 'Namaske šarte'], answer: 'Gusulske šarte', explanation: 'Gusulskih šarta ima 3: gargara, istinšak i gasli vudžud (pranje cijelog tijela).'},
+            {question: 'DOPUNI NIZ: Iftitahi tekbir, Kijam, Kiraet, Ruku\', Sedžda, ?', options: ['Selam', 'Kadei-ehire', 'Et-tehijjatu', 'Subhaneke'], answer: 'Kadei-ehire', explanation: 'Namaski ruknovi: tekbir, kijam, kiraet, ruku\', sedžda i kadei-ehire (zadnje sjedenje).'},
+            {question: 'KO SAM JA? "Ja sam namaz koji se klanja pred spavanje."', options: ['Sabah', 'Akšam', 'Jacija', 'Vitr'], answer: 'Jacija', explanation: 'Jacija-namaz se klanja u kasnim noćnim satima, pred spavanje.'},
+            {question: 'KO SAM JA? "Ja sam 114. sura u Kur\'anu."', options: ['El-Felek', 'En-Nas', 'El-Ihlas', 'El-Fatiha'], answer: 'En-Nas', explanation: 'En-Nas je 114. i posljednja sura u Kur\'anu.'},
+            {question: 'Šta je KIBLA?', options: ['Vrsta namaza', 'Smjer prema Kabi', 'Namaski rukn', 'Dio džamije'], answer: 'Smjer prema Kabi', explanation: 'Kibla je smjer prema Kabi u Mekki, prema kojem se okrećemo u namazu.'},
+            {question: 'PRONAĐI GREŠKU: "Abdeskih šarta ima tri."', options: ['Tačno je', 'Ima ih četiri', 'Ima ih pet', 'Ima ih šest'], answer: 'Ima ih četiri', explanation: 'Abdeskih šarta ima ČETIRI, a gusulskih ima tri.'},
+            {question: 'Koliko rekata ima sabah-namaz ukupno?', options: ['2', '3', '4', '5'], answer: '4', explanation: 'Sabah ima 4 rekata: 2 sunneta + 2 farza.'},
+            {question: 'Koliko rekata ima akšam-namaz ukupno?', options: ['3', '4', '5', '6'], answer: '5', explanation: 'Akšam ima 5 rekata: 3 farza + 2 sunneta.'},
+            {question: 'Ezan je:', options: ['Poziv na namaz', 'Dova poslije namaza', 'Namaska dova', 'Pozdrav'], answer: 'Poziv na namaz', explanation: 'Ezan je poziv na namaz koji uči mujezin.'},
+            {question: 'Kojom nogom ulazimo u džamiju?', options: ['Lijevom', 'Desnom', 'Svejedno', 'Objema'], answer: 'Desnom', explanation: 'U džamiju ulazimo desnom nogom, a izlazimo lijevom.'},
+            {question: 'Šta je gusul?', options: ['Manje pranje', 'Potpuno kupanje', 'Suho pranje', 'Pranje lica'], answer: 'Potpuno kupanje', explanation: 'Gusul je potpuno kupanje cijelog tijela prema islamskim propisima.'},
+            {question: 'Šta je tejemum?', options: ['Pranje vodom', 'Kupanje', 'Suho pranje zemljom', 'Pranje lica'], answer: 'Suho pranje zemljom', explanation: 'Tejemum je simbolično pranje čistom zemljom kada nema vode.'},
+            {question: 'U ruku\'u govorimo:', options: ['Subhane Rabbijel-e\'ala', 'Subhane Rabbijel-azim', 'Semiallahu limen hamideh', 'Allahu ekber'], answer: 'Subhane Rabbijel-azim', explanation: '"Subhane Rabbijel-azim" (Slavljen neka si, Gospodaru moj Veličanstveni) učimo na ruku\'u.'},
+            {question: 'Koji namaz ima samo farz rekate?', options: ['Sabah', 'Podne', 'Džuma', 'Akšam'], answer: 'Džuma', explanation: 'Džuma-namaz ima samo 2 farza, bez posebnih sunneta.'},
+            {question: 'Sura El-Felek je:', options: ['112. sura', '113. sura', '114. sura', '1. sura'], answer: '113. sura', explanation: 'El-Felek je 113. sura, a En-Nas je 114. sura u Kur\'anu.'},
+
+            // ===== NIVO 1 - IZ 1C (19 pitanja) =====
+            {question: 'IZBACI ULJEZA: Ramazanski bajram, Kurban-bajram, Mevlud, Džuma', options: ['Ramazanski bajram', 'Kurban-bajram', 'Mevlud', 'Džuma'], answer: 'Džuma', explanation: 'Bajrami i Mevlud su mubarek-dani, a Džuma je sedmični dan.'},
+            {question: 'Ako je Et-Tehijjatu dova na sjedenju, Salavati su:', options: ['Dova na kijamu', 'Blagoslovi na Poslanika', 'Dova prije jela', 'Zikr'], answer: 'Blagoslovi na Poslanika', explanation: 'Salavati su blagoslovi koje učimo na Poslanika, a.s.'},
+            {question: 'Broj 12 vas asocira na:', options: ['Islamske šarte', 'Namaske šarte', 'Hidžretske mjesece', 'Imanske šarte'], answer: 'Hidžretske mjesece', explanation: 'Hidžretski kalendar ima 12 mjeseci, kao i gregorijanski.'},
+            {question: 'KO SAM JA? "Ja sam namaz koji se klanja samo u ramazanu."', options: ['Bajram-namaz', 'Teravih-namaz', 'Džuma-namaz', 'Vitr-namaz'], answer: 'Teravih-namaz', explanation: 'Teravih-namaz se klanja samo tokom mjeseca ramazana, poslije jacije.'},
+            {question: 'KO SAM JA? "Ja sam prvi mjesec hidžretskog kalendara."', options: ['Ramazan', 'Muharrem', 'Ševval', 'Rebiul-evvel'], answer: 'Muharrem', explanation: 'Muharrem je prvi mjesec hidžretskog kalendara.'},
+            {question: 'KO SAM JA? "Ja sam deveti mjesec u kojem se posti."', options: ['Muharrem', 'Ševval', 'Ramazan', 'Zul-hidždže'], answer: 'Ramazan', explanation: 'Ramazan je deveti mjesec hidžretskog kalendara i mjesec posta.'},
+            {question: 'DOPUNI: Ramazanski bajram : 1. ševvala = Kurban-bajram : ?', options: ['9. zul-hidždže', '10. zul-hidždže', '12. rebiul-evvela', '1. muharrema'], answer: '10. zul-hidždže', explanation: 'Ramazanski bajram je 1. ševvala, a Kurban-bajram je 10. zul-hidždžeta.'},
+            {question: 'PRONAĐI GREŠKU: "Mevlud se obilježava 10. muharrema."', options: ['Tačno je', '12. rebiul-evvela', '1. ševvala', '10. zul-hidždže'], answer: '12. rebiul-evvela', explanation: 'Mevlud (rođenje Poslanika) se obilježava 12. rebiul-evvela.'},
+            {question: 'Šta je dova?', options: ['Namaski rukn', 'Molba upućena Allahu', 'Vrsta namaza', 'Pozdrav'], answer: 'Molba upućena Allahu', explanation: 'Dova je molba kojom se obraćamo Allahu za pomoć i zaštitu.'},
+            {question: 'Et-Tehijjatu je razgovor sa:', options: ['Poslanikom', 'Melekima', 'Miradža', 'Ashabi'], answer: 'Miradža', explanation: 'Et-Tehijjatu su riječi koje je Poslanik razmijenio s Allahom na Miradžu.'},
+            {question: 'Koliko rekata ima podne-namaz ukupno?', options: ['8', '10', '12', '6'], answer: '10', explanation: 'Podne ima 10 rekata: 4 sunneta + 4 farza + 2 zadnja sunneta.'},
+            {question: 'Bajram-namaz ima:', options: ['2 rekata', '3 rekata', '4 rekata', '6 rekata'], answer: '2 rekata', explanation: 'Bajram-namaz ima 2 rekata i klanja se u džematu.'},
+            {question: 'Hidžra se dogodila godine:', options: ['571.', '610.', '622.', '632.'], answer: '622.', explanation: 'Hidžra (preseljenje iz Mekke u Medinu) se dogodila 622. godine.'},
+            {question: '"Bajram šerif mubarek olsun" je:', options: ['Dova', 'Bajramska čestitka', 'Zikr', 'Selam'], answer: 'Bajramska čestitka', explanation: 'To je tradicionalna bajramska čestitka koja znači "Neka ti je bajram sretan".'},
+            {question: 'Tekbiri-tešrik se uči:', options: ['Na ramazanski bajram', 'Na Kurban-bajram', 'Svaki dan', 'Samo petkom'], answer: 'Na Kurban-bajram', explanation: 'Tekbiri-tešrik se uči poslije namaza u danima Kurban-bajrama.'},
+            {question: 'Miradž je:', options: ['Preseljenje u Medinu', 'Noćno putovanje Poslanika', 'Vrsta namaza', 'Hidžretski mjesec'], answer: 'Noćno putovanje Poslanika', explanation: 'Miradž je noćno putovanje Poslanika, a.s., na nebesa.'},
+            {question: 'Dženaza-namaz se klanja za:', options: ['Bolesne', 'Umrle', 'Putnike', 'Novorođene'], answer: 'Umrle', explanation: 'Dženaza-namaz je namaz koji se klanja za umrlu osobu.'},
+            {question: 'Estagfirullah znači:', options: ['Hvala Allahu', 'Tražim Allahov oprost', 'Ako Bog da', 'Slavljen neka si'], answer: 'Tražim Allahov oprost', explanation: 'Estagfirullah je dova za traženje oprosta od Allaha.'},
+            {question: 'Hidžretski kalendar počinje od:', options: ['Rođenja Poslanika', 'Hidžre', 'Prve objave', 'Osvajanja Mekke'], answer: 'Hidžre', explanation: 'Hidžretski kalendar počinje od hidžre (622. godine).'},
+
+            // ===== NIVO 2 - IZ 2A (19 pitanja) =====
+            {question: 'Izbaci riječ koja NE pripada: Vudžud, Ilm, Beka, Kur\'an', options: ['Vudžud', 'Ilm', 'Beka', 'Kur\'an'], answer: 'Kur\'an', explanation: 'Vudžud, Ilm i Beka su Allahova SVOJSTVA, dok je Kur\'an Allahova KNJIGA.'},
+            {question: 'Izbaci riječ koja NE pripada: Džibril, Mikail, Iblis, Israfil', options: ['Džibril', 'Mikail', 'Iblis', 'Israfil'], answer: 'Iblis', explanation: 'Džibril, Mikail i Israfil su MELEKI, a Iblis je DŽIN.'},
+            {question: 'Pojam LEVHI-MAHFUZ asocira na:', options: ['Vrstu namaza', 'Allahovo ime', 'Sudbinu i određenje', 'Vrstu posta'], answer: 'Sudbinu i određenje', explanation: 'U Levhi-mahfuzu je zapisana sudbina svega - šesti imanski šart.'},
+            {question: 'Dopuni analogiju: Ridvan : Džennet = Malik : ?', options: ['Kabur', 'Sirat', 'Džehennem', 'Mizan'], answer: 'Džehennem', explanation: 'Ridvan čuva Džennet, Malik čuva Džehennem.'},
+            {question: 'Dopuni analogiju: Musa : Tevrat = Davud : ?', options: ['Kur\'an', 'Indžil', 'Zebur', 'Suhuf'], answer: 'Zebur', explanation: 'Musau je objavljen Tevrat, Davudu Zebur.'},
+            {question: '"Pratim te i zapisujem svako djelo." Ko sam ja?', options: ['Munkir i Nekir', 'Kiramun-katibun', 'Džibril', 'Mikail'], answer: 'Kiramun-katibun', explanation: 'Kiramun-katibun su meleki pisari koji bilježe sva djela.'},
+            {question: '"U meni je zapisana sudbina svakog čovjeka." Šta sam ja?', options: ['Kur\'an', 'Levhi-mahfuz', 'Sirat', 'Mizan'], answer: 'Levhi-mahfuz', explanation: 'LEVHI-MAHFUZ - Pomno čuvana ploča sa sudbinom svega.'},
+            {question: '"Nisam melek, ali sam odbio sedždu iz oholosti." Ko sam?', options: ['Adem, a.s.', 'Džibril', 'Iblis', 'Mikail'], answer: 'Iblis', explanation: 'IBLIS je džin koji je iz oholosti odbio sedždu Ademu, a.s.'},
+            {question: 'Pronađi GREŠKU: "Kur\'an ima 114 ajeta."', options: ['Tačno je', 'Ima 114 SURA', 'Ima 30 ajeta', 'Ima 6236 ajeta'], answer: 'Ima 114 SURA', explanation: 'Kur\'an ima 114 SURA i 6236 ajeta.'},
+            {question: 'Koliko ima Allahovih lijepih imena?', options: ['50', '77', '99', '114'], answer: '99', explanation: 'Allah ima 99 lijepih imena (Esmaul-husna).'},
+            {question: 'Koliko ukupno ima Allahovih svojstava?', options: ['6', '8', '12', '14'], answer: '14', explanation: '14 svojstava: 6 es-sifatuz-zatijje + 8 es-sifatus-subutijje.'},
+            {question: 'Koji melek donosi Božiju objavu?', options: ['Mikail', 'Israfil', 'Džibril', 'Azrail'], answer: 'Džibril', explanation: 'DŽIBRIL donosi Allahovu objavu poslanicima.'},
+            {question: 'Koliko ima velikih Allahovih knjiga?', options: ['2', '4', '6', '10'], answer: '4', explanation: 'Četiri kitaba: Tevrat, Zebur, Indžil i Kur\'an.'},
+            {question: 'Koliko se poslanika spominje u Kur\'anu?', options: ['20', '25', '30', '50'], answer: '25', explanation: 'U Kur\'anu se poimence spominje 25 poslanika.'},
+            {question: 'Ko NIJE među Ulul-\'azm poslanicima?', options: ['Nuh, a.s.', 'Jusuf, a.s.', 'Ibrahim, a.s.', 'Isa, a.s.'], answer: 'Jusuf, a.s.', explanation: 'Ulul-\'azm su: Nuh, Ibrahim, Musa, Isa i Muhammed, a.s.'},
+            {question: 'Riječ BERZAH asocira na:', options: ['Vrijeme prije rođenja', 'Zagrobni život', 'Sudnji dan', 'Život u Džennetu'], answer: 'Zagrobni život', explanation: 'BERZAH je period između smrti i Sudnjeg dana.'},
+            {question: 'Pećina HIRA asocira na:', options: ['Hidžru', 'Početak objave Kur\'ana', 'Bitku na Bedru', 'Isru i Mi\'radž'], answer: 'Početak objave Kur\'ana', explanation: 'U pećini Hira je Muhammed, a.s., primio prvu objavu.'},
+            {question: 'Kur\'an je objavljen u mjesecu:', options: ['Ševvalu', 'Muharremu', 'Ramazanu', 'Redžebu'], answer: 'Ramazanu', explanation: 'Objava je počela u noći Lejletul-kadr u ramazanu.'},
+            {question: 'Broj 23 u kontekstu Kur\'ana asocira na:', options: ['Broj sura', 'Broj džuzova', 'Godine objavljivanja', 'Broj poslanika'], answer: 'Godine objavljivanja', explanation: 'Kur\'an je objavljivano 23 godine (13 u Mekki + 10 u Medini).'},
+
+            // ===== NIVO 2 - IZ 2B (19 pitanja) =====
+            {question: 'Izbaci riječ koja NE pripada: Sabah, Podne, Džuma, Ikindija', options: ['Sabah', 'Podne', 'Džuma', 'Ikindija'], answer: 'Džuma', explanation: 'Sabah, Podne i Ikindija su DNEVNI namazi, a Džuma je SEDMIČNI.'},
+            {question: 'Izbaci riječ koja NE pripada: Sehur, Iftar, Imsak, Tavaf', options: ['Sehur', 'Iftar', 'Imsak', 'Tavaf'], answer: 'Tavaf', explanation: 'Sehur, Iftar i Imsak su RAMAZANSKI pojmovi, a Tavaf je HADŽSKI obred.'},
+            {question: 'Pojam MEKKA vas asocira na:', options: ['Post', 'Hadž', 'Zekat', 'Teravih'], answer: 'Hadž', explanation: 'MEKKA je sveti grad gdje se obavlja HADŽ i nalazi se Kaba.'},
+            {question: 'Pojam DŽEMAT vas asocira na:', options: ['Pojedinačni namaz', 'Zajednički namaz', 'Noćni namaz', 'Post'], answer: 'Zajednički namaz', explanation: 'DŽEMAT je zajednički namaz koji vrijedi 27 puta više.'},
+            {question: 'Dopuni: Sehur : početak = Iftar : ?', options: ['Sredina', 'Završetak posta', 'Noć', 'Jutro'], answer: 'Završetak posta', explanation: 'Sehur je priprema za post, a Iftar je završetak posta.'},
+            {question: 'Dopuni: Ramazan : post = Zul-hidže : ?', options: ['Zekat', 'Hadž', 'Namaz', 'Teravih'], answer: 'Hadž', explanation: 'U ramazanu je post, a u zul-hidžetu hadž.'},
+            {question: 'Broj 27 u kontekstu namaza asocira na:', options: ['Broj rekata', 'Vrijednost džemata', 'Broj sura', 'Broj sedždi'], answer: 'Vrijednost džemata', explanation: 'Namaz u džematu vrijedi 27 PUTA više od pojedinačnog.'},
+            {question: 'Koliko ima islamskih šartova?', options: ['3', '4', '5', '6'], answer: '5', explanation: 'Pet islamskih šartova: šehadet, namaz, post, zekat i hadž.'},
+            {question: 'Šta je nisab?', options: ['Vrsta namaza', 'Količina imovine za zekat', 'Hadžski obred', 'Vrsta posta'], answer: 'Količina imovine za zekat', explanation: 'NISAB je količina imovine koju ako osoba posjeduje, dužna je dati zekat.'},
+            {question: 'Kada hadžije borave na Arefatu?', options: ['1. zul-hidžeta', '9. zul-hidžeta', '10. zul-hidžeta', '15. zul-hidžeta'], answer: '9. zul-hidžeta', explanation: '9. zul-hidžeta hadžije borave na brdu Arefat - ključni dan hadža.'},
+            {question: 'Šta hadžije uče tokom hadža?', options: ['Salavat', 'Telbiju', 'Fatihu', 'Ihlas'], answer: 'Telbiju', explanation: 'Hadžije uče TELBIJU: "Lebbejkellahumme lebbejk..."'},
+            {question: 'Koliko dnevnih namaza klanja musliman?', options: ['3', '4', '5', '7'], answer: '5', explanation: 'Pet dnevnih namaza: sabah, podne, ikindija, akšam, jacija.'},
+            {question: 'Šta je mukabela?', options: ['Noćni namaz', 'Zajedničko učenje Kur\'ana', 'Vrsta posta', 'Hadžski obred'], answer: 'Zajedničko učenje Kur\'ana', explanation: 'MUKABELA je zajedničko učenje Kur\'ana u džamiji tokom ramazana.'},
+            {question: 'Koliko se puta obilazi oko Kabe u tavafu?', options: ['3 puta', '5 puta', '7 puta', '10 puta'], answer: '7 puta', explanation: 'TAVAF je sedam obilazaka oko Kabe.'},
+            {question: 'Šta je itikaf?', options: ['Vrsta namaza', 'Boravak u džamiji', 'Hadžski obred', 'Vrsta zekata'], answer: 'Boravak u džamiji', explanation: 'ITIKAF je povlačenje u džamiju radi ibadeta zadnjih 10 dana ramazana.'},
+            {question: 'Teravih-namaz se klanja:', options: ['Ujutro', 'U podne', 'Poslije jacije u ramazanu', 'Petkom'], answer: 'Poslije jacije u ramazanu', explanation: 'TERAVIH se klanja u ramazanskim noćima, poslije jacija-namaza.'},
+            {question: 'Vitr-namaz se klanja:', options: ['Ujutro', 'U podne', 'Poslije jacije', 'Petkom'], answer: 'Poslije jacije', explanation: 'VITR se klanja poslije jacija-namaza i ima 3 rekata.'},
+            {question: 'Koji su farzovi hadža?', options: ['Ihram, Arefat, tavaf', 'Namaz, post, zekat', 'Sehur, iftar, teravih', 'Safa, Merva, Mina'], answer: 'Ihram, Arefat, tavaf', explanation: 'Tri farza hadža: ihram, boravak na Arefatu i tavaf oko Kabe.'},
+            {question: 'Čime se Poslanik, a.s., iftario?', options: ['Hljebom', 'Hurmom ili vodom', 'Mesom', 'Mlijekom'], answer: 'Hurmom ili vodom', explanation: 'Poslanik je rekao: "Neka se iftari hurmom, a ako ne nađe, vodom."'},
+
+            // ===== NIVO 2 - IZ 2C (18 pitanja) =====
+            {question: 'Izbaci pojam koji NE pripada: Kufr, Širk, Riddet, Tevba', options: ['Kufr', 'Širk', 'Riddet', 'Tevba'], answer: 'Tevba', explanation: 'Kufr, Širk i Riddet su TEŠKI GRIJESI, a Tevba je POKAJANJE.'},
+            {question: 'Izbaci pojam koji NE pripada: Svinjsko meso, Krv, Med, Alkohol', options: ['Svinjsko meso', 'Krv', 'Med', 'Alkohol'], answer: 'Med', explanation: 'Svinjsko meso, Krv i Alkohol su HARAM, a Med je HALAL.'},
+            {question: 'Pojam TEVBA vas asocira na:', options: ['Grijeh', 'Pokajanje', 'Namaz', 'Post'], answer: 'Pokajanje', explanation: 'TEVBA znači pokajanje za učinjene grijehe.'},
+            {question: 'Pojam HALAL asocira na:', options: ['Zabranjeno', 'Dozvoljeno', 'Pokuđeno', 'Obavezno'], answer: 'Dozvoljeno', explanation: 'HALAL je sve što je Allah dozvolio.'},
+            {question: 'Pojam AHLAK asocira na:', options: ['Namaz', 'Moral i ponašanje', 'Post', 'Hadž'], answer: 'Moral i ponašanje', explanation: 'AHLAK je islamski moral i lijepo ponašanje.'},
+            {question: 'Dopuni: Halal : dozvoljeno = Haram : ?', options: ['Pohvalno', 'Zabranjeno', 'Obavezno', 'Pokuđeno'], answer: 'Zabranjeno', explanation: 'Halal je dozvoljeno, Haram je zabranjeno.'},
+            {question: 'Dopuni: Kufr : nevjerovanje = Nifak : ?', options: ['Iskrenost', 'Licemjerstvo', 'Hrabrost', 'Skromnost'], answer: 'Licemjerstvo', explanation: 'Kufr je nevjerovanje, Nifak je licemjerstvo.'},
+            {question: '"Ja sam teški grijeh - nevjerovanje u Allaha." Šta sam?', options: ['Širk', 'Kufr', 'Nifak', 'Riddet'], answer: 'Kufr', explanation: 'KUFR je nevjerovanje u Allaha i temeljne istine vjere.'},
+            {question: '"Ja sam dijete bez roditelja." Ko sam?', options: ['Musafir', 'Jetim', 'Muallim', 'Imam'], answer: 'Jetim', explanation: 'JETIM je siroče - dijete bez roditelja.'},
+            {question: 'Pronađi GREŠKU: "Grijesi se dijele na male i velike."', options: ['Ima i TEŠKI grijesi', 'Nema malih grijeha', 'Nema velikih grijeha', 'Nema greške'], answer: 'Ima i TEŠKI grijesi', explanation: 'Grijesi se dijele na MALE, VELIKE i TEŠKE.'},
+            {question: 'Koji grijeh izvodi osobu iz vjere?', options: ['Mali grijeh', 'Veliki grijeh', 'Teški grijeh', 'Svi grijesi'], answer: 'Teški grijeh', explanation: 'Teški grijesi (kufr, širk, riddet, nifak) izvode počinioca iz vjere.'},
+            {question: 'Šta je KUFR?', options: ['Licemjerstvo', 'Nevjerovanje u Allaha', 'Napuštanje vjere', 'Pripisivanje druga'], answer: 'Nevjerovanje u Allaha', explanation: 'KUFR je nevjerovanje u Allaha i ostale temeljne istine vjere.'},
+            {question: 'Šta je ŠIRK?', options: ['Licemjerstvo', 'Nevjerovanje', 'Pripisivanje druga Allahu', 'Napuštanje vjere'], answer: 'Pripisivanje druga Allahu', explanation: 'ŠIRK je vjerovanje da uz Allaha postoje i druga božanstva.'},
+            {question: 'Kako glasi dova za pokajanje?', options: ['Bismillah', 'Elhamdulillah', 'Estagfirullah', 'Subhanallah'], answer: 'Estagfirullah', explanation: 'ESTAGFIRULLAH - Tražim Allahov oprost za grijehe.'},
+            {question: 'Poslanik je rekao da je alkohol:', options: ['Dozvoljen u malim količinama', 'Majka svih zala', 'Lijek', 'Neutralan'], answer: 'Majka svih zala', explanation: '"Alkohol je majka svih zala." (Hakim)'},
+            {question: '"Ja sam sredina između pretjerivanja i nemara." Šta sam?', options: ['Krajnost', 'Umjerenost', 'Pretjerivanje', 'Nemar'], answer: 'Umjerenost', explanation: 'UMJERENOST je srednji put između krajnosti.'},
+            {question: 'Šta je NIFAK?', options: ['Licemjerstvo u vjeri', 'Nevjerovanje', 'Širk', 'Riddet'], answer: 'Licemjerstvo u vjeri', explanation: 'NIFAK je kada osoba javno vjeruje, a u tajnosti poriče.'},
+            {question: 'Šta je jetim?', options: ['Bogataš', 'Siroče', 'Putnik', 'Starac'], answer: 'Siroče', explanation: 'JETIM je siroče - dijete bez roditelja.'},
+
+            // ===== NIVO 2 - IZ 2D (18 pitanja) =====
+            {question: 'Pojam "EBTER" vas asocira na:', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kevser', explanation: 'EBTER (bez spomena) se spominje u suri El-Kevser.'},
+            {question: 'Pojam "JETIM" vas asocira na suru:', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Maun', explanation: 'JETIM (siroče) se spominje u suri El-Maun.'},
+            {question: 'Pojam "ZIMSKO PUTOVANJE" asocira na:', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kurejš', explanation: 'Zimsko i ljetno putovanje Kurejšija - sura El-Kurejš.'},
+            {question: 'Broj 3 u kontekstu sura asocira na:', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kevser', explanation: 'El-KEVSER ima 3 ajeta - najkraća sura.'},
+            {question: 'Dopuni: El-Kevser : 3 ajeta = El-Kafirun : ?', options: ['4 ajeta', '5 ajeta', '6 ajeta', '7 ajeta'], answer: '6 ajeta', explanation: 'El-Kevser ima 3 ajeta, El-Kafirun ima 6 ajeta.'},
+            {question: '"Imam samo 3 ajeta i govorim o mnogo dobru." Koja sam sura?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kevser', explanation: 'EL-KEVSER ima 3 ajeta i govori o "kevser" - mnogo dobru.'},
+            {question: '"Govorim o siročetu i siromahu." Koja sam sura?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Maun', explanation: 'EL-MAUN govori o jetimima i miskinima.'},
+            {question: '"Govorim o zimskom i ljetnom putovanju." Koja sam sura?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kurejš', explanation: 'EL-KUREJŠ govori o putovanjima Kurejšija.'},
+            {question: 'Pronađi GREŠKU: "Sura El-Kevser ima 6 ajeta."', options: ['Ima 3 ajeta', 'Ima 4 ajeta', 'Ima 7 ajeta', 'Nema greške'], answer: 'Ima 3 ajeta', explanation: 'Sura El-Kevser ima samo 3 ajeta - najkraća sura.'},
+            {question: 'Koliko ajeta ima sura El-Kevser?', options: ['3', '4', '5', '6'], answer: '3', explanation: 'Sura El-Kevser ima samo 3 ajeta - najkraća sura.'},
+            {question: 'Koliko ajeta ima sura El-Maun?', options: ['5', '6', '7', '8'], answer: '7', explanation: 'Sura El-Maun ima 7 ajeta.'},
+            {question: 'Šta znači riječ "Kevser"?', options: ['Nevjernici', 'Mnogo dobro', 'Siroče', 'Kurejšije'], answer: 'Mnogo dobro', explanation: 'KEVSER znači "mnogo dobro" ili "obilje".'},
+            {question: 'Ko su Kurejšije?', options: ['Stanovnici Medine', 'Stanovnici Mekke', 'Stanovnici Taifa', 'Stanovnici Jemena'], answer: 'Stanovnici Mekke', explanation: 'KUREJŠIJE su pleme koje je živjelo u Mekki.'},
+            {question: 'Sura El-Maun kritizira one koji:', options: ['Klanjaju redovno', 'Grubo odbijaju siroče', 'Pomažu siromašne', 'Daju zekat'], answer: 'Grubo odbijaju siroče', explanation: 'El-Maun kritizira one koji grubo odbijaju jetima.'},
+            {question: 'Kada se uči Kunut-dova?', options: ['Na prvom rekatu', 'Na drugom rekatu', 'Na trećem rekatu vitira', 'Poslije namaza'], answer: 'Na trećem rekatu vitira', explanation: 'Kunut-dova se uči u TREĆEM rekatu vitr-namaza.'},
+            {question: '"Lekum dinukum ve lije din" znači:', options: ['U ime Allaha', 'Vama vaša vjera, a meni moja', 'Mnogo dobro', 'Tražim zaštitu'], answer: 'Vama vaša vjera, a meni moja', explanation: 'To je posljednji ajet sure El-Kafirun.'},
+            {question: '"Kritikujem one koji klanjaju radi ljudi." Koja sam sura?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Maun', explanation: 'EL-MAUN kritizira munafike koji klanjaju radi ljudi.'},
+            {question: 'Koja sura govori o putovanjima Kurejšija?', options: ['El-Kafirun', 'El-Kevser', 'El-Maun', 'El-Kurejš'], answer: 'El-Kurejš', explanation: 'El-KUREJŠ govori o zimskim i ljetnim putovanjima.'}
+            ]
+        };
+    </script>
+
+    <!-- Centralizovani JavaScript Engine -->
+    <script src="../core/quiz-engine.js"></script>
+</body>
+</html>
