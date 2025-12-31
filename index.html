@@ -81,6 +81,20 @@
             box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
         }
         
+        /* HARD QUIZ SPECIAL STYLE */
+        .section-title:has(+ .quiz-grid .quiz-card.final-quiz:first-child[onclick*="hard"]) {
+            position: relative;
+        }
+        .quiz-card.final-quiz[onclick*="hard"] {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(251, 191, 36, 0.15));
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+        .quiz-card.final-quiz[onclick*="hard"]:hover {
+            border-color: #ef4444;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(251, 191, 36, 0.2));
+        }
+        
         .quiz-icon { width: 120px; height: auto; margin: 0 auto 1rem auto; display: block; }
         .quiz-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 0.5rem; }
         .quiz-description { color: #d1fae5; margin-bottom: 1rem; font-size: 1rem; line-height: 1.5; }
@@ -280,7 +294,12 @@
                 <p>
                     Prijava je namijenjena muallimima i njihovim učenicima mekteba u cilju evidentiranja i praćenja rezultata.
                     <br><br>
-                    Završni kvizovi (🔒) su dostupni samo prijavljenim korisnicima.
+                    <strong>Završni kvizovi</strong> (🔒) i <strong>Hard kvizovi</strong> (🔥🔒) su dostupni samo prijavljenim korisnicima.
+                    <br><br>
+                    <strong>Hard kvizovi</strong> sadrže napredne tipove pitanja:<br>
+                    • <strong>Checkbox</strong> - više tačnih odgovora<br>
+                    • <strong>Reorder</strong> - poredaj po redu<br>
+                    • <strong>Match</strong> - spoji parove
                     <br><br>
                     Za više informacija pišite nam na:<br>
                     <a href="/cdn-cgi/l/email-protection#5a33343c351a373f312e3f3874343f2e"><span class="__cf_email__" data-cfemail="0c65626a634c61696778696e22626978">[email&#160;protected]</span></a>
@@ -344,6 +363,55 @@
                 <p class="quiz-description">60 najboljih pitanja iz svih lekcija</p>
                 <div class="quiz-badge">20 od 60 pitanja</div>
                 <span class="random-badge">🔀 Svaki put drugačija pitanja</span>
+                <span class="locked-notice">🔒 Samo za prijavljene</span>
+            </div>
+        </div>
+        
+        <h2 class="section-title">1. NIVO - HARD 🔥</h2>
+        
+        <div class="quiz-grid">
+            <div class="quiz-card final-quiz locked" onclick="openLockedQuiz('nivo1/1a-hard.html')">
+                <img src="assets/images/star_1.png" alt="1 zvjezdica" class="quiz-icon">
+                <h2 class="quiz-title">KVIZ 1A - HARD</h2>
+                <p class="quiz-description">Iman, Islam, Poslanik - Napredni nivo</p>
+                <div class="quiz-badge">20 od 52 pitanja</div>
+                <span class="random-badge">🔥 Checkbox • Reorder • Match</span>
+                <span class="locked-notice">🔒 Samo za prijavljene</span>
+            </div>
+            
+            <div class="quiz-card final-quiz locked" onclick="openLockedQuiz('nivo1/1b-hard.html')">
+                <img src="assets/images/star_2.png" alt="2 zvjezdice" class="quiz-icon">
+                <h2 class="quiz-title">KVIZ 1B - HARD</h2>
+                <p class="quiz-description">Namaz, Abdest, Ruknovi - Napredni nivo</p>
+                <div class="quiz-badge">20 od 52 pitanja</div>
+                <span class="random-badge">🔥 Checkbox • Reorder • Match</span>
+                <span class="locked-notice">🔒 Samo za prijavljene</span>
+            </div>
+            
+            <div class="quiz-card final-quiz locked" onclick="openLockedQuiz('nivo1/1c-hard.html')">
+                <img src="assets/images/star_3.png" alt="3 zvjezdice" class="quiz-icon">
+                <h2 class="quiz-title">KVIZ 1C - HARD</h2>
+                <p class="quiz-description">Dove, Bajrami, Hidžra - Napredni nivo</p>
+                <div class="quiz-badge">20 od 52 pitanja</div>
+                <span class="random-badge">🔥 Checkbox • Reorder • Match</span>
+                <span class="locked-notice">🔒 Samo za prijavljene</span>
+            </div>
+            
+            <div class="quiz-card final-quiz locked" onclick="openLockedQuiz('nivo1/1d-hard.html')">
+                <img src="assets/images/star_4.png" alt="4 zvjezdice" class="quiz-icon">
+                <h2 class="quiz-title">KVIZ 1D - HARD</h2>
+                <p class="quiz-description">Sure i Dove - Napredni nivo</p>
+                <div class="quiz-badge">20 od 52 pitanja</div>
+                <span class="random-badge">🔥 Checkbox • Reorder • Match</span>
+                <span class="locked-notice">🔒 Samo za prijavljene</span>
+            </div>
+            
+            <div class="quiz-card final-quiz locked" onclick="openLockedQuiz('nivo1/1e-hard.html')">
+                <img src="assets/images/star_5.png" alt="5 zvjezdica" class="quiz-icon">
+                <h2 class="quiz-title">KVIZ 1E - HARD</h2>
+                <p class="quiz-description">Kompletan Nivo 1 - SVE TEME - Napredni</p>
+                <div class="quiz-badge">20 od 52 pitanja</div>
+                <span class="random-badge">🔥 Checkbox • Reorder • Match</span>
                 <span class="locked-notice">🔒 Samo za prijavljene</span>
             </div>
         </div>
@@ -448,7 +516,7 @@
         </div>
         
         <div class="footer">
-            <p>📖 Ukupno 16 kvizova • 1200+ pitanja</p>
+            <p>📖 Ukupno 21 kviz • 1400+ pitanja</p>
             <p style="margin-top: 1rem; font-size: 0.95rem;">Učite o islamu kroz interaktivne kvizove</p>
         </div>
         
